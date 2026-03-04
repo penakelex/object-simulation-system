@@ -1,0 +1,103 @@
+package org.penakelex.objectsimulationsystem.habitat;
+
+import javafx.scene.canvas.GraphicsContext;
+import org.apache.commons.lang3.tuple.Pair;
+import org.penakelex.objectsimulationsystem.vehicle.Car;
+import org.penakelex.objectsimulationsystem.vehicle.Truck;
+import org.penakelex.objectsimulationsystem.vehicle.Vehicle;
+import org.penakelex.objectsimulationsystem.vehicle.images.CarImages;
+import org.penakelex.objectsimulationsystem.vehicle.images.TruckImages;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
+
+public final class Habitat {
+    private final List<Vehicle> vehicles = new ArrayList<>();
+    private int idCounter = 0;
+
+    private double width, height;
+
+    private final TruckImages truckImages = new TruckImages();
+    private final CarImages carImages = new CarImages();
+
+    private final VehicleSpawner<Truck> truckSpawner =
+        new VehicleSpawner<>(
+            200,
+            0.7,
+            Truck::new,
+            truckImages
+        );
+    private final VehicleSpawner<Car> carSpawner =
+        new VehicleSpawner<>(
+            300,
+            0.5,
+            Car::new,
+            carImages
+        );
+
+    private final List<VehicleSpawner<?>> vehicleSpawners = List.of(
+        truckSpawner, carSpawner
+    );
+
+    private final Random random = ThreadLocalRandom.current();
+
+    public Habitat(final double width, final double height) {
+        this.width = width;
+        this.height = height;
+    }
+
+
+    public void update(final long currentTimeMillis) {
+        for (final var spawner : vehicleSpawners) {
+            spawner
+                .trySpawn(
+                    currentTimeMillis,
+                    this::generateVehicleStartingPosition,
+                    this::getNextId
+                ).ifPresent(vehicles::add);
+        }
+
+        for (final var vehicle : vehicles) {
+            vehicle.update(currentTimeMillis);
+        }
+    }
+
+    private int getNextId() {
+        return ++idCounter;
+    }
+    private Pair<Double, Double> generateVehicleStartingPosition(
+        final double vehicleWidth,
+        final double vehicleHeight
+    ) {
+        return Pair.of(
+            random.nextDouble() * (width - vehicleWidth),
+            random.nextDouble() * (height - vehicleHeight)
+        );
+    }
+
+    public void draw(final GraphicsContext context) {
+        for (final var vehicle : vehicles) {
+            vehicle.draw(context);
+        }
+    }
+
+    public void reset() {
+        vehicles.clear();
+        idCounter = 0;
+        vehicleSpawners.forEach(VehicleSpawner::reset);
+    }
+
+    public List<Vehicle> getVehicles() {
+        return vehicles;
+    }
+
+    public void setHeight(final double height) {
+        this.height = height;
+    }
+
+    public void setWidth(final double width) {
+        this.width = width;
+    }
+}
