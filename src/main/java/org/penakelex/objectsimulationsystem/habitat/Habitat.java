@@ -80,8 +80,6 @@ public final class Habitat {
     }
 
     public void draw(final GraphicsContext context) {
-        context.clearRect(0, 0, width, height);
-
         for (final var vehicle : vehicles) {
             vehicle.draw(context);
         }

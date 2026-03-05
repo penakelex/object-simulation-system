@@ -54,16 +54,13 @@ public class SimulationController {
         simulationCanvas.widthProperty()
             .addListener((_, _, newValue) -> {
                 habitat.setWidth(newValue.doubleValue());
-                habitat.draw(graphicsContext);
+                draw();
             });
         simulationCanvas.heightProperty()
             .addListener((_, _, newValue) -> {
                 habitat.setHeight(newValue.doubleValue());
-                habitat.draw(graphicsContext);
+                draw();
             });
-
-        setupGameLoop();
-        updateStatistics();
     }
 
     public void setupKeyboardHandler(final Scene scene) {
@@ -72,6 +69,7 @@ public class SimulationController {
                 case B -> startSimulation();
                 case E -> stopSimulation();
                 case T -> toggleTimeDisplay();
+                case R -> restartSimulation();
             }
         });
 
@@ -101,10 +99,8 @@ public class SimulationController {
             return;
         }
 
+        startTime = System.currentTimeMillis() - elapsedTime;
         running = true;
-        startTime = System.currentTimeMillis();
-        elapsedTime = 0;
-        habitat.reset();
         statusLabel.setText("▶️ Запущено");
         statusLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 15px; -fx-text-fill: #4CAF50;");
         simulationCanvas.requestFocus();
@@ -112,11 +108,17 @@ public class SimulationController {
 
     private void stopSimulation() {
         running = false;
-        elapsedTime = System.currentTimeMillis() - startTime;
         statusLabel.setText("⏸️ Остановлено");
         statusLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 15px; -fx-text-fill: #F44336;");
-        showStatistics();
         updateStatistics();
+    }
+
+    private void restartSimulation() {
+        startTime = System.currentTimeMillis();
+        elapsedTime = 0;
+        habitat.reset();
+        updateStatistics();
+        draw();
     }
 
     private void toggleTimeDisplay() {
@@ -140,12 +142,10 @@ public class SimulationController {
         int trucks = 0;
         int cars = 0;
 
-        if (habitat != null) {
-            for (final var vehicle : habitat.getVehicles()) {
-                switch (vehicle) {
-                    case Car _ -> cars++;
-                    case Truck _ -> trucks++;
-                }
+        for (final var vehicle : habitat.getVehicles()) {
+            switch (vehicle) {
+                case Car _ -> cars++;
+                case Truck _ -> trucks++;
             }
         }
 
@@ -156,24 +156,6 @@ public class SimulationController {
         if (showTime) {
             timeLabel.setText(String.format("%d мс", elapsedTime));
         }
-    }
-
-    private void showStatistics() {
-//        int trucks = 0;
-//        int cars = 0;
-//
-//        for (var vehicle : habitat.getVehicles()) {
-//            if (vehicle instanceof Truck) {
-//                trucks++;
-//            } else if (vehicle instanceof Car) {
-//                cars++;
-//            }
-//        }
-
-        // Показываем финальную статистику в виджетах
-        truckCountLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 18px; -fx-text-fill: #4CAF50;");
-        carCountLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 18px; -fx-text-fill: #2196F3;");
-        totalCountLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 18px; -fx-text-fill: #FF5722;");
     }
 
     public void requestFocus() {

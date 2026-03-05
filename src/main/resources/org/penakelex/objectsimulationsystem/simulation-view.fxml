@@ -67,6 +67,7 @@
             <Label text="B - Старт" style="-fx-font-size: 12px; -fx-text-fill: #666;"/>
             <Label text="E - Стоп" style="-fx-font-size: 12px; -fx-text-fill: #666;"/>
             <Label text="T - Время" style="-fx-font-size: 12px; -fx-text-fill: #666;"/>
+            <Label text="R - Перезапуск" style="-fx-font-size: 12px; -fx-text-fill: #666;"/>
         </VBox>
 
         <VBox spacing="5" VBox.vgrow="ALWAYS">
@@ -76,85 +77,3 @@
         </VBox>
     </VBox>
 </HBox>
-        <!--
-        <?xml version="1.0" encoding="UTF-8"?>
-
-        <?import javafx.geometry.Insets?>
-        <?import javafx.scene.canvas.Canvas?>
-        <?import javafx.scene.control.Label?>
-        <?import javafx.scene.layout.BorderPane?>
-        <?import javafx.scene.layout.HBox?>
-        <?import javafx.scene.layout.VBox?>
-
-        <BorderPane xmlns="http://javafx.com/javafx/25"
-                    xmlns:fx="http://javafx.com/fxml/1"
-                    fx:controller="org.penakelex.objectsimulationsystem.SimulationController"
-                    prefWidth="1000" prefHeight="700">
-
-            <center>
-                <Canvas fx:id="simulationCanvas" BorderPane.alignment="CENTER"/>
-            </center>
-
-            <right>
-                <VBox spacing="15" style="-fx-background-color: #f5f5f5;">
-                    <padding>
-                        <Insets top="20" right="20" bottom="20" left="20"/>
-                    </padding>
-
-                    <VBox spacing="5">
-                        <Label text="⏱️ Время симуляции:"
-                               style="-fx-font-weight: bold; -fx-font-size: 14px;"/>
-                        <Label fx:id="timeLabel"
-                               text="0 мс"
-                               style="-fx-font-size: 16px; -fx-text-fill: #2196F3;"/>
-                    </VBox>
-
-                    <Label style="-fx-background-color: #ddd; -fx-pref-height: 2px; -fx-pref-width: 200px;"/>
-
-                    <VBox spacing="5">
-                        <Label text="📊 Статистика объектов:"
-                               style="-fx-font-weight: bold; -fx-font-size: 14px;"/>
-
-                        <HBox spacing="10">
-                            <Label text="🚛 Грузовые:" style="-fx-font-size: 13px;"/>
-                            <Label fx:id="truckCountLabel"
-                                   text="0"
-                                   style="-fx-font-weight: bold; -fx-text-fill: #4CAF50;"/>
-                        </HBox>
-
-                        <HBox spacing="10">
-                            <Label text="🚗 Легковые:" style="-fx-font-size: 13px;"/>
-                            <Label fx:id="carCountLabel"
-                                   text="0"
-                                   style="-fx-font-weight: bold; -fx-text-fill: #2196F3;"/>
-                        </HBox>
-
-                        <HBox spacing="10">
-                            <Label text="📈 Всего:" style="-fx-font-size: 13px;"/>
-                            <Label fx:id="totalCountLabel"
-                                   text="0"
-                                   style="-fx-font-weight: bold; -fx-text-fill: #FF5722;"/>
-                        </HBox>
-                    </VBox>
-
-                    <Label style="-fx-background-color: #ddd; -fx-pref-height: 2px; -fx-pref-width: 200px;"/>
-
-                    <VBox spacing="10">
-                        <Label text="⚙️ Управление:"
-                               style="-fx-font-weight: bold; -fx-font-size: 14px;"/>
-
-                        <Label text="B - Старт" style="-fx-font-size: 12px; -fx-text-fill: #666;"/>
-                        <Label text="E - Стоп" style="-fx-font-size: 12px; -fx-text-fill: #666;"/>
-                        <Label text="T - Время" style="-fx-font-size: 12px; -fx-text-fill: #666;"/>
-                    </VBox>
-
-                    <VBox spacing="5" VBox.vgrow="ALWAYS">
-                        <Label fx:id="statusLabel"
-                               text="⏸️ Остановлено"
-                               style="-fx-font-weight: bold; -fx-font-size: 15px; -fx-text-fill: #F44336;"/>
-                    </VBox>
-
-                </VBox>
-            </right>
-
-        </BorderPane>-->
