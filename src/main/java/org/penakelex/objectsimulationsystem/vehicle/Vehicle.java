@@ -7,38 +7,54 @@ import org.penakelex.objectsimulationsystem.behaviour.IBehaviour;
 public abstract sealed class Vehicle implements IBehaviour
     permits Truck, Car
 {
+    public static final double RELATIVE_SIZE = 0.05;
+
     protected final int id;
-    protected double x, y;
-    protected final long birthTime;
+    protected double relativeX, relativeY;
+    protected final long spawnTime;
     protected final Image image;
+
+    private double absoluteX, absoluteY;
 
     public Vehicle(
         final int id,
-        final double x,
-        final double y,
-        final long birthTime,
+        final double relativeX,
+        final double relativeY,
+        final long spawnTime,
         final Image image
     ) {
         this.id = id;
-        this.x = x;
-        this.y = y;
-        this.birthTime = birthTime;
+        this.relativeX = relativeX;
+        this.relativeY = relativeY;
+        this.spawnTime = spawnTime;
         this.image = image;
+    }
+
+    public void updateAbsoluteXPosition(final double canvasWidth) {
+        this.absoluteX = this.relativeX * canvasWidth;
+    }
+
+    public void updateAbsoluteYPosition(final double canvasHeight) {
+        this.absoluteY = this.relativeY * canvasHeight;
+
     }
 
     @Override
     public void update(final long time) {
-
     }
 
     @Override
     public void draw(final GraphicsContext context) {
-        final var drawHeight = context.getCanvas().getHeight() * 0.05;
+        final var drawHeight =
+            context.getCanvas().getHeight() * RELATIVE_SIZE;
+        final var drawWidth =
+            drawHeight * image.getWidth() / image.getHeight();
+
         context.drawImage(
             image,
-            x,
-            y,
-            drawHeight * image.getWidth() / image.getHeight(),
+            absoluteX,
+            absoluteY,
+            drawWidth,
             drawHeight
         );
     }

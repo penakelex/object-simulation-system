@@ -9,7 +9,8 @@
 <HBox xmlns="http://javafx.com/javafx/25"
       xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="org.penakelex.objectsimulationsystem.SimulationController"
-      prefWidth="1000" prefHeight="700">
+      minWidth="400" minHeight="400"
+      prefWidth="900" prefHeight="700">
 
     <StackPane fx:id="canvasContainer" HBox.hgrow="ALWAYS" minWidth="0" minHeight="0">
         <Canvas fx:id="simulationCanvas"/>

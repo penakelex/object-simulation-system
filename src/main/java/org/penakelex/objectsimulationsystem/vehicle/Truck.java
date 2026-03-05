@@ -5,11 +5,11 @@ import javafx.scene.image.Image;
 public final class Truck extends Vehicle {
     public Truck(
         final int id,
-        final double x,
-        final double y,
-        final long birthTime,
+        final double absoluteX,
+        final double absoluteY,
+        final long spawnTime,
         final Image image
     ) {
-        super(id, x, y, birthTime, image);
+        super(id, absoluteX, absoluteY, spawnTime, image);
     }
 }

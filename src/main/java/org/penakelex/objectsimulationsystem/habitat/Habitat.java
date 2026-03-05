@@ -24,15 +24,15 @@ public final class Habitat {
 
     private final VehicleSpawner<Truck> truckSpawner =
         new VehicleSpawner<>(
-            200,
-            0.7,
+            100,
+            1,
             Truck::new,
             truckImages
         );
     private final VehicleSpawner<Car> carSpawner =
         new VehicleSpawner<>(
-            300,
-            0.5,
+            100,
+            1,
             Car::new,
             carImages
         );
@@ -48,15 +48,18 @@ public final class Habitat {
         this.height = height;
     }
 
-
     public void update(final long currentTimeMillis) {
         for (final var spawner : vehicleSpawners) {
             spawner
                 .trySpawn(
                     currentTimeMillis,
-                    this::generateVehicleStartingPosition,
+                    this::generateVehicleStartingRelativePosition,
                     this::getNextId
-                ).ifPresent(vehicles::add);
+                ).ifPresent((vehicle) -> {
+                    vehicle.updateAbsoluteXPosition(this.width);
+                    vehicle.updateAbsoluteYPosition(this.height);
+                    vehicles.add(vehicle);
+                });
         }
 
         for (final var vehicle : vehicles) {
@@ -67,17 +70,18 @@ public final class Habitat {
     private int getNextId() {
         return ++idCounter;
     }
-    private Pair<Double, Double> generateVehicleStartingPosition(
-        final double vehicleWidth,
-        final double vehicleHeight
-    ) {
+
+    private Pair<Double, Double>
+    generateVehicleStartingRelativePosition() {
         return Pair.of(
-            random.nextDouble() * (width - vehicleWidth),
-            random.nextDouble() * (height - vehicleHeight)
+            random.nextDouble() * (1 - Vehicle.RELATIVE_SIZE),
+            random.nextDouble() * (1 - Vehicle.RELATIVE_SIZE)
         );
     }
 
     public void draw(final GraphicsContext context) {
+        context.clearRect(0, 0, width, height);
+
         for (final var vehicle : vehicles) {
             vehicle.draw(context);
         }
@@ -93,11 +97,27 @@ public final class Habitat {
         return vehicles;
     }
 
-    public void setHeight(final double height) {
-        this.height = height;
+    public void setWidth(final double width) {
+        if (this.width == width) {
+            return;
+        }
+
+        this.width = width;
+
+        for (final var vehicle : vehicles) {
+            vehicle.updateAbsoluteXPosition(this.width);
+        }
     }
 
-    public void setWidth(final double width) {
-        this.width = width;
+    public void setHeight(final double height) {
+        if (this.height == height) {
+            return;
+        }
+
+        this.height = height;
+
+        for (final var vehicle : vehicles) {
+            vehicle.updateAbsoluteYPosition(this.height);
+        }
     }
 }

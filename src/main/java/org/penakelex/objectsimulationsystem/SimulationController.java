@@ -52,13 +52,15 @@ public class SimulationController {
             .heightProperty()
         );
         simulationCanvas.widthProperty()
-            .addListener((_, _, newValue) ->
-                habitat.setWidth(newValue.doubleValue())
-            );
+            .addListener((_, _, newValue) -> {
+                habitat.setWidth(newValue.doubleValue());
+                habitat.draw(graphicsContext);
+            });
         simulationCanvas.heightProperty()
-            .addListener((_, _, newValue) ->
-                habitat.setHeight(newValue.doubleValue())
-            );
+            .addListener((_, _, newValue) -> {
+                habitat.setHeight(newValue.doubleValue());
+                habitat.draw(graphicsContext);
+            });
 
         setupGameLoop();
         updateStatistics();
@@ -67,19 +69,7 @@ public class SimulationController {
     public void setupKeyboardHandler(final Scene scene) {
         scene.setOnKeyPressed(event -> {
             switch (event.getCode()) {
-                case B -> {
-                    startSimulation();
-                    IO.println(String.format(
-                        "Container: Width: %f, height: %f",
-                        canvasContainer.getWidth(),
-                        canvasContainer.getHeight()
-                    ));
-                    IO.println(String.format(
-                        "Canvas: Width: %f, height: %f",
-                        simulationCanvas.getWidth(),
-                        simulationCanvas.getHeight()
-                    ));
-                }
+                case B -> startSimulation();
                 case E -> stopSimulation();
                 case T -> toggleTimeDisplay();
             }

@@ -31,7 +31,7 @@ public final class VehicleSpawner<T extends Vehicle> {
 
     public Optional<T> trySpawn(
         final long currentTimeMillis,
-        final PositionGenerator positionGenerator,
+        final RelativePositionGenerator relativePositionGenerator,
         final IdSupplier idSupplier
     ) {
         if (currentTimeMillis - lastSpawnTime < periodMillis) {
@@ -46,11 +46,8 @@ public final class VehicleSpawner<T extends Vehicle> {
 
         final var image = images.getRandomImage();
 
-        final var position = positionGenerator.generate(
-            image.getWidth(),
-            image.getHeight()
-
-        );
+        final var position =
+            relativePositionGenerator.generate();
 
         return Optional.of(factory.create(
             idSupplier.getNextId(),
@@ -66,10 +63,8 @@ public final class VehicleSpawner<T extends Vehicle> {
     }
 
     @FunctionalInterface
-    public interface PositionGenerator {
-        Pair<Double, Double> generate(
-            final double width, final double height
-        );
+    public interface RelativePositionGenerator {
+        Pair<Double, Double> generate();
     }
 
     @FunctionalInterface

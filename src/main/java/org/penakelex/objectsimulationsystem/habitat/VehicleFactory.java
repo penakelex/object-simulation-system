@@ -7,8 +7,8 @@ import org.penakelex.objectsimulationsystem.vehicle.Vehicle;
 public interface VehicleFactory<T extends Vehicle> {
     T create(
         final int id,
-        final double x,
-        final double y,
+        final double absoluteX,
+        final double absoluteY,
         final long spawnTime,
         final Image image
     );

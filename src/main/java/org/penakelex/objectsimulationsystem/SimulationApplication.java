@@ -16,14 +16,16 @@ public class SimulationApplication extends Application {
         );
 
         final HBox root = loader.load();
-        final var scene = new Scene(root, 1000., 700.);
+        final var scene = new Scene(
+            root, root.getPrefWidth(), root.getPrefHeight()
+        );
         final SimulationController controller =
             loader.getController();
 
         stage.setTitle("🚗 Симуляция автомобилей");
         stage.setScene(scene);
-        stage.setMinWidth(800);
-        stage.setMinHeight(600);
+        stage.setMinWidth(root.getMinWidth());
+        stage.setMinHeight(root.getMinHeight());
         stage.show();
 
         controller.setupKeyboardHandler(scene);
