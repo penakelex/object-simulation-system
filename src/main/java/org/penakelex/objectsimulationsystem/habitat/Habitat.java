@@ -24,15 +24,15 @@ public final class Habitat {
 
     private final VehicleSpawner<Truck> truckSpawner =
         new VehicleSpawner<>(
-            100,
-            1,
+            200,
+            0.7,
             Truck::new,
             truckImages
         );
     private final VehicleSpawner<Car> carSpawner =
         new VehicleSpawner<>(
-            100,
-            1,
+            300,
+            0.5,
             Car::new,
             carImages
         );

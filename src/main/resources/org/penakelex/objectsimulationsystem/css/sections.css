@@ -1,0 +1,25 @@
+.info-section {
+    -fx-padding: 5 0;
+    -fx-background-color: transparent;
+}
+
+.section-header {
+    -fx-alignment: center-left;
+    -fx-spacing: 8;
+}
+
+.section-title {
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+    -fx-text-fill: #333333;
+}
+
+.section-content {
+    -fx-background-color: transparent;
+}
+
+.section-separator {
+    -fx-background-color: #dddddd;
+    -fx-pref-height: 2px;
+    -fx-max-width: 200px;
+}

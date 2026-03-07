@@ -10,7 +10,7 @@ public abstract sealed class Vehicle implements IBehaviour
     public static final double RELATIVE_SIZE = 0.05;
 
     protected final int id;
-    protected double relativeX, relativeY;
+    protected final double relativeX, relativeY;
     protected final long spawnTime;
     protected final Image image;
 

@@ -1,0 +1,14 @@
+@import url("controls.css");
+@import url("layout.css");
+@import url("scrollbar.css");
+@import url("sections.css");
+@import url("statistics.css");
+@import url("status.css");
+@import url("widgets.css");
+
+.time-value {
+    -fx-font-size: 16px;
+    -fx-text-fill: #2196F3;
+    -fx-font-weight: bold;
+    -fx-padding: 5 0 0 24;
+}

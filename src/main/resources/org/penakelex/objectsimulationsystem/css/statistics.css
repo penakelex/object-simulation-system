@@ -1,0 +1,16 @@
+.statistics-container {
+    -fx-padding: 5 0 0 24;
+    -fx-spacing: 5;
+}
+
+.stat-value-trucks {
+    -fx-text-fill: #4CAF50;
+}
+
+.stat-value-cars {
+    -fx-text-fill: #2196F3;
+}
+
+.stat-value-total {
+    -fx-text-fill: #FF5722;
+}

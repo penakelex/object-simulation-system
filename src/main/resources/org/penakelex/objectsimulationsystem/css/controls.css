@@ -1,0 +1,15 @@
+.controls-list {
+    -fx-padding: 5 0 0 24;
+    -fx-spacing: 5;
+}
+
+.key-badge {
+    -fx-background-color: #e0e0e0;
+    -fx-text-fill: #333333;
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+    -fx-padding: 2 8;
+    -fx-background-radius: 4;
+    -fx-min-width: 25;
+    -fx-alignment: center;
+}

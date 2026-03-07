@@ -1,0 +1,43 @@
+.iconed-section {
+    -fx-padding: 5 0;
+    -fx-background-color: transparent;
+}
+
+.labeled-value-row {
+    -fx-alignment: center-left;
+    -fx-spacing: 10;
+}
+
+.row-label {
+    -fx-font-size: 13px;
+    -fx-text-fill: #666666;
+}
+
+.row-value {
+    -fx-font-weight: 600;
+    -fx-font-size: 13px;
+    -fx-text-alignment: right;
+    -fx-min-width: 50;
+}
+
+.row-value.trucks {
+    -fx-text-fill: #4CAF50;
+}
+
+.row-value.cars {
+    -fx-text-fill: #2196F3;
+}
+
+.row-value.total {
+    -fx-text-fill: #FF5722;
+}
+
+.key-action-pair {
+    -fx-alignment: center-left;
+    -fx-spacing: 8;
+}
+
+.action-description {
+    -fx-font-size: 12px;
+    -fx-text-fill: #666666;
+}

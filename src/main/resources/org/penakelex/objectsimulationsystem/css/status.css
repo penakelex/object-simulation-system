@@ -1,0 +1,24 @@
+.status-section {
+    -fx-alignment: bottom-left;
+}
+
+.status-container {
+    -fx-alignment: center-left;
+}
+
+.status-value {
+    -fx-font-weight: bold;
+    -fx-font-size: 15px;
+}
+
+.status-stopped {
+    -fx-text-fill: #F44336;
+}
+
+.status-running {
+    -fx-text-fill: #4CAF50;
+}
+
+.status-paused {
+    -fx-text-fill: #FF9800;
+}

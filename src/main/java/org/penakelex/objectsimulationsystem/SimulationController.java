@@ -2,30 +2,40 @@ package org.penakelex.objectsimulationsystem;
 
 import javafx.animation.AnimationTimer;
 import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Label;
 import javafx.scene.layout.StackPane;
+import javafx.scene.paint.Color;
+import org.kordamp.ikonli.javafx.FontIcon;
 import org.penakelex.objectsimulationsystem.habitat.Habitat;
+import org.penakelex.objectsimulationsystem.ui.LabeledValueRow;
 import org.penakelex.objectsimulationsystem.vehicle.Car;
 import org.penakelex.objectsimulationsystem.vehicle.Truck;
 
-public class SimulationController {
+import java.net.URL;
+import java.util.ResourceBundle;
+
+public class SimulationController implements Initializable {
     @FXML
     private Canvas simulationCanvas;
     @FXML
     private Label timeLabel;
     @FXML
-    private Label truckCountLabel;
+    private LabeledValueRow truckRow;
     @FXML
-    private Label carCountLabel;
+    private LabeledValueRow carRow;
     @FXML
-    private Label totalCountLabel;
+    private LabeledValueRow totalRow;
     @FXML
     private Label statusLabel;
     @FXML
+    private FontIcon statusIcon;
+    @FXML
     private StackPane canvasContainer;
+    private AnimationTimer gameTimer;
 
     private Habitat habitat;
     private GraphicsContext graphicsContext;
@@ -34,23 +44,42 @@ public class SimulationController {
     private long startTime = 0;
     private long elapsedTime = 0;
 
-    @FXML
-    public void initialize() {
+    private ResourceBundle resources;
+
+    @Override
+    public void initialize(
+        final URL _location,
+        final ResourceBundle resources
+    ) {
+        this.resources = resources;
+
         graphicsContext = simulationCanvas.getGraphicsContext2D();
         habitat = new Habitat(
             simulationCanvas.getWidth(),
             simulationCanvas.getHeight()
         );
 
-        setupGameLoop();
-        updateStatistics();
+        gameTimer = new AnimationTimer() {
+            @Override
+            public void handle(final long now) {
+                if (running) {
+                    elapsedTime =
+                        System.currentTimeMillis() - startTime;
+                    habitat.update(elapsedTime);
+                    draw();
+                    updateStatistics();
+                }
+            }
+        };
 
-        simulationCanvas.widthProperty().bind(canvasContainer
-            .widthProperty()
-        );
-        simulationCanvas.heightProperty().bind(canvasContainer
-            .heightProperty()
-        );
+        updateStatistics();
+        updateStatusLabel();
+
+        simulationCanvas.widthProperty()
+            .bind(canvasContainer.widthProperty());
+        simulationCanvas.heightProperty()
+            .bind(canvasContainer.heightProperty());
+
         simulationCanvas.widthProperty()
             .addListener((_, _, newValue) -> {
                 habitat.setWidth(newValue.doubleValue());
@@ -77,23 +106,6 @@ public class SimulationController {
         simulationCanvas.requestFocus();
     }
 
-    private void setupGameLoop() {
-        final var gameTimer = new AnimationTimer() {
-            @Override
-            public void handle(final long now) {
-                if (running) {
-                    elapsedTime =
-                        System.currentTimeMillis() - startTime;
-                    habitat.update(elapsedTime);
-                    draw();
-                    updateStatistics();
-                }
-            }
-        };
-
-        gameTimer.start();
-    }
-
     private void startSimulation() {
         if (running) {
             return;
@@ -101,15 +113,15 @@ public class SimulationController {
 
         startTime = System.currentTimeMillis() - elapsedTime;
         running = true;
-        statusLabel.setText("▶️ Запущено");
-        statusLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 15px; -fx-text-fill: #4CAF50;");
+        updateStatusLabel();
         simulationCanvas.requestFocus();
+        gameTimer.start();
     }
 
     private void stopSimulation() {
         running = false;
-        statusLabel.setText("⏸️ Остановлено");
-        statusLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 15px; -fx-text-fill: #F44336;");
+        gameTimer.stop();
+        updateStatusLabel();
         updateStatistics();
     }
 
@@ -139,8 +151,7 @@ public class SimulationController {
     }
 
     private void updateStatistics() {
-        int trucks = 0;
-        int cars = 0;
+        int trucks = 0, cars = 0;
 
         for (final var vehicle : habitat.getVehicles()) {
             switch (vehicle) {
@@ -149,12 +160,38 @@ public class SimulationController {
             }
         }
 
-        truckCountLabel.setText(String.valueOf(trucks));
-        carCountLabel.setText(String.valueOf(cars));
-        totalCountLabel.setText(String.valueOf(trucks + cars));
+        truckRow.setValue(trucks);
+        carRow.setValue(cars);
+        totalRow.setValue(trucks + cars);
 
         if (showTime) {
-            timeLabel.setText(String.format("%d мс", elapsedTime));
+            timeLabel.setText(resources
+                .getString("format.time.milliseconds")
+                .formatted(elapsedTime)
+            );
+        }
+    }
+
+    private void updateStatusLabel() {
+
+        if (running) {
+            statusLabel.setText(resources.getString(
+                "label.status.running"
+            ));
+            statusLabel.getStyleClass()
+                .setAll("status-value", "status-running");
+
+            statusIcon.setIconLiteral("fas-play-circle");
+            statusIcon.setIconColor(Color.web("#4CAF50"));
+        } else {
+            statusLabel.setText(resources.getString(
+                "label.status.stopped"
+            ));
+            statusLabel.getStyleClass()
+                .setAll("status-value", "status-stopped");
+
+            statusIcon.setIconLiteral("fas-pause-circle");
+            statusIcon.setIconColor(Color.web("#F44336"));
         }
     }
 

@@ -1,0 +1,17 @@
+.control-panel {
+    -fx-background-color: #f5f5f5;
+    -fx-border-color: #e0e0e0;
+    -fx-border-width: 0 0 0 1;
+}
+
+.canvas-container {
+    -fx-background-color: #ffffff;
+}
+
+.simulation-canvas {
+    -fx-background-color: transparent;
+}
+
+.control-panel-content {
+    -fx-background-color: transparent;
+}

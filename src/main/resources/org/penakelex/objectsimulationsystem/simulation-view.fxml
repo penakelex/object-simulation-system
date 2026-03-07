@@ -1,79 +1,103 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.canvas.Canvas?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Separator?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
-
 <?import javafx.scene.layout.StackPane?>
+<?import org.kordamp.ikonli.javafx.FontIcon?>
+<?import org.penakelex.objectsimulationsystem.ui.IconedSection?>
+<?import org.penakelex.objectsimulationsystem.ui.LabeledValueRow?>
+<?import org.penakelex.objectsimulationsystem.ui.KeyActionRow?>
+
 <HBox xmlns="http://javafx.com/javafx/25"
       xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="org.penakelex.objectsimulationsystem.SimulationController"
       minWidth="400" minHeight="400"
-      prefWidth="900" prefHeight="700">
+      prefWidth="900" prefHeight="700"
+      stylesheets="@css/main.css">
 
-    <StackPane fx:id="canvasContainer" HBox.hgrow="ALWAYS" minWidth="0" minHeight="0">
-        <Canvas fx:id="simulationCanvas"/>
+    <StackPane fx:id="canvasContainer"
+               HBox.hgrow="ALWAYS"
+               minWidth="0"
+               minHeight="0"
+               styleClass="canvas-container">
+        <Canvas fx:id="simulationCanvas" styleClass="simulation-canvas"/>
     </StackPane>
 
-    <VBox spacing="15"
-          style="-fx-background-color: #f5f5f5;"
-          prefWidth="250"
-          HBox.hgrow="NEVER">
-        <padding>
-            <Insets top="20" right="20" bottom="20" left="20"/>
-        </padding>
+    <ScrollPane fitToWidth="true"
+                hbarPolicy="NEVER"
+                styleClass="control-panel-scroll"
+                prefWidth="250"
+                HBox.hgrow="NEVER">
 
-        <VBox spacing="5">
-            <Label text="⏱️ Время симуляции:"
-                   style="-fx-font-weight: bold; -fx-font-size: 14px;"/>
-            <Label fx:id="timeLabel"
-                   text="0 мс"
-                   style="-fx-font-size: 16px; -fx-text-fill: #2196F3;"/>
-        </VBox>
+        <VBox spacing="15"
+              styleClass="control-panel-content"
+              prefWidth="230">
+            <padding>
+                <Insets top="20" right="20" bottom="20" left="20"/>
+            </padding>
 
-        <Label style="-fx-background-color: #ddd; -fx-pref-height: 2px; -fx-pref-width: 200px;"/>
+            <IconedSection iconLiteral="fas-clock"
+                           title="%label.simulation.time"
+                           iconColor="#2196F3">
+                <Label fx:id="timeLabel" styleClass="time-value"/>
+            </IconedSection>
 
-        <VBox spacing="5">
-            <Label text="📊 Статистика объектов:"
-                   style="-fx-font-weight: bold; -fx-font-size: 14px;"/>
-            <VBox spacing="5">
-                <HBox spacing="10">
-                    <Label text="🚛 Грузовые:" style="-fx-font-size: 13px;"/>
-                    <Label fx:id="truckCountLabel"
-                           text="0"
-                           style="-fx-font-weight: bold; -fx-text-fill: #4CAF50;"/>
-                </HBox>
-                <HBox spacing="10">
-                    <Label text="🚗 Легковые:" style="-fx-font-size: 13px;"/>
-                    <Label fx:id="carCountLabel"
-                           text="0"
-                           style="-fx-font-weight: bold; -fx-text-fill: #2196F3;"/>
-                </HBox>
-                <HBox spacing="10">
-                    <Label text="📈 Всего:" style="-fx-font-size: 13px;"/>
-                    <Label fx:id="totalCountLabel"
-                           text="0"
-                           style="-fx-font-weight: bold; -fx-text-fill: #FF5722;"/>
+            <Separator styleClass="section-separator"/>
+
+            <IconedSection iconLiteral="fas-chart-bar"
+                           title="%label.statistics.title"
+                           iconColor="#2196F3">
+                <VBox spacing="5" styleClass="statistics-container">
+                    <LabeledValueRow fx:id="truckRow"
+                                     iconLiteral="fas-truck"
+                                     iconColor="#4CAF50"
+                                     labelText="%label.trucks"/>
+                    <LabeledValueRow fx:id="carRow"
+                                     iconLiteral="fas-car"
+                                     iconColor="#2196F3"
+                                     labelText="%label.cars"/>
+                    <LabeledValueRow fx:id="totalRow"
+                                     iconLiteral="fas-chart-line"
+                                     iconColor="#FF5722"
+                                     labelText="%label.total"/>
+                </VBox>
+            </IconedSection>
+
+            <Separator styleClass="section-separator"/>
+
+            <IconedSection iconLiteral="fas-cog"
+                           title="%label.controls.title"
+                           iconColor="#2196F3">
+                <VBox spacing="5" styleClass="controls-list">
+                    <KeyActionRow keyBind="%label.controls.keybind.start"
+                                   actionText="%label.controls.start"/>
+                    <KeyActionRow keyBind="%label.controls.keybind.stop"
+                                   actionText="%label.controls.stop"/>
+                    <KeyActionRow keyBind="%label.controls.keybind.time"
+                                   actionText="%label.controls.time"/>
+                    <KeyActionRow keyBind="%label.controls.keybind.restart"
+                                   actionText="%label.controls.restart"/>
+                </VBox>
+            </IconedSection>
+
+            <Separator styleClass="section-separator"/>
+
+            <VBox spacing="5" styleClass="status-section">
+                <HBox spacing="8" styleClass="status-container" alignment="CENTER_LEFT">
+                    <FontIcon fx:id="statusIcon"
+                              iconLiteral="fas-pause-circle"
+                              iconSize="18"
+                              iconColor="#F44336"/>
+                    <Label fx:id="statusLabel"
+                           text="%label.status.stopped"
+                           styleClass="status-value status-stopped"/>
                 </HBox>
             </VBox>
         </VBox>
-
-        <Label style="-fx-background-color: #ddd; -fx-pref-height: 2px; -fx-pref-width: 200px;"/>
-
-        <VBox spacing="10">
-            <Label text="⚙️ Управление:"
-                   style="-fx-font-weight: bold; -fx-font-size: 14px;"/>
-            <Label text="B - Старт" style="-fx-font-size: 12px; -fx-text-fill: #666;"/>
-            <Label text="E - Стоп" style="-fx-font-size: 12px; -fx-text-fill: #666;"/>
-            <Label text="T - Время" style="-fx-font-size: 12px; -fx-text-fill: #666;"/>
-            <Label text="R - Перезапуск" style="-fx-font-size: 12px; -fx-text-fill: #666;"/>
-        </VBox>
-
-        <VBox spacing="5" VBox.vgrow="ALWAYS">
-            <Label fx:id="statusLabel"
-                   text="⏸️ Остановлено"
-                   style="-fx-font-weight: bold; -fx-font-size: 15px; -fx-text-fill: #F44336;"/>
-        </VBox>
-    </VBox>
+    </ScrollPane>
 </HBox>
