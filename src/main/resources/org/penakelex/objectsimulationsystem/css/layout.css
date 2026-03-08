@@ -2,10 +2,13 @@
     -fx-background-color: #f5f5f5;
     -fx-border-color: #e0e0e0;
     -fx-border-width: 0 0 0 1;
+    -fx-pref-width: 230;
 }
 
 .canvas-container {
     -fx-background-color: #ffffff;
+    -fx-min-width: 0;
+    -fx-min-height: 0;
 }
 
 .simulation-canvas {
@@ -14,4 +17,7 @@
 
 .control-panel-content {
     -fx-background-color: transparent;
+    -fx-padding: 20;
+    -fx-spacing: 15;
+    -fx-pref-width: 210;
 }

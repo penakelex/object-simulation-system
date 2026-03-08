@@ -13,10 +13,13 @@ import java.util.ResourceBundle;
 public class SimulationApplication extends Application {
     @Override
     public void start(final Stage stage) throws IOException {
+        final var resources =
+            ResourceBundle.getBundle("messages");
+
         final var loader = new FXMLLoader(
             SimulationApplication.class
                 .getResource("simulation-view.fxml"),
-            ResourceBundle.getBundle("messages")
+            resources
         );
 
         final HBox root = loader.load();
@@ -35,7 +38,7 @@ public class SimulationApplication extends Application {
         final SimulationController controller =
             loader.getController();
 
-        stage.setTitle("🚗 Симуляция автомобилей");
+        stage.setTitle(resources.getString("application.title"));
         stage.setScene(scene);
         stage.setMinWidth(root.getMinWidth());
         stage.setMinHeight(root.getMinHeight());

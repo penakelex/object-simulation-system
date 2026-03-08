@@ -3,6 +3,8 @@
     -fx-border-color: #e0e0e0;
     -fx-border-width: 0 0 0 1;
     -fx-fit-to-width: true;
+    -fx-hbar-policy: never;
+    -fx-min-width: 230px;
 }
 
 .control-panel-scroll > .viewport {

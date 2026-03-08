@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
 <?import javafx.scene.canvas.Canvas?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ScrollPane?>
@@ -16,88 +15,133 @@
 <HBox xmlns="http://javafx.com/javafx/25"
       xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="org.penakelex.objectsimulationsystem.SimulationController"
-      minWidth="400" minHeight="400"
-      prefWidth="900" prefHeight="700"
+      minWidth="600"
+      minHeight="400"
+      prefWidth="900"
+      prefHeight="700"
       stylesheets="@css/main.css">
 
+    <!--Simulation field-->
     <StackPane fx:id="canvasContainer"
                HBox.hgrow="ALWAYS"
-               minWidth="0"
-               minHeight="0"
                styleClass="canvas-container">
+
         <Canvas fx:id="simulationCanvas" styleClass="simulation-canvas"/>
+
+        <VBox fx:id="statisticsOverlay"
+              styleClass="statistics-overlay"
+              visible="false"
+              managed="false">
+
+            <StackPane styleClass="overlay-card">
+                <VBox spacing="12" alignment="CENTER">
+                    <HBox spacing="10" alignment="CENTER">
+                        <FontIcon iconLiteral="fas-chart-bar"
+                                  styleClass="overlay-icon"/>
+                        <Label text="%label.simulation_results"
+                               styleClass="overlay-title"/>
+                    </HBox>
+
+                    <Separator styleClass="overlay-separator"/>
+
+                    <VBox spacing="2">
+                        <LabeledValueRow fx:id="overlayTruckRow"
+                                         iconLiteral="fas-truck"
+                                         iconColor="#4CAF50"
+                                         labelText="%label.trucks"
+                                         styleClass="overlay-stat-row"/>
+
+                        <LabeledValueRow fx:id="overlayCarRow"
+                                         iconLiteral="fas-car"
+                                         iconColor="#2196F3"
+                                         labelText="%label.cars"
+                                         styleClass="overlay-stat-row"/>
+
+                        <LabeledValueRow fx:id="overlayTotalRow"
+                                         iconLiteral="fas-chart-line"
+                                         iconColor="#FF5722"
+                                         labelText="%label.total"
+                                         styleClass="overlay-stat-row"/>
+                    </VBox>
+
+                    <Separator styleClass="overlay-separator"/>
+
+                    <HBox spacing="8" alignment="CENTER">
+                        <FontIcon iconLiteral="fas-clock"
+                                  iconSize="18"
+                                  iconColor="#FF9800"/>
+                        <Label fx:id="overlayTimeLabel"
+                               styleClass="overlay-time"/>
+                    </HBox>
+                </VBox>
+            </StackPane>
+        </VBox>
     </StackPane>
 
-    <ScrollPane fitToWidth="true"
-                hbarPolicy="NEVER"
-                styleClass="control-panel-scroll"
-                prefWidth="250"
-                HBox.hgrow="NEVER">
+    <!--Control panel-->
+    <VBox styleClass="control-panel" HBox.hgrow="NEVER">
+        <ScrollPane styleClass="control-panel-scroll"
+                    VBox.vgrow="ALWAYS"
+                    HBox.hgrow="NEVER">
 
-        <VBox spacing="15"
-              styleClass="control-panel-content"
-              prefWidth="230">
-            <padding>
-                <Insets top="20" right="20" bottom="20" left="20"/>
-            </padding>
+            <VBox styleClass="control-panel-content">
 
-            <IconedSection iconLiteral="fas-clock"
-                           title="%label.simulation.time"
-                           iconColor="#2196F3">
-                <Label fx:id="timeLabel" styleClass="time-value"/>
-            </IconedSection>
+                <VBox spacing="15" fx:id="infoContainer">
+                    <VBox spacing="15" fx:id="timeContainer">
+                        <IconedSection iconLiteral="fas-clock"
+                                       title="%label.simulation.time">
+                            <Label fx:id="timeLabel" styleClass="time-value"/>
+                        </IconedSection>
 
-            <Separator styleClass="section-separator"/>
+                        <Separator styleClass="section-separator"/>
+                    </VBox>
 
-            <IconedSection iconLiteral="fas-chart-bar"
-                           title="%label.statistics.title"
-                           iconColor="#2196F3">
-                <VBox spacing="5" styleClass="statistics-container">
-                    <LabeledValueRow fx:id="truckRow"
-                                     iconLiteral="fas-truck"
-                                     iconColor="#4CAF50"
-                                     labelText="%label.trucks"/>
-                    <LabeledValueRow fx:id="carRow"
-                                     iconLiteral="fas-car"
-                                     iconColor="#2196F3"
-                                     labelText="%label.cars"/>
-                    <LabeledValueRow fx:id="totalRow"
-                                     iconLiteral="fas-chart-line"
-                                     iconColor="#FF5722"
-                                     labelText="%label.total"/>
+                    <IconedSection iconLiteral="fas-chart-bar"
+                                   title="%label.statistics.title">
+                        <VBox styleClass="statistics-container">
+                            <LabeledValueRow fx:id="truckRow"
+                                             iconLiteral="fas-truck"
+                                             iconColor="#4CAF50"
+                                             labelText="%label.trucks"/>
+                            <LabeledValueRow fx:id="carRow"
+                                             iconLiteral="fas-car"
+                                             iconColor="#2196F3"
+                                             labelText="%label.cars"/>
+                            <LabeledValueRow fx:id="totalRow"
+                                             iconLiteral="fas-chart-line"
+                                             iconColor="#FF5722"
+                                             labelText="%label.total"/>
+                        </VBox>
+                    </IconedSection>
+
+                    <Separator styleClass="section-separator"/>
                 </VBox>
-            </IconedSection>
 
-            <Separator styleClass="section-separator"/>
-
-            <IconedSection iconLiteral="fas-cog"
-                           title="%label.controls.title"
-                           iconColor="#2196F3">
-                <VBox spacing="5" styleClass="controls-list">
-                    <KeyActionRow keyBind="%label.controls.keybind.start"
-                                   actionText="%label.controls.start"/>
-                    <KeyActionRow keyBind="%label.controls.keybind.stop"
-                                   actionText="%label.controls.stop"/>
-                    <KeyActionRow keyBind="%label.controls.keybind.time"
-                                   actionText="%label.controls.time"/>
-                    <KeyActionRow keyBind="%label.controls.keybind.restart"
-                                   actionText="%label.controls.restart"/>
-                </VBox>
-            </IconedSection>
-
-            <Separator styleClass="section-separator"/>
-
-            <VBox spacing="5" styleClass="status-section">
-                <HBox spacing="8" styleClass="status-container" alignment="CENTER_LEFT">
-                    <FontIcon fx:id="statusIcon"
-                              iconLiteral="fas-pause-circle"
-                              iconSize="18"
-                              iconColor="#F44336"/>
-                    <Label fx:id="statusLabel"
-                           text="%label.status.stopped"
-                           styleClass="status-value status-stopped"/>
-                </HBox>
+                <IconedSection iconLiteral="fas-cog"
+                               title="%label.controls.title">
+                    <VBox styleClass="controls-list">
+                        <KeyActionRow keyBind="%label.controls.keybind.start"
+                                      actionText="%label.controls.start"/>
+                        <KeyActionRow keyBind="%label.controls.keybind.stop"
+                                      actionText="%label.controls.stop"/>
+                        <KeyActionRow keyBind="%label.controls.keybind.time"
+                                      actionText="%label.controls.time"/>
+                        <KeyActionRow keyBind="%label.controls.keybind.restart"
+                                      actionText="%label.controls.restart"/>
+                    </VBox>
+                </IconedSection>
             </VBox>
+        </ScrollPane>
+
+        <VBox styleClass="status-section">
+            <HBox styleClass="status-container">
+                <FontIcon fx:id="statusIcon"
+                          iconLiteral="fas-pause-circle"
+                          styleClass="status-icon"/>
+                <Label fx:id="statusLabel"
+                       text="%label.status.stopped"
+                       styleClass="status-value status-stopped"/>
+            </HBox>
         </VBox>
-    </ScrollPane>
+    </VBox>
 </HBox>

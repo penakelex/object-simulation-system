@@ -1,0 +1,61 @@
+.statistics-overlay {
+    -fx-background-color: rgba(0, 0, 0, 0.45);
+    -fx-alignment: center;
+    -fx-spacing: 15;
+    -fx-padding: 30 50;
+}
+
+.overlay-card {
+    -fx-background-color: rgba(255, 255, 255, 0.95);
+    -fx-background-radius: 15;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.3), 20, 0, 0, 5);
+    -fx-padding: 25 40;
+}
+
+.overlay-title {
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #333333;
+}
+
+.overlay-icon {
+    -fx-icon-size: 28px;
+    -fx-icon-color: #2196F3;
+    -fx-effect: dropshadow(gaussian, rgba(33, 150, 243, 0.4), 10, 0, 0, 2);
+}
+
+.overlay-separator {
+    -fx-background-color: #dddddd;
+    -fx-pref-height: 2px;
+    -fx-max-width: 300px;
+}
+
+.overlay-time {
+    -fx-font-size: 18px;
+    -fx-font-style: italic;
+    -fx-font-weight: bold;
+    -fx-text-fill: #FF9800;
+}
+
+
+.overlay-stat-row {
+    -fx-alignment: center;
+    -fx-spacing: 15;
+    -fx-padding: 5 0;
+}
+
+.overlay-stat-row .row-label {
+    -fx-font-size: 20px;
+    -fx-font-weight: 600;
+    -fx-text-fill: #555555;
+}
+
+.overlay-stat-row .row-value {
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+    -fx-text-alignment: center;
+}
+
+.overlay-stat-row .row-icon {
+    -fx-icon-size: 18px;
+}

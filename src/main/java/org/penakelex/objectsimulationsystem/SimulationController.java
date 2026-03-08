@@ -8,33 +8,31 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Label;
 import javafx.scene.layout.StackPane;
-import javafx.scene.paint.Color;
+import javafx.scene.layout.VBox;
 import org.kordamp.ikonli.javafx.FontIcon;
 import org.penakelex.objectsimulationsystem.habitat.Habitat;
 import org.penakelex.objectsimulationsystem.ui.LabeledValueRow;
-import org.penakelex.objectsimulationsystem.vehicle.Car;
-import org.penakelex.objectsimulationsystem.vehicle.Truck;
 
 import java.net.URL;
 import java.util.ResourceBundle;
 
 public class SimulationController implements Initializable {
-    @FXML
-    private Canvas simulationCanvas;
-    @FXML
-    private Label timeLabel;
-    @FXML
-    private LabeledValueRow truckRow;
-    @FXML
-    private LabeledValueRow carRow;
-    @FXML
-    private LabeledValueRow totalRow;
-    @FXML
-    private Label statusLabel;
-    @FXML
-    private FontIcon statusIcon;
-    @FXML
-    private StackPane canvasContainer;
+    @FXML private Canvas simulationCanvas;
+    @FXML private Label timeLabel;
+    @FXML private Label overlayTimeLabel;
+    @FXML private LabeledValueRow truckRow;
+    @FXML private LabeledValueRow carRow;
+    @FXML private LabeledValueRow totalRow;
+    @FXML private LabeledValueRow overlayTruckRow;
+    @FXML private LabeledValueRow overlayCarRow;
+    @FXML private LabeledValueRow overlayTotalRow;
+    @FXML private Label statusLabel;
+    @FXML private FontIcon statusIcon;
+    @FXML private StackPane canvasContainer;
+    @FXML private VBox infoContainer;
+    @FXML private VBox timeContainer;
+    @FXML private VBox statisticsOverlay;
+
     private AnimationTimer gameTimer;
 
     private Habitat habitat;
@@ -67,12 +65,12 @@ public class SimulationController implements Initializable {
                         System.currentTimeMillis() - startTime;
                     habitat.update(elapsedTime);
                     draw();
-                    updateStatistics();
+                    updatePanelStatistics();
                 }
             }
         };
 
-        updateStatistics();
+        updatePanelStatistics();
         updateStatusLabel();
 
         simulationCanvas.widthProperty()
@@ -113,30 +111,59 @@ public class SimulationController implements Initializable {
 
         startTime = System.currentTimeMillis() - elapsedTime;
         running = true;
+
+        infoContainer.setVisible(true);
+        infoContainer.setManaged(true);
+
+        statisticsOverlay.setVisible(false);
+        statisticsOverlay.setManaged(false);
+
         updateStatusLabel();
+
         simulationCanvas.requestFocus();
         gameTimer.start();
     }
 
     private void stopSimulation() {
+        if (!running) {
+            return;
+        }
+
         running = false;
         gameTimer.stop();
+
+        updateOverlayStatistics();
+
+        infoContainer.setVisible(false);
+        infoContainer.setManaged(false);
+
+        statisticsOverlay.setVisible(true);
+        statisticsOverlay.setManaged(true);
+
+        resetStatistics();
         updateStatusLabel();
-        updateStatistics();
     }
 
     private void restartSimulation() {
+        if (!running) {
+            return;
+        }
+
+        resetStatistics();
+        draw();
+    }
+
+    private void resetStatistics() {
         startTime = System.currentTimeMillis();
         elapsedTime = 0;
         habitat.reset();
-        updateStatistics();
-        draw();
+        updatePanelStatistics();
     }
 
     private void toggleTimeDisplay() {
         showTime = !showTime;
-        timeLabel.setVisible(showTime);
-        timeLabel.setManaged(showTime);
+        timeContainer.setVisible(showTime);
+        timeContainer.setManaged(showTime);
     }
 
     private void draw() {
@@ -150,19 +177,30 @@ public class SimulationController implements Initializable {
         habitat.draw(graphicsContext);
     }
 
-    private void updateStatistics() {
-        int trucks = 0, cars = 0;
+    private void updatePanelStatistics() {
+        updateStatistics(truckRow, carRow, totalRow, timeLabel);
+    }
 
-        for (final var vehicle : habitat.getVehicles()) {
-            switch (vehicle) {
-                case Car _ -> cars++;
-                case Truck _ -> trucks++;
-            }
-        }
+    private void updateOverlayStatistics() {
+        updateStatistics(
+            overlayTruckRow,
+            overlayCarRow,
+            overlayTotalRow,
+            overlayTimeLabel
+        );
+    }
 
-        truckRow.setValue(trucks);
-        carRow.setValue(cars);
-        totalRow.setValue(trucks + cars);
+    private void updateStatistics(
+        final LabeledValueRow truckRow,
+        final LabeledValueRow carRow,
+        final LabeledValueRow totalRow,
+        final Label timeLabel
+    ) {
+        final var statistics = habitat.getStatistics();
+
+        truckRow.setValue(statistics.trucks());
+        carRow.setValue(statistics.cars());
+        totalRow.setValue(statistics.trucks() + statistics.cars());
 
         if (showTime) {
             timeLabel.setText(resources
@@ -173,7 +211,6 @@ public class SimulationController implements Initializable {
     }
 
     private void updateStatusLabel() {
-
         if (running) {
             statusLabel.setText(resources.getString(
                 "label.status.running"
@@ -182,7 +219,8 @@ public class SimulationController implements Initializable {
                 .setAll("status-value", "status-running");
 
             statusIcon.setIconLiteral("fas-play-circle");
-            statusIcon.setIconColor(Color.web("#4CAF50"));
+            statusIcon.getStyleClass()
+                .setAll("status-icon", "running");
         } else {
             statusLabel.setText(resources.getString(
                 "label.status.stopped"
@@ -191,7 +229,8 @@ public class SimulationController implements Initializable {
                 .setAll("status-value", "status-stopped");
 
             statusIcon.setIconLiteral("fas-pause-circle");
-            statusIcon.setIconColor(Color.web("#F44336"));
+            statusIcon.getStyleClass()
+                .setAll("status-icon", "stopped");
         }
     }
 

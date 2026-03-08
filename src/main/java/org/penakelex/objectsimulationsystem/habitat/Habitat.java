@@ -24,22 +24,21 @@ public final class Habitat {
 
     private final VehicleSpawner<Truck> truckSpawner =
         new VehicleSpawner<>(
-            200,
-            0.7,
+            Configuration.TRUCK_SPAWN_PERIOD,
+            Configuration.TRUCK_SPAWN_PROBABILITY,
             Truck::new,
             truckImages
         );
     private final VehicleSpawner<Car> carSpawner =
         new VehicleSpawner<>(
-            300,
-            0.5,
+            Configuration.CAR_SPAWN_PERIOD,
+            Configuration.CAR_SPAWN_PROBABILITY,
             Car::new,
             carImages
         );
 
-    private final List<VehicleSpawner<?>> vehicleSpawners = List.of(
-        truckSpawner, carSpawner
-    );
+    private final List<VehicleSpawner<?>> vehicleSpawners =
+        List.of(truckSpawner, carSpawner);
 
     private final Random random = ThreadLocalRandom.current();
 
@@ -74,8 +73,10 @@ public final class Habitat {
     private Pair<Double, Double>
     generateVehicleStartingRelativePosition() {
         return Pair.of(
-            random.nextDouble() * (1 - Vehicle.RELATIVE_SIZE),
-            random.nextDouble() * (1 - Vehicle.RELATIVE_SIZE)
+            random.nextDouble() *
+                (1 - Configuration.VEHICLE_RELATIVE_SIZE),
+            random.nextDouble() *
+                (1 - Configuration.VEHICLE_RELATIVE_SIZE)
         );
     }
 
@@ -89,10 +90,6 @@ public final class Habitat {
         vehicles.clear();
         idCounter = 0;
         vehicleSpawners.forEach(VehicleSpawner::reset);
-    }
-
-    public List<Vehicle> getVehicles() {
-        return vehicles;
     }
 
     public void setWidth(final double width) {
@@ -117,5 +114,18 @@ public final class Habitat {
         for (final var vehicle : vehicles) {
             vehicle.updateAbsoluteYPosition(this.height);
         }
+    }
+
+    public VehicleStatistics getStatistics() {
+        int trucks = 0, cars = 0;
+
+        for (final var vehicle : vehicles) {
+            switch (vehicle) {
+                case Car _ -> cars++;
+                case Truck _ -> trucks++;
+            }
+        }
+
+        return new VehicleStatistics(trucks, cars, trucks + cars);
     }
 }

@@ -1,5 +1,6 @@
 .iconed-section {
     -fx-padding: 5 0;
+    -fx-spacing: 5;
     -fx-background-color: transparent;
 }
 
@@ -8,28 +9,20 @@
     -fx-spacing: 10;
 }
 
-.row-label {
+.labeled-value-row .row-label {
     -fx-font-size: 13px;
     -fx-text-fill: #666666;
 }
 
-.row-value {
+.labeled-value-row .row-value {
     -fx-font-weight: 600;
     -fx-font-size: 13px;
     -fx-text-alignment: right;
     -fx-min-width: 50;
 }
 
-.row-value.trucks {
-    -fx-text-fill: #4CAF50;
-}
-
-.row-value.cars {
-    -fx-text-fill: #2196F3;
-}
-
-.row-value.total {
-    -fx-text-fill: #FF5722;
+.labeled-value-row .row-icon {
+    -fx-icon-size: 14px;
 }
 
 .key-action-pair {

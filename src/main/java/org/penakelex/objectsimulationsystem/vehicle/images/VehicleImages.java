@@ -1,6 +1,7 @@
 package org.penakelex.objectsimulationsystem.vehicle.images;
 
 import javafx.scene.image.Image;
+import org.penakelex.objectsimulationsystem.habitat.Configuration;
 
 import java.util.List;
 import java.util.Objects;
@@ -9,9 +10,6 @@ import java.util.concurrent.ThreadLocalRandom;
 public sealed abstract class VehicleImages
     permits CarImages, TruckImages
 {
-    private static final String BASE_PATH = "/images/vehicles";
-    public static final int IMAGE_SIZE = 64;
-
     protected final List<Image> images;
 
     protected VehicleImages() throws AssertionError {
@@ -33,10 +31,13 @@ public sealed abstract class VehicleImages
         return imagesNames.stream().map(name -> {
             final var image = new Image(
                 Objects.requireNonNull(getClass().getResourceAsStream(
-                    String.format("%s/%s", BASE_PATH, name)
+                    String.format("%s/%s",
+                        Configuration.VEHICLE_IMAGES_BASE_PATH,
+                        name
+                    )
                 )),
-                IMAGE_SIZE,
-                IMAGE_SIZE,
+                Configuration.VEHICLE_IMAGE_SIZE,
+                Configuration.VEHICLE_IMAGE_SIZE,
                 true,
                 true
             );

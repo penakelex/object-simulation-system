@@ -1,14 +1,32 @@
 .status-section {
-    -fx-alignment: bottom-left;
+    -fx-alignment: center;
+    -fx-padding: 10;
+    -fx-background-color: rgba(0, 0, 0, 0.02);
+    -fx-border-color: rgba(0, 0, 0, 0.08);
+    -fx-border-width: 1 0 0 0;
+    -fx-spacing: 5;
 }
 
 .status-container {
     -fx-alignment: center-left;
+    -fx-padding: 12 20;
+    -fx-background-color: rgba(255, 255, 255, 0.9);
+    -fx-background-radius: 10;
+    -fx-border-color: rgba(0, 0, 0, 0.15);
+    -fx-border-radius: 10;
+    -fx-border-width: 1;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 8, 0, 0, 2);
+    -fx-spacing: 8;
+}
+
+.status-icon {
+    -fx-icon-size: 18px;
 }
 
 .status-value {
     -fx-font-weight: bold;
-    -fx-font-size: 15px;
+    -fx-font-size: 14px;
+    -fx-text-fill: #333333;
 }
 
 .status-stopped {
@@ -19,6 +37,10 @@
     -fx-text-fill: #4CAF50;
 }
 
-.status-paused {
-    -fx-text-fill: #FF9800;
+.status-icon.running {
+    -fx-icon-color: #4CAF50;
+}
+
+.status-icon.stopped {
+    -fx-icon-color: #F44336;
 }

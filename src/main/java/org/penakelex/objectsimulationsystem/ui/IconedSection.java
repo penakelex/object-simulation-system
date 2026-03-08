@@ -1,7 +1,5 @@
 package org.penakelex.objectsimulationsystem.ui;
 
-import javafx.geometry.Pos;
-import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -12,52 +10,23 @@ import org.kordamp.ikonli.javafx.FontIcon;
 public final class IconedSection extends VBox {
     private final FontIcon icon = new FontIcon();
     private final Label titleLabel = new Label();
-    private final VBox contentContainer = new VBox(5);
 
     public IconedSection() {
-        super(5);
+        super();
 
         getStyleClass().add("iconed-section");
 
-        icon.setIconSize(16);
+        icon.getStyleClass().add("section-icon");
         titleLabel.getStyleClass().add("section-title");
 
-        final var header = new HBox(8, icon, titleLabel);
+        final var header = new HBox(icon, titleLabel);
         header.getStyleClass().add("section-header");
-        header.setAlignment(Pos.CENTER_LEFT);
 
+        final var contentContainer = new VBox();
         contentContainer.getStyleClass().add("section-content");
         VBox.setVgrow(contentContainer, Priority.ALWAYS);
 
         getChildren().addAll(header, contentContainer);
-    }
-
-    public IconedSection(
-        final String iconLiteral,
-        final String title,
-        final String iconColor,
-        final Node... content
-    ) {
-        this();
-        setIconLiteral(iconLiteral);
-        setIconColor(iconColor);
-        setTitle(title);
-
-        if (content != null && content.length > 0) {
-            contentContainer.getChildren().addAll(content);
-        }
-    }
-
-    public void setContent(final Node... children) {
-        contentContainer.getChildren().setAll(children);
-    }
-
-    public void addContent(final Node... children) {
-        contentContainer.getChildren().addAll(children);
-    }
-
-    public void clearContent() {
-        contentContainer.getChildren().clear();
     }
 
     public void setTitle(final String title) {
@@ -82,9 +51,5 @@ public final class IconedSection extends VBox {
 
     public String getIconColor() {
         return icon.getIconColor().toString();
-    }
-
-    public VBox getContentContainer() {
-        return contentContainer;
     }
 }

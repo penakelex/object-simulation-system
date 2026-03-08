@@ -3,12 +3,11 @@ package org.penakelex.objectsimulationsystem.vehicle;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import org.penakelex.objectsimulationsystem.behaviour.IBehaviour;
+import org.penakelex.objectsimulationsystem.habitat.Configuration;
 
 public abstract sealed class Vehicle implements IBehaviour
     permits Truck, Car
 {
-    public static final double RELATIVE_SIZE = 0.05;
-
     protected final int id;
     protected final double relativeX, relativeY;
     protected final long spawnTime;
@@ -45,17 +44,23 @@ public abstract sealed class Vehicle implements IBehaviour
 
     @Override
     public void draw(final GraphicsContext context) {
-        final var drawHeight =
-            context.getCanvas().getHeight() * RELATIVE_SIZE;
-        final var drawWidth =
-            drawHeight * image.getWidth() / image.getHeight();
+        final var canvas = context.getCanvas();
+        final var imageWidth = image.getWidth();
+        final var imageHeight = image.getHeight();
+
+        final var scale = Math.min(
+            canvas.getWidth() * Configuration.VEHICLE_RELATIVE_SIZE /
+                imageWidth,
+            canvas.getHeight() * Configuration.VEHICLE_RELATIVE_SIZE /
+                imageHeight
+        );
 
         context.drawImage(
             image,
             absoluteX,
             absoluteY,
-            drawWidth,
-            drawHeight
+            imageWidth * scale,
+            imageHeight * scale
         );
     }
 }
