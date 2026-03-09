@@ -13,4 +13,6 @@ module org.penakelex.objectsimulationsystem {
     exports org.penakelex.objectsimulationsystem.ui;
     exports org.penakelex.objectsimulationsystem.vehicle;
     exports org.penakelex.objectsimulationsystem.vehicle.images;
+    exports org.penakelex.objectsimulationsystem.habitat.exceptions;
+    exports org.penakelex.objectsimulationsystem.vehicle.exceptions;
 }

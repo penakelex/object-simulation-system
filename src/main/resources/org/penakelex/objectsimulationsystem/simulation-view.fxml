@@ -21,8 +21,7 @@
       prefHeight="700"
       stylesheets="@css/main.css">
 
-    <!--Simulation field-->
-    <StackPane fx:id="canvasContainer"
+    <StackPane fx:id="simulationField"
                HBox.hgrow="ALWAYS"
                styleClass="canvas-container">
 
@@ -78,7 +77,6 @@
         </VBox>
     </StackPane>
 
-    <!--Control panel-->
     <VBox styleClass="control-panel" HBox.hgrow="NEVER">
         <ScrollPane styleClass="control-panel-scroll"
                     VBox.vgrow="ALWAYS"

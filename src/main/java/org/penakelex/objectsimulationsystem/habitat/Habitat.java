@@ -2,6 +2,8 @@ package org.penakelex.objectsimulationsystem.habitat;
 
 import javafx.scene.canvas.GraphicsContext;
 import org.apache.commons.lang3.tuple.Pair;
+import org.penakelex.objectsimulationsystem.habitat.exceptions.HabitatCreationException;
+import org.penakelex.objectsimulationsystem.habitat.exceptions.HabitatInvalidParameter;
 import org.penakelex.objectsimulationsystem.vehicle.Car;
 import org.penakelex.objectsimulationsystem.vehicle.Truck;
 import org.penakelex.objectsimulationsystem.vehicle.Vehicle;
@@ -43,6 +45,25 @@ public final class Habitat {
     private final Random random = ThreadLocalRandom.current();
 
     public Habitat(final double width, final double height) {
+        final var invalidParameters =
+            new ArrayList<HabitatInvalidParameter>();
+
+        if (width < 0) {
+            invalidParameters.add(new HabitatInvalidParameter.Width(
+                width
+            ));
+        }
+
+        if (height < 0) {
+            invalidParameters.add(new HabitatInvalidParameter.Height(
+                height
+            ));
+        }
+
+        if (!invalidParameters.isEmpty()) {
+            throw new HabitatCreationException(invalidParameters);
+        }
+
         this.width = width;
         this.height = height;
     }

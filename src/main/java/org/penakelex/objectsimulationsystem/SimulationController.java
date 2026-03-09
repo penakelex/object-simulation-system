@@ -28,7 +28,7 @@ public class SimulationController implements Initializable {
     @FXML private LabeledValueRow overlayTotalRow;
     @FXML private Label statusLabel;
     @FXML private FontIcon statusIcon;
-    @FXML private StackPane canvasContainer;
+    @FXML private StackPane simulationField;
     @FXML private VBox infoContainer;
     @FXML private VBox timeContainer;
     @FXML private VBox statisticsOverlay;
@@ -74,9 +74,9 @@ public class SimulationController implements Initializable {
         updateStatusLabel();
 
         simulationCanvas.widthProperty()
-            .bind(canvasContainer.widthProperty());
+            .bind(simulationField.widthProperty());
         simulationCanvas.heightProperty()
-            .bind(canvasContainer.heightProperty());
+            .bind(simulationField.heightProperty());
 
         simulationCanvas.widthProperty()
             .addListener((_, _, newValue) -> {
