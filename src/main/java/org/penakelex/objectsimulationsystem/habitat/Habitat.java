@@ -70,16 +70,15 @@ public final class Habitat {
 
     public void update(final long currentTimeMillis) {
         for (final var spawner : vehicleSpawners) {
-            spawner
-                .trySpawn(
-                    currentTimeMillis,
-                    this::generateVehicleStartingRelativePosition,
-                    this::getNextId
-                ).ifPresent((vehicle) -> {
-                    vehicle.updateAbsoluteXPosition(this.width);
-                    vehicle.updateAbsoluteYPosition(this.height);
-                    vehicles.add(vehicle);
-                });
+            spawner.trySpawn(
+                currentTimeMillis,
+                this::generateVehicleStartingRelativePosition,
+                this::getNextId
+            ).forEach(newVehicle -> {
+                newVehicle.updateAbsoluteXPosition(this.width);
+                newVehicle.updateAbsoluteYPosition(this.height);
+                vehicles.add(newVehicle);
+            });
         }
 
         for (final var vehicle : vehicles) {

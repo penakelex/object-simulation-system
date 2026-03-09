@@ -4,7 +4,8 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.penakelex.objectsimulationsystem.vehicle.Vehicle;
 import org.penakelex.objectsimulationsystem.vehicle.images.VehicleImages;
 
-import java.util.Optional;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -29,33 +30,45 @@ public final class VehicleSpawner<T extends Vehicle> {
         this.probability = probability;
     }
 
-    public Optional<T> trySpawn(
+    public List<T> trySpawn(
         final long currentTimeMillis,
         final RelativePositionGenerator relativePositionGenerator,
         final IdSupplier idSupplier
     ) {
-        if (currentTimeMillis - lastSpawnTime < periodMillis) {
-            return Optional.empty();
+        final var elapsedSinceLastSpawn =
+            currentTimeMillis - lastSpawnTime;
+
+        if (elapsedSinceLastSpawn < periodMillis) {
+            return List.of();
         }
 
-        lastSpawnTime = currentTimeMillis;
+        final int spawnsNeeded =
+            (int) (elapsedSinceLastSpawn / periodMillis);
 
-        if (random.nextDouble() > probability) {
-            return Optional.empty();
+        lastSpawnTime += (long) spawnsNeeded * periodMillis;
+
+        final var newVehicles = new ArrayList<T>();
+
+        for (int i = 0; i < spawnsNeeded; i++) {
+            if (random.nextDouble() > probability) {
+                continue;
+            }
+
+            final var position =
+                relativePositionGenerator.generate();
+
+            newVehicles.add(
+                factory.create(
+                    idSupplier.getNextId(),
+                    position.getLeft(),
+                    position.getRight(),
+                    currentTimeMillis,
+                    images.getRandomImage()
+                )
+            );
         }
 
-        final var image = images.getRandomImage();
-
-        final var position =
-            relativePositionGenerator.generate();
-
-        return Optional.of(factory.create(
-            idSupplier.getNextId(),
-            position.getLeft(),
-            position.getRight(),
-            currentTimeMillis,
-            image
-        ));
+        return newVehicles;
     }
 
     public void reset() {
