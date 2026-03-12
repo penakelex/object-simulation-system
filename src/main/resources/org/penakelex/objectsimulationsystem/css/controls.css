@@ -1,11 +1,9 @@
-.controls-list {
-    -fx-padding: 5 0 0 24;
-    -fx-spacing: 5;
-}
-
+/* ========================================
+   KeyBadge
+   ======================================== */
 .key-badge {
     -fx-background-color: #e0e0e0;
-    -fx-text-fill: #333333;
+    -fx-text-fill: -fx-text-color-dark;
     -fx-font-size: 11px;
     -fx-font-weight: bold;
     -fx-padding: 2 8;

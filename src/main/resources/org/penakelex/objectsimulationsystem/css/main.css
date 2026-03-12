@@ -3,13 +3,30 @@
 @import url("layout.css");
 @import url("scrollbar.css");
 @import url("sections.css");
-@import url("statistics.css");
 @import url("status.css");
 @import url("statistics_overlay.css");
 
-.time-value {
-    -fx-font-size: 16px;
-    -fx-text-fill: #2196F3;
-    -fx-font-weight: bold;
-    -fx-padding: 5 0 0 24;
+.root {
+    -fx-base-blue-color: #2196F3;
+    -fx-base-green-color: #4CAF50;
+
+    -fx-truck-icon-color: -fx-base-green-color;
+    -fx-car-icon-color: -fx-base-blue-color;
+    -fx-total-icon-color: #FF5722;
+
+    -fx-period-icon-color: #607D8B;
+    -fx-probability-icon-color: #FFA726;
+
+    -fx-overlay-time-color: #FF9800;
+
+    -fx-status-stopped: #F44336;
+    -fx-status-running: -fx-base-green-color;
+
+    -fx-text-color-light: #666666;
+    -fx-text-color-dark: #333333;
+
+    -fx-control-panel-background-color: #f5f5f5;
+    -fx-control-panel-border-color: #e0e0e0;
+
+    -fx-separator-color: #dddddd;
 }

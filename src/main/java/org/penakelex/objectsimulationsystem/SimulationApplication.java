@@ -45,6 +45,5 @@ public class SimulationApplication extends Application {
         stage.show();
 
         controller.setupKeyboardHandler(scene);
-        controller.requestFocus();
     }
 }

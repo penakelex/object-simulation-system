@@ -35,6 +35,10 @@ public final class VehicleSpawner<T extends Vehicle> {
         final RelativePositionGenerator relativePositionGenerator,
         final IdSupplier idSupplier
     ) {
+        if (!images.isLoaded()) {
+            return List.of();
+        }
+
         final var elapsedSinceLastSpawn =
             currentTimeMillis - lastSpawnTime;
 

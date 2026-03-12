@@ -1,12 +1,36 @@
+/* ========================================
+   Основная панель управления
+   ======================================== */
 .control-panel {
-    -fx-background-color: #f5f5f5;
-    -fx-border-color: #e0e0e0;
+    -fx-background-color: -fx-control-panel-background-color;
+    -fx-border-color: -fx-control-panel-border-color;
     -fx-border-width: 0 0 0 1;
-    -fx-pref-width: 230;
+    -fx-min-width: 270;
+    -fx-pref-width: -fx-min-width;
 }
 
+.control-panel-content {
+    -fx-background-color: transparent;
+    -fx-padding: 20;
+    -fx-spacing: 15;
+    -fx-min-width: 250;
+    -fx-pref-width: -fx-min-width;
+}
+
+/* ========================================
+   Контейнеры информации
+   ======================================== */
+.control-panel-content,
+.info-container,
+.time-container {
+    -fx-spacing: 15;
+}
+
+/* ========================================
+   Canvas
+   ======================================== */
 .canvas-container {
-    -fx-background-color: #ffffff;
+    -fx-background-color: white;
     -fx-min-width: 0;
     -fx-min-height: 0;
 }
@@ -15,9 +39,11 @@
     -fx-background-color: transparent;
 }
 
-.control-panel-content {
-    -fx-background-color: transparent;
-    -fx-padding: 20;
-    -fx-spacing: 15;
-    -fx-pref-width: 210;
+/* ========================================
+   Разделители
+   ======================================== */
+.section-separator {
+    -fx-background-color: -fx-separator-color;
+    -fx-pref-height: 1px;
+    -fx-padding: 0 10;
 }

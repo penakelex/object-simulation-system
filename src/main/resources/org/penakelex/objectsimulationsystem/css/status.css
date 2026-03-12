@@ -1,10 +1,15 @@
+/* ========================================
+   Секция статуса
+   ======================================== */
 .status-section {
     -fx-alignment: center;
     -fx-padding: 10;
     -fx-background-color: rgba(0, 0, 0, 0.02);
     -fx-border-color: rgba(0, 0, 0, 0.08);
     -fx-border-width: 1 0 0 0;
-    -fx-spacing: 5;
+    -fx-pref-height: 62;
+    -fx-max-height: -fx-pref-height;
+    -fx-min-height: -fx-pref-height;
 }
 
 .status-container {
@@ -19,28 +24,34 @@
     -fx-spacing: 8;
 }
 
+/* ========================================
+   Иконка статуса
+   ======================================== */
 .status-icon {
     -fx-icon-size: 18px;
 }
 
-.status-value {
-    -fx-font-weight: bold;
-    -fx-font-size: 14px;
-    -fx-text-fill: #333333;
-}
-
-.status-stopped {
-    -fx-text-fill: #F44336;
-}
-
-.status-running {
-    -fx-text-fill: #4CAF50;
-}
-
 .status-icon.running {
-    -fx-icon-color: #4CAF50;
+    -fx-icon-color: -fx-status-running;
 }
 
 .status-icon.stopped {
-    -fx-icon-color: #F44336;
+    -fx-icon-color: -fx-status-stopped;
+}
+
+/* ========================================
+   Текст статуса
+   ======================================== */
+.status-value {
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+    -fx-text-fill: -fx-text-color-dark;
+}
+
+.status-value.stopped {
+    -fx-text-fill: -fx-status-stopped;
+}
+
+.status-value.running {
+    -fx-text-fill: -fx-status-running;
 }

@@ -1,30 +1,63 @@
+/* ========================================
+   IconedSection
+   ======================================== */
 .iconed-section {
-    -fx-padding: 5 0;
     -fx-spacing: 5;
     -fx-background-color: transparent;
+    -fx-alignment: top-left;
 }
 
+.section-header {
+    -fx-alignment: center-left;
+    -fx-spacing: 8;
+}
+
+.section-icon {
+    -fx-icon-size: 16px;
+    -fx-icon-color: -fx-base-blue-color;
+}
+
+.section-title {
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+    -fx-text-fill: -fx-text-color-dark;
+    -fx-alignment: top-left;
+}
+
+.section-content {
+    -fx-padding: 5 0 0 24;
+    -fx-spacing: 5;
+}
+
+/* ========================================
+   LabeledValueRow
+   ======================================== */
 .labeled-value-row {
     -fx-alignment: center-left;
     -fx-spacing: 10;
 }
 
 .labeled-value-row .row-label {
-    -fx-font-size: 13px;
-    -fx-text-fill: #666666;
+    -fx-text-fill: -fx-text-color-light;
 }
 
 .labeled-value-row .row-value {
     -fx-font-weight: 600;
-    -fx-font-size: 13px;
     -fx-text-alignment: right;
-    -fx-min-width: 50;
+}
+
+.labeled-value-row .row-label,
+.labeled-value-row .row-value {
+    -fx-font-size: 13px;
 }
 
 .labeled-value-row .row-icon {
     -fx-icon-size: 14px;
 }
 
+/* ========================================
+   KeyActionRow
+   ======================================== */
 .key-action-pair {
     -fx-alignment: center-left;
     -fx-spacing: 8;
@@ -32,5 +65,5 @@
 
 .action-description {
     -fx-font-size: 12px;
-    -fx-text-fill: #666666;
+    -fx-text-fill: -fx-text-color-light;
 }

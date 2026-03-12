@@ -10,6 +10,7 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import org.kordamp.ikonli.javafx.FontIcon;
+import org.penakelex.objectsimulationsystem.habitat.Configuration;
 import org.penakelex.objectsimulationsystem.habitat.Habitat;
 import org.penakelex.objectsimulationsystem.ui.LabeledValueRow;
 
@@ -18,20 +19,23 @@ import java.util.ResourceBundle;
 
 public class SimulationController implements Initializable {
     @FXML private Canvas simulationCanvas;
-    @FXML private Label timeLabel;
-    @FXML private Label overlayTimeLabel;
-    @FXML private LabeledValueRow truckRow;
-    @FXML private LabeledValueRow carRow;
-    @FXML private LabeledValueRow totalRow;
-    @FXML private LabeledValueRow overlayTruckRow;
-    @FXML private LabeledValueRow overlayCarRow;
-    @FXML private LabeledValueRow overlayTotalRow;
+    @FXML private StackPane simulationField;
+
+    @FXML private LabeledValueRow truckPeriodRow, truckProbabilityRow,
+        carPeriodRow, carProbabilityRow;
+
+    @FXML private Label timeLabel, overlayTimeLabel;
+
+    @FXML private LabeledValueRow truckRow, carRow, totalRow;
+
+    @FXML private LabeledValueRow overlayTruckRow, overlayCarRow,
+        overlayTotalRow;
+
     @FXML private Label statusLabel;
     @FXML private FontIcon statusIcon;
-    @FXML private StackPane simulationField;
-    @FXML private VBox infoContainer;
-    @FXML private VBox timeContainer;
-    @FXML private VBox statisticsOverlay;
+
+    @FXML private VBox infoContainer, timeContainer,
+        statisticsOverlay;
 
     private AnimationTimer gameTimer;
 
@@ -70,6 +74,19 @@ public class SimulationController implements Initializable {
             }
         };
 
+        initializeGenerationParameters(
+            truckPeriodRow,
+            truckProbabilityRow,
+            Configuration.TRUCK_SPAWN_PERIOD,
+            Configuration.TRUCK_SPAWN_PROBABILITY
+        );
+        initializeGenerationParameters(
+            carPeriodRow,
+            carProbabilityRow,
+            Configuration.CAR_SPAWN_PERIOD,
+            Configuration.CAR_SPAWN_PROBABILITY
+        );
+
         updatePanelStatistics();
         updateStatusLabel();
 
@@ -102,6 +119,22 @@ public class SimulationController implements Initializable {
 
         simulationCanvas.setFocusTraversable(true);
         simulationCanvas.requestFocus();
+    }
+
+    private void initializeGenerationParameters(
+        final LabeledValueRow periodRow,
+        final LabeledValueRow probabilityRow,
+        final int period,
+        final double probability
+    ) {
+        periodRow.setValue(resources
+            .getString("format.period.milliseconds")
+            .formatted(period)
+        );
+        probabilityRow.setValue(resources
+            .getString("format.probability.percent")
+            .formatted((int) (probability * 100))
+        );
     }
 
     private void startSimulation() {
@@ -211,30 +244,23 @@ public class SimulationController implements Initializable {
     }
 
     private void updateStatusLabel() {
+        final String status;
+        final String iconLiteral;
+
         if (running) {
-            statusLabel.setText(resources.getString(
-                "label.status.running"
-            ));
-            statusLabel.getStyleClass()
-                .setAll("status-value", "status-running");
-
-            statusIcon.setIconLiteral("fas-play-circle");
-            statusIcon.getStyleClass()
-                .setAll("status-icon", "running");
+            status = "running";
+            iconLiteral = "fas-play-circle";
         } else {
-            statusLabel.setText(resources.getString(
-                "label.status.stopped"
-            ));
-            statusLabel.getStyleClass()
-                .setAll("status-value", "status-stopped");
-
-            statusIcon.setIconLiteral("fas-pause-circle");
-            statusIcon.getStyleClass()
-                .setAll("status-icon", "stopped");
+            status = "stopped";
+            iconLiteral = "fas-pause-circle";
         }
-    }
 
-    public void requestFocus() {
-        simulationCanvas.requestFocus();
+        statusLabel.setText(resources.getString(
+            String.format("label.status.%s", status)
+        ));
+        statusLabel.getStyleClass().setAll("status-value", status);
+
+        statusIcon.setIconLiteral(iconLiteral);
+        statusIcon.getStyleClass().setAll("status-icon", status);
     }
 }

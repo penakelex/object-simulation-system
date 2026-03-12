@@ -1,10 +1,9 @@
 .control-panel-scroll {
-    -fx-background-color: #f5f5f5;
-    -fx-border-color: #e0e0e0;
+    -fx-background-color: -fx-control-panel-background-color;
+    -fx-border-color: -fx-control-panel-border-color;
     -fx-border-width: 0 0 0 1;
     -fx-fit-to-width: true;
     -fx-hbar-policy: never;
-    -fx-min-width: 230px;
 }
 
 .control-panel-scroll > .viewport {
@@ -13,7 +12,7 @@
 
 .control-panel-scroll .scroll-bar:vertical {
     -fx-pref-width: 12px;
-    -fx-background-color: #f5f5f5;
+    -fx-background-color: -fx-control-panel-background-color;
 }
 
 .control-panel-scroll .scroll-bar:vertical .thumb {

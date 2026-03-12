@@ -1,3 +1,6 @@
+/* ========================================
+   Контейнер overlay
+   ======================================== */
 .statistics-overlay {
     -fx-background-color: rgba(0, 0, 0, 0.45);
     -fx-alignment: center;
@@ -10,52 +13,102 @@
     -fx-background-radius: 15;
     -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.3), 20, 0, 0, 5);
     -fx-padding: 25 40;
+    -fx-spacing: 12;
+    -fx-alignment: center;
 }
 
+/* ========================================
+   Заголовок
+   ======================================== */
 .overlay-title {
+    -fx-spacing: 10;
+    -fx-alignment: center;
+}
+
+.overlay-title-label {
     -fx-font-size: 24px;
     -fx-font-weight: bold;
-    -fx-text-fill: #333333;
+    -fx-text-fill: -fx-text-color-dark;
 }
 
 .overlay-icon {
     -fx-icon-size: 28px;
-    -fx-icon-color: #2196F3;
+    -fx-icon-color: -fx-base-blue-color;
     -fx-effect: dropshadow(gaussian, rgba(33, 150, 243, 0.4), 10, 0, 0, 2);
 }
 
+/* ========================================
+   Разделители
+   ======================================== */
 .overlay-separator {
-    -fx-background-color: #dddddd;
+    -fx-background-color: -fx-separator-color;
     -fx-pref-height: 2px;
-    -fx-max-width: 300px;
+    -fx-padding: 0 40;
 }
 
-.overlay-time {
+/* ========================================
+   Время
+   ======================================== */
+.overlay-time-row {
+    -fx-spacing: 8;
+    -fx-alignment: center;
+}
+
+.overlay-time-icon {
+    -fx-icon-size: 18px;
+    -fx-icon-color: -fx-overlay-time-color;
+}
+
+.overlay-time-label {
     -fx-font-size: 18px;
     -fx-font-style: italic;
     -fx-font-weight: bold;
-    -fx-text-fill: #FF9800;
+    -fx-text-fill: -fx-overlay-time-color;
 }
 
+/* ========================================
+   Статистика транспортных средств
+   ======================================== */
+.overlay-vehicles-statistics-container {
+    -fx-spacing: 2;
+}
 
-.overlay-stat-row {
+.overlay-statistics-row {
     -fx-alignment: center;
     -fx-spacing: 15;
     -fx-padding: 5 0;
 }
 
-.overlay-stat-row .row-label {
+.overlay-statistics-row .row-label,
+.overlay-statistics-row .row-value {
     -fx-font-size: 20px;
+    -fx-text-alignment: center;
+}
+
+.overlay-statistics-row .row-label {
     -fx-font-weight: 600;
     -fx-text-fill: #555555;
 }
 
-.overlay-stat-row .row-value {
-    -fx-font-size: 20px;
+.overlay-statistics-row .row-value {
     -fx-font-weight: bold;
-    -fx-text-alignment: center;
 }
 
-.overlay-stat-row .row-icon {
+.overlay-statistics-row .row-icon {
     -fx-icon-size: 18px;
+}
+
+/* ========================================
+   Цвета иконок (ID селекторы)
+   ======================================== */
+#overlayTruckRow .row-icon {
+    -fx-icon-color: -fx-truck-icon-color;
+}
+
+#overlayCarRow .row-icon {
+    -fx-icon-color: -fx-car-icon-color;
+}
+
+#overlayTotalRow .row-icon {
+    -fx-icon-color: -fx-total-icon-color;
 }

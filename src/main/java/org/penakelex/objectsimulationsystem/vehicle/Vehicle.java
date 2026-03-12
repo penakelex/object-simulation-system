@@ -72,7 +72,6 @@ public abstract sealed class Vehicle implements IBehaviour
 
     public void updateAbsoluteYPosition(final double canvasHeight) {
         this.absoluteY = this.relativeY * canvasHeight;
-
     }
 
     @Override

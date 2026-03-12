@@ -1,32 +1,36 @@
 package org.penakelex.objectsimulationsystem.ui;
 
+import javafx.beans.DefaultProperty;
+import javafx.collections.ObservableList;
+import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import org.kordamp.ikonli.javafx.FontIcon;
 
+@DefaultProperty("content")
 public final class IconedSection extends VBox {
     private final FontIcon icon = new FontIcon();
     private final Label titleLabel = new Label();
+    private final VBox contentContainer = new VBox();
 
     public IconedSection() {
-        super();
-
         getStyleClass().add("iconed-section");
 
         icon.getStyleClass().add("section-icon");
         titleLabel.getStyleClass().add("section-title");
 
+        contentContainer.getStyleClass().add("section-content");
+
         final var header = new HBox(icon, titleLabel);
         header.getStyleClass().add("section-header");
 
-        final var contentContainer = new VBox();
-        contentContainer.getStyleClass().add("section-content");
-        VBox.setVgrow(contentContainer, Priority.ALWAYS);
-
         getChildren().addAll(header, contentContainer);
+    }
+
+    public ObservableList<Node> getContent() {
+        return contentContainer.getChildren();
     }
 
     public void setTitle(final String title) {

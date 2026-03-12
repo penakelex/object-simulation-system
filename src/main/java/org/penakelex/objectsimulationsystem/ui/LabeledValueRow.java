@@ -11,8 +11,6 @@ public final class LabeledValueRow extends HBox {
     private final Label valueLabel = new Label();
 
     public LabeledValueRow() {
-        super();
-
         getStyleClass().add("labeled-value-row");
 
         icon.getStyleClass().add("row-icon");
@@ -22,8 +20,16 @@ public final class LabeledValueRow extends HBox {
         getChildren().addAll(icon, label, valueLabel);
     }
 
+    public void setValue(final String value) {
+        valueLabel.setText(value);
+    }
+
     public void setValue(final int value) {
-        valueLabel.setText(String.valueOf(value));
+        setValue(String.valueOf(value));
+    }
+
+    public void setValue(final double value) {
+        setValue(String.valueOf(value));
     }
 
     public void setLabelText(final String text) {

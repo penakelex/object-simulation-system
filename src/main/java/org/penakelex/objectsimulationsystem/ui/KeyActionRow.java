@@ -8,8 +8,6 @@ public final class KeyActionRow extends HBox {
     private final Label actionLabel = new Label();
 
     public KeyActionRow() {
-        super();
-
         getStyleClass().add("key-action-pair");
         keyBadge.getStyleClass().add("key-badge");
         actionLabel.getStyleClass().add("action-description");

@@ -1,26 +1,33 @@
-.section-header {
-    -fx-alignment: center-left;
-    -fx-spacing: 8;
-}
-
-.section-icon {
-    -fx-icon-size: 16px;
-    -fx-icon-color: #2196F3;
-}
-
-.section-title {
+/* ========================================
+   Время симуляции (в панели информации)
+   ======================================== */
+.time-value {
+    -fx-font-size: 16px;
+    -fx-text-fill: -fx-base-blue-color;
     -fx-font-weight: bold;
-    -fx-font-size: 14px;
-    -fx-text-fill: #333333;
 }
 
-.section-content {
-    -fx-background-color: transparent;
-    -fx-spacing: 5;
+/* ========================================
+   Цвета иконок параметров
+   ======================================== */
+.period-row .row-icon {
+    -fx-icon-color: -fx-period-icon-color;
 }
 
-.section-separator {
-    -fx-background-color: #dddddd;
-    -fx-pref-height: 2px;
-    -fx-max-width: 200px;
+.probability-row .row-icon {
+    -fx-icon-color: -fx-probability-icon-color;
+}
+
+.truck-parameters-section .section-icon,
+.truck-parameters-row .row-icon {
+    -fx-icon-color: -fx-truck-icon-color;
+}
+
+.car-parameters-section .section-icon,
+.car-parameters-row .row-icon {
+    -fx-icon-color: -fx-car-icon-color;
+}
+
+.total-vehicles-parameters-row .row-icon {
+    -fx-icon-color: -fx-total-icon-color;
 }

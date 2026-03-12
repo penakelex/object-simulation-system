@@ -32,60 +32,81 @@
               visible="false"
               managed="false">
 
-            <StackPane styleClass="overlay-card">
-                <VBox spacing="12" alignment="CENTER">
-                    <HBox spacing="10" alignment="CENTER">
-                        <FontIcon iconLiteral="fas-chart-bar"
-                                  styleClass="overlay-icon"/>
-                        <Label text="%label.simulation_results"
-                               styleClass="overlay-title"/>
-                    </HBox>
+            <VBox styleClass="overlay-card">
+                <HBox styleClass="overlay-title">
+                    <FontIcon iconLiteral="fas-chart-bar"
+                              styleClass="overlay-icon"/>
+                    <Label text="%label.simulation_results"
+                           styleClass="overlay-title-label"/>
+                </HBox>
 
-                    <Separator styleClass="overlay-separator"/>
+                <Separator styleClass="overlay-separator"/>
 
-                    <VBox spacing="2">
-                        <LabeledValueRow fx:id="overlayTruckRow"
-                                         iconLiteral="fas-truck"
-                                         iconColor="#4CAF50"
-                                         labelText="%label.trucks"
-                                         styleClass="overlay-stat-row"/>
-
-                        <LabeledValueRow fx:id="overlayCarRow"
-                                         iconLiteral="fas-car"
-                                         iconColor="#2196F3"
-                                         labelText="%label.cars"
-                                         styleClass="overlay-stat-row"/>
-
-                        <LabeledValueRow fx:id="overlayTotalRow"
-                                         iconLiteral="fas-chart-line"
-                                         iconColor="#FF5722"
-                                         labelText="%label.total"
-                                         styleClass="overlay-stat-row"/>
-                    </VBox>
-
-                    <Separator styleClass="overlay-separator"/>
-
-                    <HBox spacing="8" alignment="CENTER">
-                        <FontIcon iconLiteral="fas-clock"
-                                  iconSize="18"
-                                  iconColor="#FF9800"/>
-                        <Label fx:id="overlayTimeLabel"
-                               styleClass="overlay-time"/>
-                    </HBox>
+                <VBox styleClass="overlay-vehicles-statistics-container">
+                    <LabeledValueRow fx:id="overlayTruckRow"
+                                     iconLiteral="fas-truck"
+                                     labelText="%label.trucks"
+                                     styleClass="overlay-statistics-row"/>
+                    <LabeledValueRow fx:id="overlayCarRow"
+                                     iconLiteral="fas-car"
+                                     labelText="%label.cars"
+                                     styleClass="overlay-statistics-row"/>
+                    <LabeledValueRow fx:id="overlayTotalRow"
+                                     iconLiteral="fas-chart-line"
+                                     labelText="%label.total"
+                                     styleClass="overlay-statistics-row"/>
                 </VBox>
-            </StackPane>
+
+                <Separator styleClass="overlay-separator"/>
+
+                <HBox styleClass="overlay-time-row">
+                    <FontIcon iconLiteral="fas-clock"
+                              styleClass="overlay-time-icon"/>
+                    <Label fx:id="overlayTimeLabel"
+                           styleClass="overlay-time-label"/>
+                </HBox>
+            </VBox>
         </VBox>
     </StackPane>
 
     <VBox styleClass="control-panel" HBox.hgrow="NEVER">
         <ScrollPane styleClass="control-panel-scroll"
-                    VBox.vgrow="ALWAYS"
-                    HBox.hgrow="NEVER">
+                    VBox.vgrow="ALWAYS">
 
             <VBox styleClass="control-panel-content">
+                <IconedSection iconLiteral="fas-cogs"
+                               title="%label.generation.parameters">
+                    <IconedSection iconLiteral="fas-truck"
+                                   title="%label.trucks"
+                                   styleClass="truck-parameters-section">
+                        <LabeledValueRow fx:id="truckPeriodRow"
+                                         iconLiteral="fas-clock"
+                                         labelText="%label.generation.period"
+                                         styleClass="period-row"/>
+                        <LabeledValueRow fx:id="truckProbabilityRow"
+                                         iconLiteral="fas-percentage"
+                                         labelText="%label.generation.probability"
+                                         styleClass="probability-row"/>
+                    </IconedSection>
 
-                <VBox spacing="15" fx:id="infoContainer">
-                    <VBox spacing="15" fx:id="timeContainer">
+                    <IconedSection iconLiteral="fas-car"
+                                   title="%label.cars"
+                                   styleClass="car-parameters-section">
+                        <LabeledValueRow fx:id="carPeriodRow"
+                                         iconLiteral="fas-clock"
+                                         labelText="%label.generation.period"
+                                         styleClass="period-row"/>
+                        <LabeledValueRow fx:id="carProbabilityRow"
+                                         iconLiteral="fas-percentage"
+                                         labelText="%label.generation.probability"
+                                         styleClass="probability-row"/>
+                    </IconedSection>
+                </IconedSection>
+
+                <Separator styleClass="section-separator"/>
+
+                <VBox fx:id="infoContainer" styleClass="info-container">
+                    <VBox fx:id="timeContainer" styleClass="time-container">
                         <IconedSection iconLiteral="fas-clock"
                                        title="%label.simulation.time">
                             <Label fx:id="timeLabel" styleClass="time-value"/>
@@ -96,20 +117,18 @@
 
                     <IconedSection iconLiteral="fas-chart-bar"
                                    title="%label.statistics.title">
-                        <VBox styleClass="statistics-container">
-                            <LabeledValueRow fx:id="truckRow"
-                                             iconLiteral="fas-truck"
-                                             iconColor="#4CAF50"
-                                             labelText="%label.trucks"/>
-                            <LabeledValueRow fx:id="carRow"
-                                             iconLiteral="fas-car"
-                                             iconColor="#2196F3"
-                                             labelText="%label.cars"/>
-                            <LabeledValueRow fx:id="totalRow"
-                                             iconLiteral="fas-chart-line"
-                                             iconColor="#FF5722"
-                                             labelText="%label.total"/>
-                        </VBox>
+                        <LabeledValueRow fx:id="truckRow"
+                                         iconLiteral="fas-truck"
+                                         labelText="%label.trucks"
+                                         styleClass="truck-parameters-row"/>
+                        <LabeledValueRow fx:id="carRow"
+                                         iconLiteral="fas-car"
+                                         labelText="%label.cars"
+                                         styleClass="car-parameters-row"/>
+                        <LabeledValueRow fx:id="totalRow"
+                                         iconLiteral="fas-chart-line"
+                                         labelText="%label.total"
+                                         styleClass="total-vehicles-parameters-row"/>
                     </IconedSection>
 
                     <Separator styleClass="section-separator"/>
@@ -117,16 +136,14 @@
 
                 <IconedSection iconLiteral="fas-cog"
                                title="%label.controls.title">
-                    <VBox styleClass="controls-list">
-                        <KeyActionRow keyBind="%label.controls.keybind.start"
-                                      actionText="%label.controls.start"/>
-                        <KeyActionRow keyBind="%label.controls.keybind.stop"
-                                      actionText="%label.controls.stop"/>
-                        <KeyActionRow keyBind="%label.controls.keybind.time"
-                                      actionText="%label.controls.time"/>
-                        <KeyActionRow keyBind="%label.controls.keybind.restart"
-                                      actionText="%label.controls.restart"/>
-                    </VBox>
+                    <KeyActionRow keyBind="%label.controls.keybind.start"
+                                  actionText="%label.controls.start"/>
+                    <KeyActionRow keyBind="%label.controls.keybind.stop"
+                                  actionText="%label.controls.stop"/>
+                    <KeyActionRow keyBind="%label.controls.keybind.time"
+                                  actionText="%label.controls.time"/>
+                    <KeyActionRow keyBind="%label.controls.keybind.restart"
+                                  actionText="%label.controls.restart"/>
                 </IconedSection>
             </VBox>
         </ScrollPane>
@@ -138,7 +155,7 @@
                           styleClass="status-icon"/>
                 <Label fx:id="statusLabel"
                        text="%label.status.stopped"
-                       styleClass="status-value status-stopped"/>
+                       styleClass="status-value stopped"/>
             </HBox>
         </VBox>
     </VBox>
