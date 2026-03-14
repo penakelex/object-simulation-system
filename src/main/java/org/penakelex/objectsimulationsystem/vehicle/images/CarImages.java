@@ -1,15 +1,10 @@
 package org.penakelex.objectsimulationsystem.vehicle.images;
 
-import java.util.List;
+import org.penakelex.objectsimulationsystem.habitat.Configuration;
 
 public final class CarImages extends VehicleImages {
     @Override
-    protected List<String> getImagesNames() {
-        return List.of(
-            "car.png"
-//            "car1.png",
-//            "car2.png",
-//            "car3.png"
-        );
+    protected String getImagesPath() {
+        return Configuration.VEHICLE_IMAGES_CARS_PATH;
     }
 }

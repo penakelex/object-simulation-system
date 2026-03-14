@@ -2,7 +2,12 @@ target/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
-.kotlin
+
+src/**/resources/images/**/*.png
+src/**/resources/images/**/*.jpg
+src/**/resources/images/**/*.jpeg
+!src/**/resources/images/vehicles/cars/.gitkeep
+!src/**/resources/images/vehicles/trucks/.gitkeep
 
 ### IntelliJ IDEA ###
 .idea/

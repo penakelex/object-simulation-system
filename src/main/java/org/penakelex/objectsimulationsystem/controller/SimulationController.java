@@ -139,7 +139,7 @@ public class SimulationController implements Initializable {
         );
     }
 
-    public void initializeHabitateImages(
+    public void initializeHabitatImages(
         final TruckImages truckImages,
         final CarImages carImages
     ) {

@@ -89,7 +89,7 @@ public class SimulationApplication extends Application {
 
         final SimulationController controller =
             loader.getController();
-        controller.initializeHabitateImages(truckImages, carImages);
+        controller.initializeHabitatImages(truckImages, carImages);
 
         stage.setTitle(resources.getString("application.title"));
         stage.setScene(scene);

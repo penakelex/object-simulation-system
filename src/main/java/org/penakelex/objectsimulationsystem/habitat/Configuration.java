@@ -5,17 +5,17 @@ import java.util.ResourceBundle;
 public final class Configuration {
     public static final int TRUCK_SPAWN_PERIOD_MILLIS;
     public static final double TRUCK_SPAWN_PROBABILITY;
-
     public static final int CAR_SPAWN_PERIOD_MILLIS;
     public static final double CAR_SPAWN_PROBABILITY;
-
     public static final double VEHICLE_RELATIVE_SIZE;
     public static final int VEHICLE_IMAGE_SIZE;
     public static final String VEHICLE_IMAGES_BASE_PATH;
+    public static final String VEHICLE_IMAGES_CARS_PATH;
+    public static final String VEHICLE_IMAGES_TRUCKS_PATH;
+    public static final String[] VEHICLE_IMAGE_EXTENSIONS;
 
     static {
-        final var configuration =
-            ResourceBundle.getBundle("configuration");
+        final var configuration = ResourceBundle.getBundle("configuration");
 
         TRUCK_SPAWN_PERIOD_MILLIS = validatePositiveInt(
             configuration,
@@ -27,7 +27,6 @@ public final class Configuration {
             "habitat.truck.spawn.probability",
             "Truck spawn"
         );
-
         CAR_SPAWN_PERIOD_MILLIS = validatePositiveInt(
             configuration,
             "habitat.car.spawn.period.millis",
@@ -38,7 +37,6 @@ public final class Configuration {
             "habitat.car.spawn.probability",
             "Car spawn"
         );
-
         VEHICLE_RELATIVE_SIZE = validateRange(
             configuration,
             "vehicle.relative.size",
@@ -47,15 +45,28 @@ public final class Configuration {
             1.0
         );
         VEHICLE_IMAGE_SIZE = validatePositiveInt(
-            configuration, "vehicle.image.size", "Vehicle image size"
+            configuration,
+            "vehicle.image.size",
+            "Vehicle image size"
         );
-        VEHICLE_IMAGES_BASE_PATH =
-            configuration.getString("vehicle.image.path");
+        VEHICLE_IMAGES_BASE_PATH = configuration.getString(
+            "vehicle.images.base.path"
+        );
+        VEHICLE_IMAGES_CARS_PATH = configuration.getString(
+            "vehicle.images.cars.path"
+        );
+        VEHICLE_IMAGES_TRUCKS_PATH = configuration.getString(
+            "vehicle.images.trucks.path"
+        );
+        VEHICLE_IMAGE_EXTENSIONS = configuration
+            .getString("vehicle.image.extensions")
+            .split(",");
     }
 
     private Configuration() {
         throw new UnsupportedOperationException(
-            "Configuration is a utility class");
+            "Configuration is a utility class"
+        );
     }
 
     private static int validatePositiveInt(
@@ -64,13 +75,11 @@ public final class Configuration {
         final String paramName
     ) {
         final var value = Integer.parseInt(config.getString(key));
-
         if (value < 1) {
             throw new IllegalArgumentException(
                 "%s must be positive: %d".formatted(paramName, value)
             );
         }
-
         return value;
     }
 
@@ -80,16 +89,13 @@ public final class Configuration {
         final String paramName
     ) {
         final var value = Double.parseDouble(config.getString(key));
-
         if (value <= 0.0 || value > 1.0) {
             throw new IllegalArgumentException(
                 "%s probability must be in [0, 1]: %f".formatted(
-                    paramName,
-                    value
+                    paramName, value
                 )
             );
         }
-
         return value;
     }
 
@@ -101,14 +107,12 @@ public final class Configuration {
         final double max
     ) {
         final var value = Double.parseDouble(config.getString(key));
-
         if (value <= min || value > max) {
             throw new IllegalArgumentException(
                 "%s must be in (%f, %f]: %f"
                     .formatted(paramName, min, max, value)
             );
         }
-
         return value;
     }
 }
