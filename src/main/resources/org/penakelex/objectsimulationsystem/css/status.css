@@ -39,6 +39,10 @@
     -fx-icon-color: -fx-status-stopped;
 }
 
+.status-icon.paused {
+    -fx-icon-color: -fx-status-paused;
+}
+
 /* ========================================
    Текст статуса
    ======================================== */
@@ -54,4 +58,8 @@
 
 .status-value.running {
     -fx-text-fill: -fx-status-running;
+}
+
+.status-value.paused {
+    -fx-text-fill: -fx-status-paused;
 }

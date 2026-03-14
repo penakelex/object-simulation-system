@@ -14,7 +14,7 @@
 
 <HBox xmlns="http://javafx.com/javafx/25"
       xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="org.penakelex.objectsimulationsystem.SimulationController"
+      fx:controller="org.penakelex.objectsimulationsystem.controller.SimulationController"
       minWidth="600"
       minHeight="400"
       prefWidth="900"
@@ -140,6 +140,8 @@
                                   actionText="%label.controls.start"/>
                     <KeyActionRow keyBind="%label.controls.keybind.stop"
                                   actionText="%label.controls.stop"/>
+                    <KeyActionRow keyBind="%label.controls.keybind.pause"
+                                  actionText="%label.controls.pause"/>
                     <KeyActionRow keyBind="%label.controls.keybind.time"
                                   actionText="%label.controls.time"/>
                     <KeyActionRow keyBind="%label.controls.keybind.restart"

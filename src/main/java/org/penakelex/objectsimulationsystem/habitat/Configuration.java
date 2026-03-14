@@ -3,10 +3,10 @@ package org.penakelex.objectsimulationsystem.habitat;
 import java.util.ResourceBundle;
 
 public final class Configuration {
-    public static final int TRUCK_SPAWN_PERIOD;
+    public static final int TRUCK_SPAWN_PERIOD_MILLIS;
     public static final double TRUCK_SPAWN_PROBABILITY;
 
-    public static final int CAR_SPAWN_PERIOD;
+    public static final int CAR_SPAWN_PERIOD_MILLIS;
     public static final double CAR_SPAWN_PROBABILITY;
 
     public static final double VEHICLE_RELATIVE_SIZE;
@@ -17,9 +17,9 @@ public final class Configuration {
         final var configuration =
             ResourceBundle.getBundle("configuration");
 
-        TRUCK_SPAWN_PERIOD = validatePositiveInt(
+        TRUCK_SPAWN_PERIOD_MILLIS = validatePositiveInt(
             configuration,
-            "habitat.truck.spawn.period",
+            "habitat.truck.spawn.period.millis",
             "Truck spawn period"
         );
         TRUCK_SPAWN_PROBABILITY = validateProbability(
@@ -28,9 +28,9 @@ public final class Configuration {
             "Truck spawn"
         );
 
-        CAR_SPAWN_PERIOD = validatePositiveInt(
+        CAR_SPAWN_PERIOD_MILLIS = validatePositiveInt(
             configuration,
-            "habitat.car.spawn.period",
+            "habitat.car.spawn.period.millis",
             "Car spawn period"
         );
         CAR_SPAWN_PROBABILITY = validateProbability(

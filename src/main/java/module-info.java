@@ -3,8 +3,6 @@ module org.penakelex.objectsimulationsystem {
     requires javafx.fxml;
     requires org.apache.commons.lang3;
     requires org.kordamp.ikonli.javafx;
-    requires org.kordamp.ikonli.fontawesome5;
-    requires java.logging;
 
     opens org.penakelex.objectsimulationsystem to javafx.fxml;
 
@@ -16,4 +14,6 @@ module org.penakelex.objectsimulationsystem {
     exports org.penakelex.objectsimulationsystem.vehicle.images;
     exports org.penakelex.objectsimulationsystem.habitat.exceptions;
     exports org.penakelex.objectsimulationsystem.vehicle.exceptions;
+    exports org.penakelex.objectsimulationsystem.controller;
+    opens org.penakelex.objectsimulationsystem.controller to javafx.fxml;
 }

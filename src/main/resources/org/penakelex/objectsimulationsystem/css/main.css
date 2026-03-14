@@ -9,18 +9,20 @@
 .root {
     -fx-base-blue-color: #2196F3;
     -fx-base-green-color: #4CAF50;
+    -fx-base-orange-color: #FFA726;
 
     -fx-truck-icon-color: -fx-base-green-color;
     -fx-car-icon-color: -fx-base-blue-color;
     -fx-total-icon-color: #FF5722;
 
     -fx-period-icon-color: #607D8B;
-    -fx-probability-icon-color: #FFA726;
+    -fx-probability-icon-color: -fx-base-orange-color;
 
     -fx-overlay-time-color: #FF9800;
 
     -fx-status-stopped: #F44336;
     -fx-status-running: -fx-base-green-color;
+    -fx-status-paused: -fx-base-orange-color;
 
     -fx-text-color-light: #666666;
     -fx-text-color-dark: #333333;

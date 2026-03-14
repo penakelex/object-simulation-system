@@ -21,30 +21,20 @@ public final class Habitat {
 
     private double width, height;
 
-    private final TruckImages truckImages = new TruckImages();
-    private final CarImages carImages = new CarImages();
+    private final VehicleSpawner<Truck> truckSpawner;
+    private final VehicleSpawner<Car> carSpawner;
 
-    private final VehicleSpawner<Truck> truckSpawner =
-        new VehicleSpawner<>(
-            Configuration.TRUCK_SPAWN_PERIOD,
-            Configuration.TRUCK_SPAWN_PROBABILITY,
-            Truck::new,
-            truckImages
-        );
-    private final VehicleSpawner<Car> carSpawner =
-        new VehicleSpawner<>(
-            Configuration.CAR_SPAWN_PERIOD,
-            Configuration.CAR_SPAWN_PROBABILITY,
-            Car::new,
-            carImages
-        );
-
-    private final List<VehicleSpawner<?>> vehicleSpawners =
-        List.of(truckSpawner, carSpawner);
+    private final List<VehicleSpawner<? extends Vehicle>>
+        vehicleSpawners;
 
     private final Random random = ThreadLocalRandom.current();
 
-    public Habitat(final double width, final double height) {
+    public Habitat(
+        final double width,
+        final double height,
+        final TruckImages truckImages,
+        final CarImages carImages
+    ) {
         final var invalidParameters =
             new ArrayList<HabitatInvalidParameter>();
 
@@ -66,6 +56,21 @@ public final class Habitat {
 
         this.width = width;
         this.height = height;
+
+        truckSpawner = new VehicleSpawner<>(
+            Configuration.TRUCK_SPAWN_PERIOD_MILLIS,
+            Configuration.TRUCK_SPAWN_PROBABILITY,
+            Truck::new,
+            truckImages
+        );
+        carSpawner = new VehicleSpawner<>(
+            Configuration.CAR_SPAWN_PERIOD_MILLIS,
+            Configuration.CAR_SPAWN_PROBABILITY,
+            Car::new,
+            carImages
+        );
+
+        vehicleSpawners = List.of(truckSpawner, carSpawner);
     }
 
     public void update(final long currentTimeMillis) {

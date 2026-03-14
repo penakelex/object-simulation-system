@@ -1,4 +1,4 @@
-package org.penakelex.objectsimulationsystem;
+package org.penakelex.objectsimulationsystem.controller;
 
 import javafx.animation.AnimationTimer;
 import javafx.fxml.FXML;
@@ -13,6 +13,8 @@ import org.kordamp.ikonli.javafx.FontIcon;
 import org.penakelex.objectsimulationsystem.habitat.Configuration;
 import org.penakelex.objectsimulationsystem.habitat.Habitat;
 import org.penakelex.objectsimulationsystem.ui.LabeledValueRow;
+import org.penakelex.objectsimulationsystem.vehicle.images.CarImages;
+import org.penakelex.objectsimulationsystem.vehicle.images.TruckImages;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -26,10 +28,8 @@ public class SimulationController implements Initializable {
 
     @FXML private Label timeLabel, overlayTimeLabel;
 
-    @FXML private LabeledValueRow truckRow, carRow, totalRow;
-
-    @FXML private LabeledValueRow overlayTruckRow, overlayCarRow,
-        overlayTotalRow;
+    @FXML private LabeledValueRow truckRow, carRow, totalRow,
+        overlayTruckRow, overlayCarRow, overlayTotalRow;
 
     @FXML private Label statusLabel;
     @FXML private FontIcon statusIcon;
@@ -41,8 +41,11 @@ public class SimulationController implements Initializable {
 
     private Habitat habitat;
     private GraphicsContext graphicsContext;
-    private boolean running = false;
+
+    private SimulationState state = SimulationState.Stopped;
+
     private boolean showTime = true;
+
     private long startTime = 0;
     private long elapsedTime = 0;
 
@@ -54,17 +57,12 @@ public class SimulationController implements Initializable {
         final ResourceBundle resources
     ) {
         this.resources = resources;
-
         graphicsContext = simulationCanvas.getGraphicsContext2D();
-        habitat = new Habitat(
-            simulationCanvas.getWidth(),
-            simulationCanvas.getHeight()
-        );
 
         gameTimer = new AnimationTimer() {
             @Override
             public void handle(final long now) {
-                if (running) {
+                if (state == SimulationState.Running) {
                     elapsedTime =
                         System.currentTimeMillis() - startTime;
                     habitat.update(elapsedTime);
@@ -77,17 +75,16 @@ public class SimulationController implements Initializable {
         initializeGenerationParameters(
             truckPeriodRow,
             truckProbabilityRow,
-            Configuration.TRUCK_SPAWN_PERIOD,
+            Configuration.TRUCK_SPAWN_PERIOD_MILLIS,
             Configuration.TRUCK_SPAWN_PROBABILITY
         );
         initializeGenerationParameters(
             carPeriodRow,
             carProbabilityRow,
-            Configuration.CAR_SPAWN_PERIOD,
+            Configuration.CAR_SPAWN_PERIOD_MILLIS,
             Configuration.CAR_SPAWN_PROBABILITY
         );
 
-        updatePanelStatistics();
         updateStatusLabel();
 
         simulationCanvas.widthProperty()
@@ -112,6 +109,7 @@ public class SimulationController implements Initializable {
             switch (event.getCode()) {
                 case B -> startSimulation();
                 case E -> stopSimulation();
+                case P -> pauseSimulation();
                 case T -> toggleTimeDisplay();
                 case R -> restartSimulation();
             }
@@ -137,13 +135,27 @@ public class SimulationController implements Initializable {
         );
     }
 
+    public void initializeHabitateImages(
+        final TruckImages truckImages,
+        final CarImages carImages
+    ) {
+        habitat = new Habitat(
+            simulationCanvas.getWidth(),
+            simulationCanvas.getHeight(),
+            truckImages,
+            carImages
+        );
+
+        updatePanelStatistics();
+    }
+
     private void startSimulation() {
-        if (running) {
+        if (state == SimulationState.Running) {
             return;
         }
 
         startTime = System.currentTimeMillis() - elapsedTime;
-        running = true;
+        state = SimulationState.Running;
 
         infoContainer.setVisible(true);
         infoContainer.setManaged(true);
@@ -158,11 +170,11 @@ public class SimulationController implements Initializable {
     }
 
     private void stopSimulation() {
-        if (!running) {
+        if (state == SimulationState.Stopped) {
             return;
         }
 
-        running = false;
+        state = SimulationState.Stopped;
         gameTimer.stop();
 
         updateOverlayStatistics();
@@ -177,8 +189,17 @@ public class SimulationController implements Initializable {
         updateStatusLabel();
     }
 
+    private void pauseSimulation() {
+        if (state != SimulationState.Running) {
+            return;
+        }
+
+        state = SimulationState.Paused;
+        updateStatusLabel();
+    }
+
     private void restartSimulation() {
-        if (!running) {
+        if (state == SimulationState.Stopped) {
             return;
         }
 
@@ -244,23 +265,12 @@ public class SimulationController implements Initializable {
     }
 
     private void updateStatusLabel() {
-        final String status;
-        final String iconLiteral;
+        statusLabel.setText(resources.getString(state.messageKey));
+        statusLabel.getStyleClass()
+            .setAll("status-value", state.styleClass);
 
-        if (running) {
-            status = "running";
-            iconLiteral = "fas-play-circle";
-        } else {
-            status = "stopped";
-            iconLiteral = "fas-pause-circle";
-        }
-
-        statusLabel.setText(resources.getString(
-            String.format("label.status.%s", status)
-        ));
-        statusLabel.getStyleClass().setAll("status-value", status);
-
-        statusIcon.setIconLiteral(iconLiteral);
-        statusIcon.getStyleClass().setAll("status-icon", status);
+        statusIcon.setIconLiteral(state.iconLiteral);
+        statusIcon.getStyleClass()
+            .setAll("status-icon", state.styleClass);
     }
 }
