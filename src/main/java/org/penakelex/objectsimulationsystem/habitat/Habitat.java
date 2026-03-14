@@ -16,8 +16,14 @@ import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
 public final class Habitat {
-    private final List<Vehicle> vehicles = new ArrayList<>();
+    private static final double MAX_RELATIVE_VEHICLE_POSITION =
+        1 - Configuration.VEHICLE_RELATIVE_SIZE;
+
+    private final List<Vehicle> vehicles = new ArrayList<>(500);
     private int idCounter = 0;
+
+    private int trucksCount = 0, carsCount = 0;
+    private boolean statisticsDirty = true;
 
     private double width, height;
 
@@ -36,21 +42,9 @@ public final class Habitat {
         final CarImages carImages
     ) {
         final var invalidParameters =
-            new ArrayList<HabitatInvalidParameter>();
+            validateParameters(width, height);
 
-        if (width < 0) {
-            invalidParameters.add(new HabitatInvalidParameter.Width(
-                width
-            ));
-        }
-
-        if (height < 0) {
-            invalidParameters.add(new HabitatInvalidParameter.Height(
-                height
-            ));
-        }
-
-        if (!invalidParameters.isEmpty()) {
+        if (invalidParameters != null) {
             throw new HabitatCreationException(invalidParameters);
         }
 
@@ -61,29 +55,69 @@ public final class Habitat {
             Configuration.TRUCK_SPAWN_PERIOD_MILLIS,
             Configuration.TRUCK_SPAWN_PROBABILITY,
             Truck::new,
-            truckImages
+            truckImages,
+            Truck.class
         );
         carSpawner = new VehicleSpawner<>(
             Configuration.CAR_SPAWN_PERIOD_MILLIS,
             Configuration.CAR_SPAWN_PROBABILITY,
             Car::new,
-            carImages
+            carImages,
+            Car.class
         );
 
         vehicleSpawners = List.of(truckSpawner, carSpawner);
     }
 
+    private static List<HabitatInvalidParameter> validateParameters(
+        final double width,
+        final double height
+    ) {
+        List<HabitatInvalidParameter> invalidParameters = null;
+
+        if (width < 0) {
+            invalidParameters = new ArrayList<>(2);
+            invalidParameters.add(new HabitatInvalidParameter.Width(
+                width
+            ));
+        }
+
+        if (height < 0) {
+            if (invalidParameters == null) {
+                invalidParameters = new ArrayList<>(1);
+            }
+
+            invalidParameters.add(new HabitatInvalidParameter.Height(
+                height
+            ));
+        }
+
+        return invalidParameters;
+    }
+
     public void update(final long currentTimeMillis) {
         for (final var spawner : vehicleSpawners) {
-            spawner.trySpawn(
+            final var spawnedVehicles = spawner.trySpawn(
                 currentTimeMillis,
                 this::generateVehicleStartingRelativePosition,
                 this::getNextId
-            ).forEach(newVehicle -> {
-                newVehicle.updateAbsoluteXPosition(this.width);
-                newVehicle.updateAbsoluteYPosition(this.height);
+            );
+
+            if (!spawnedVehicles.isEmpty()) {
+                statisticsDirty = true;
+
+                if (spawner.getVehicleType() == Truck.class) {
+                    trucksCount += spawnedVehicles.size();
+                } else if (spawner.getVehicleType() == Car.class) {
+                    carsCount += spawnedVehicles.size();
+                }
+            }
+
+            for (final var newVehicle : spawnedVehicles) {
+                newVehicle
+                    .onCanvasSizeUpdated(this.width, this.height);
                 vehicles.add(newVehicle);
-            });
+            }
         }
 
         for (final var vehicle : vehicles) {
@@ -92,16 +126,14 @@ public final class Habitat {
     }
 
     private int getNextId() {
-        return ++idCounter;
+        return idCounter++;
     }
 
     private Pair<Double, Double>
     generateVehicleStartingRelativePosition() {
         return Pair.of(
-            random.nextDouble() *
-                (1 - Configuration.VEHICLE_RELATIVE_SIZE),
-            random.nextDouble() *
-                (1 - Configuration.VEHICLE_RELATIVE_SIZE)
+            random.nextDouble() * MAX_RELATIVE_VEHICLE_POSITION,
+            random.nextDouble() * MAX_RELATIVE_VEHICLE_POSITION
         );
     }
 
@@ -114,43 +146,35 @@ public final class Habitat {
     public void reset() {
         vehicles.clear();
         idCounter = 0;
+        trucksCount = 0;
+        carsCount = 0;
+        statisticsDirty = true;
         vehicleSpawners.forEach(VehicleSpawner::reset);
     }
 
-    public void setWidth(final double width) {
-        if (this.width == width) {
+    public void setSize(final double width, final double height) {
+        if (this.width == width && this.height == height) {
             return;
         }
 
         this.width = width;
-
-        for (final var vehicle : vehicles) {
-            vehicle.updateAbsoluteXPosition(this.width);
-        }
-    }
-
-    public void setHeight(final double height) {
-        if (this.height == height) {
-            return;
-        }
-
         this.height = height;
 
         for (final var vehicle : vehicles) {
-            vehicle.updateAbsoluteYPosition(this.height);
+            vehicle.onCanvasSizeUpdated(width, height);
         }
     }
 
+    public boolean isStatisticsDirty() {
+        return statisticsDirty;
+    }
+
     public VehicleStatistics getStatistics() {
-        int trucks = 0, cars = 0;
-
-        for (final var vehicle : vehicles) {
-            switch (vehicle) {
-                case Car _ -> cars++;
-                case Truck _ -> trucks++;
-            }
-        }
-
-        return new VehicleStatistics(trucks, cars, trucks + cars);
+        statisticsDirty = false;
+        return new VehicleStatistics(
+            trucksCount,
+            carsCount,
+            trucksCount + carsCount
+        );
     }
 }

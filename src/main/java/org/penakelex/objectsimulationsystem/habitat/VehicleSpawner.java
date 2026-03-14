@@ -15,6 +15,8 @@ public final class VehicleSpawner<T extends Vehicle> {
     private final VehicleFactory<T> factory;
     private final VehicleImages images;
 
+    private final Class<T> vehicleType;
+
     private long lastSpawnTime = 0;
     private final Random random = ThreadLocalRandom.current();
 
@@ -22,12 +24,18 @@ public final class VehicleSpawner<T extends Vehicle> {
         final int periodMillis,
         final double probability,
         final VehicleFactory<T> factory,
-        final VehicleImages images
+        final VehicleImages images,
+        final Class<T> vehicleType
     ) {
         this.factory = factory;
         this.images = images;
         this.periodMillis = periodMillis;
         this.probability = probability;
+        this.vehicleType = vehicleType;
+    }
+
+    public Class<T> getVehicleType() {
+        return vehicleType;
     }
 
     public List<T> trySpawn(
@@ -35,7 +43,6 @@ public final class VehicleSpawner<T extends Vehicle> {
         final RelativePositionGenerator relativePositionGenerator,
         final IdSupplier idSupplier
     ) {
-
         final var elapsedSinceLastSpawn =
             currentTimeMillis - lastSpawnTime;
 
@@ -43,12 +50,12 @@ public final class VehicleSpawner<T extends Vehicle> {
             return List.of();
         }
 
-        final int spawnsNeeded =
+        final var spawnsNeeded =
             (int) (elapsedSinceLastSpawn / periodMillis);
 
         lastSpawnTime += (long) spawnsNeeded * periodMillis;
 
-        final var newVehicles = new ArrayList<T>();
+        final var newVehicles = new ArrayList<T>(spawnsNeeded);
 
         for (int i = 0; i < spawnsNeeded; i++) {
             if (random.nextDouble() > probability) {

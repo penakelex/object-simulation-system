@@ -67,7 +67,12 @@ public class SimulationController implements Initializable {
                         System.currentTimeMillis() - startTime;
                     habitat.update(elapsedTime);
                     draw();
-                    updatePanelStatistics();
+
+                    if (habitat.isStatisticsDirty()) {
+                        updatePanelStatistics();
+                    }
+
+                    updatePanelTime();
                 }
             }
         };
@@ -92,14 +97,13 @@ public class SimulationController implements Initializable {
         simulationCanvas.heightProperty()
             .bind(simulationField.heightProperty());
 
-        simulationCanvas.widthProperty()
+        simulationField
+            .layoutBoundsProperty()
             .addListener((_, _, newValue) -> {
-                habitat.setWidth(newValue.doubleValue());
-                draw();
-            });
-        simulationCanvas.heightProperty()
-            .addListener((_, _, newValue) -> {
-                habitat.setHeight(newValue.doubleValue());
+                habitat.setSize(
+                    newValue.getWidth(),
+                    newValue.getHeight()
+                );
                 draw();
             });
     }
@@ -146,7 +150,7 @@ public class SimulationController implements Initializable {
             carImages
         );
 
-        updatePanelStatistics();
+        updatePanelStatisticsWithTime();
     }
 
     private void startSimulation() {
@@ -177,7 +181,7 @@ public class SimulationController implements Initializable {
         state = SimulationState.Stopped;
         gameTimer.stop();
 
-        updateOverlayStatistics();
+        updateOverlayStatisticsWithTime();
 
         infoContainer.setVisible(false);
         infoContainer.setManaged(false);
@@ -211,7 +215,7 @@ public class SimulationController implements Initializable {
         startTime = System.currentTimeMillis();
         elapsedTime = 0;
         habitat.reset();
-        updatePanelStatistics();
+        updatePanelStatisticsWithTime();
     }
 
     private void toggleTimeDisplay() {
@@ -231,31 +235,41 @@ public class SimulationController implements Initializable {
         habitat.draw(graphicsContext);
     }
 
-    private void updatePanelStatistics() {
-        updateStatistics(truckRow, carRow, totalRow, timeLabel);
+    private void updatePanelStatisticsWithTime() {
+        updatePanelStatistics();
+        updatePanelTime();
     }
 
-    private void updateOverlayStatistics() {
+    private void updatePanelStatistics() {
+        updateStatistics(truckRow, carRow, totalRow);
+    }
+
+    private void updatePanelTime() {
+        updateTime(timeLabel);
+    }
+
+    private void updateOverlayStatisticsWithTime() {
         updateStatistics(
             overlayTruckRow,
             overlayCarRow,
-            overlayTotalRow,
-            overlayTimeLabel
+            overlayTotalRow
         );
+        updateTime(overlayTimeLabel);
     }
 
     private void updateStatistics(
         final LabeledValueRow truckRow,
         final LabeledValueRow carRow,
-        final LabeledValueRow totalRow,
-        final Label timeLabel
+        final LabeledValueRow totalRow
     ) {
         final var statistics = habitat.getStatistics();
 
         truckRow.setValue(statistics.trucks());
         carRow.setValue(statistics.cars());
         totalRow.setValue(statistics.trucks() + statistics.cars());
+    }
 
+    private void updateTime(final Label timeLabel) {
         if (showTime) {
             timeLabel.setText(resources
                 .getString("format.time.milliseconds")
