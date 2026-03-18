@@ -79,13 +79,13 @@
     -fx-padding: 5 0;
 }
 
-.overlay-statistics-row .row-label,
+.overlay-statistics-row .label,
 .overlay-statistics-row .row-value {
     -fx-font-size: 20px;
     -fx-text-alignment: center;
 }
 
-.overlay-statistics-row .row-label {
+.overlay-statistics-row .label {
     -fx-font-weight: 600;
     -fx-text-fill: #555555;
 }
@@ -94,21 +94,21 @@
     -fx-font-weight: bold;
 }
 
-.overlay-statistics-row .row-icon {
+.overlay-statistics-row .icon {
     -fx-icon-size: 18px;
 }
 
 /* ========================================
    Цвета иконок (ID селекторы)
    ======================================== */
-#overlayTruckRow .row-icon {
+#overlayTruckRow .icon {
     -fx-icon-color: -fx-truck-icon-color;
 }
 
-#overlayCarRow .row-icon {
+#overlayCarRow .icon {
     -fx-icon-color: -fx-car-icon-color;
 }
 
-#overlayTotalRow .row-icon {
+#overlayTotalRow .icon {
     -fx-icon-color: -fx-total-icon-color;
 }

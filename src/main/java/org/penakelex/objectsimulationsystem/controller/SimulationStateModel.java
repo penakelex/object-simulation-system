@@ -57,12 +57,6 @@ public final class SimulationStateModel {
         return showTime;
     }
 
-    public boolean isShowTimeStateChecked() {
-        return showTime && (state.get() != SimulationState.Stopped
-            || startTime == 0
-        );
-    }
-
     public void toggleShowTime() {
         showTime = !showTime;
     }

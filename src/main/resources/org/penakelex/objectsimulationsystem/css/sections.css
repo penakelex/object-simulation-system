@@ -10,24 +10,24 @@
 /* ========================================
    Цвета иконок параметров
    ======================================== */
-.period-row .row-icon {
+.period-row .icon {
     -fx-icon-color: -fx-period-icon-color;
 }
 
-.probability-row .row-icon {
+.probability-row .icon {
     -fx-icon-color: -fx-probability-icon-color;
 }
 
 .truck-parameters-section .section-icon,
-.truck-parameters-row .row-icon {
+.truck-parameters-row .icon {
     -fx-icon-color: -fx-truck-icon-color;
 }
 
 .car-parameters-section .section-icon,
-.car-parameters-row .row-icon {
+.car-parameters-row .icon {
     -fx-icon-color: -fx-car-icon-color;
 }
 
-.total-vehicles-parameters-row .row-icon {
+.total-vehicles-parameters-row .icon {
     -fx-icon-color: -fx-total-icon-color;
 }

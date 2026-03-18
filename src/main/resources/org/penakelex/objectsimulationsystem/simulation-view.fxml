@@ -19,6 +19,9 @@
 <?import org.penakelex.objectsimulationsystem.ui.LabeledValueRow?>
 <?import org.penakelex.objectsimulationsystem.ui.ToolbarButton?>
 
+<?import javafx.scene.control.CheckBox?>
+<?import org.penakelex.objectsimulationsystem.ui.LabeledProbabilityBox?>
+<?import org.penakelex.objectsimulationsystem.ui.LabeledInputRow?>
 <VBox xmlns="http://javafx.com/javafx/25"
       xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="org.penakelex.objectsimulationsystem.controller.SimulationController"
@@ -158,49 +161,7 @@
         <StackPane fx:id="simulationField"
                    HBox.hgrow="ALWAYS"
                    styleClass="canvas-container">
-
             <Canvas fx:id="simulationCanvas" styleClass="simulation-canvas"/>
-
-            <VBox fx:id="statisticsOverlay"
-                  styleClass="statistics-overlay"
-                  visible="false"
-                  managed="false">
-
-                <VBox styleClass="overlay-card">
-                    <HBox styleClass="overlay-title">
-                        <FontIcon iconLiteral="fas-chart-bar"
-                                  styleClass="overlay-icon"/>
-                        <Label text="%label.simulation_results"
-                               styleClass="overlay-title-label"/>
-                    </HBox>
-
-                    <Separator styleClass="overlay-separator"/>
-
-                    <VBox styleClass="overlay-vehicles-statistics-container">
-                        <LabeledValueRow fx:id="overlayTruckRow"
-                                         iconLiteral="fas-truck"
-                                         labelText="%label.trucks"
-                                         styleClass="overlay-statistics-row"/>
-                        <LabeledValueRow fx:id="overlayCarRow"
-                                         iconLiteral="fas-car"
-                                         labelText="%label.cars"
-                                         styleClass="overlay-statistics-row"/>
-                        <LabeledValueRow fx:id="overlayTotalRow"
-                                         iconLiteral="fas-chart-line"
-                                         labelText="%label.total"
-                                         styleClass="overlay-statistics-row"/>
-                    </VBox>
-
-                    <Separator styleClass="overlay-separator"/>
-
-                    <HBox styleClass="overlay-time-row">
-                        <FontIcon iconLiteral="fas-clock"
-                                  styleClass="overlay-time-icon"/>
-                        <Label fx:id="overlayTimeLabel"
-                               styleClass="overlay-time-label"/>
-                    </HBox>
-                </VBox>
-            </VBox>
         </StackPane>
 
         <VBox styleClass="control-panel" HBox.hgrow="NEVER">
@@ -213,27 +174,28 @@
                         <IconedSection iconLiteral="fas-truck"
                                        title="%label.trucks"
                                        styleClass="truck-parameters-section">
-                            <LabeledValueRow fx:id="truckPeriodRow"
+                            <LabeledInputRow fx:id="truckPeriodInput"
                                              iconLiteral="fas-clock"
                                              labelText="%label.generation.period"
-                                             styleClass="period-row"/>
-                            <LabeledValueRow fx:id="truckProbabilityRow"
-                                             iconLiteral="fas-percentage"
-                                             labelText="%label.generation.probability"
-                                             styleClass="probability-row"/>
+                                             styleClass="period-row"
+                                             promptText="%placeholder.period.millis"/>
+                            <LabeledProbabilityBox fx:id="truckProbabilityBox"
+                                                   iconLiteral="fas-percentage"
+                                                   labelText="%label.generation.probability"
+                                                   styleClass="probability-row"/>
                         </IconedSection>
-
                         <IconedSection iconLiteral="fas-car"
                                        title="%label.cars"
                                        styleClass="car-parameters-section">
-                            <LabeledValueRow fx:id="carPeriodRow"
+                            <LabeledInputRow fx:id="carPeriodInput"
                                              iconLiteral="fas-clock"
                                              labelText="%label.generation.period"
-                                             styleClass="period-row"/>
-                            <LabeledValueRow fx:id="carProbabilityRow"
-                                             iconLiteral="fas-percentage"
-                                             labelText="%label.generation.probability"
-                                             styleClass="probability-row"/>
+                                             styleClass="period-row"
+                                             promptText="%placeholder.period.millis"/>
+                            <LabeledProbabilityBox fx:id="carProbabilityBox"
+                                                   iconLiteral="fas-percentage"
+                                                   labelText="%label.generation.probability"
+                                                   styleClass="probability-row"/>
                         </IconedSection>
                     </IconedSection>
 
@@ -273,11 +235,18 @@
                                          toggleGroup="$timeToggleGroup"
                                          styleClass="time-radio-button"/>
                         </IconedSection>
+
+                        <IconedSection iconLiteral="fas-info-circle"
+                                       title="%label.show.statistics.title">
+                            <CheckBox fx:id="showStatisticsCheckBox"
+                                      text="%label.show.statistics"
+                                      styleClass="statistics-checkbox"/>
+                        </IconedSection>
                     </IconedSection>
                 </VBox>
             </ScrollPane>
 
-            <VBox styleClass="status-section">
+            <VBox fx:id="statusContainer" styleClass="status-section">
                 <StackPane fx:id="statusTimeContainer" styleClass="status-time-container">
                     <LabeledValueRow fx:id="statusTimeRow"
                                      iconLiteral="fas-clock"

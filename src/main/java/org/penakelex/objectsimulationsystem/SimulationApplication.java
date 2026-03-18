@@ -66,7 +66,7 @@ public class SimulationApplication extends Application {
 
         try {
             root = loader.load();
-        } catch (final IOException e) {
+        } catch (final IOException _) {
             showErrorAndExit(
                 resources,
                 getErrorString(resources, "error.fxml.not_found"),
@@ -96,5 +96,8 @@ public class SimulationApplication extends Application {
         stage.setMinWidth(root.getMinWidth());
         stage.setMinHeight(root.getMinHeight());
         stage.show();
+
+        controller.setKeyboardHandler(scene);
+        controller.setStage(stage);
     }
 }

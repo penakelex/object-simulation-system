@@ -1,11 +1,15 @@
 package org.penakelex.objectsimulationsystem.habitat;
 
+import java.util.Arrays;
 import java.util.ResourceBundle;
+import java.util.stream.Collectors;
 
 public final class Configuration {
-    public static final int TRUCK_SPAWN_PERIOD_MILLIS;
+    public static final int TRUCK_SPAWN_PERIOD;
+    public static final TimeUnit TRUCK_SPAWN_TIME_UNIT;
     public static final double TRUCK_SPAWN_PROBABILITY;
-    public static final int CAR_SPAWN_PERIOD_MILLIS;
+    public static final int CAR_SPAWN_PERIOD;
+    public static final TimeUnit CAR_SPAWN_TIME_UNIT;
     public static final double CAR_SPAWN_PROBABILITY;
     public static final double VEHICLE_RELATIVE_SIZE;
     public static final int VEHICLE_IMAGE_SIZE;
@@ -15,22 +19,31 @@ public final class Configuration {
     public static final String[] VEHICLE_IMAGE_EXTENSIONS;
 
     static {
-        final var configuration = ResourceBundle.getBundle("configuration");
+        final var configuration =
+            ResourceBundle.getBundle("configuration");
 
-        TRUCK_SPAWN_PERIOD_MILLIS = validatePositiveInt(
+        TRUCK_SPAWN_PERIOD = validatePositiveInt(
             configuration,
-            "habitat.truck.spawn.period.millis",
+            "habitat.truck.spawn.period",
             "Truck spawn period"
+        );
+        TRUCK_SPAWN_TIME_UNIT = validateTimeUnitString(
+            configuration,
+            "habitat.truck.spawn.period.time.unit"
         );
         TRUCK_SPAWN_PROBABILITY = validateProbability(
             configuration,
             "habitat.truck.spawn.probability",
             "Truck spawn"
         );
-        CAR_SPAWN_PERIOD_MILLIS = validatePositiveInt(
+        CAR_SPAWN_PERIOD = validatePositiveInt(
             configuration,
-            "habitat.car.spawn.period.millis",
+            "habitat.car.spawn.period",
             "Car spawn period"
+        );
+        CAR_SPAWN_TIME_UNIT = validateTimeUnitString(
+            configuration,
+            "habitat.car.spawn.time.unit"
         );
         CAR_SPAWN_PROBABILITY = validateProbability(
             configuration,
@@ -64,9 +77,7 @@ public final class Configuration {
     }
 
     private Configuration() {
-        throw new UnsupportedOperationException(
-            "Configuration is a utility class"
-        );
+        throw new UnsupportedOperationException("Utility class");
     }
 
     private static int validatePositiveInt(
@@ -114,5 +125,30 @@ public final class Configuration {
             );
         }
         return value;
+    }
+
+    private static TimeUnit validateTimeUnitString(
+        final ResourceBundle config,
+        final String key
+    ) {
+        final var configTimeUnit = config.getString(key);
+        final var optionalTimeUnit = Arrays.stream(TimeUnit.values())
+            .filter(timeUnit -> timeUnit.literal.equals(configTimeUnit))
+            .findFirst();
+
+        if (optionalTimeUnit.isPresent()) {
+            return optionalTimeUnit.get();
+        }
+
+        throw new IllegalArgumentException(
+            String.format(
+                "Time unit must be from [%s] but got %s",
+                Arrays
+                    .stream(TimeUnit.values())
+                    .map(unit -> unit.literal)
+                    .collect(Collectors.joining(", ")),
+                configTimeUnit
+            )
+        );
     }
 }

@@ -14,9 +14,6 @@ public final class VehicleCollection {
         this.vehicles = Collections.synchronizedList(new ArrayList<>(500));
     }
 
-    /**
-     * Получение единственного экземпляра (Double-Checked Locking).
-     */
     public static VehicleCollection getInstance() {
         VehicleCollection result = instance;
 

@@ -37,7 +37,7 @@
     -fx-spacing: 10;
 }
 
-.labeled-value-row .row-label {
+.labeled-value-row .label {
     -fx-text-fill: -fx-text-color-light;
 }
 
@@ -46,12 +46,12 @@
     -fx-text-alignment: right;
 }
 
-.labeled-value-row .row-label,
+.labeled-value-row .label,
 .labeled-value-row .row-value {
     -fx-font-size: 13px;
 }
 
-.labeled-value-row .row-icon {
+.labeled-value-row .icon {
     -fx-icon-size: 14px;
 }
 
@@ -66,4 +66,192 @@
 .action-description {
     -fx-font-size: 12px;
     -fx-text-fill: -fx-text-color-light;
+}
+
+/* ========================================
+Statistics CheckBox
+======================================== */
+.statistics-checkbox {
+    -fx-font-size: 13px;
+    -fx-text-fill: -fx-text-color-dark;
+    -fx-padding: 8 0;
+    -fx-cursor: hand;
+}
+
+.statistics-checkbox .box {
+    -fx-background-color: -fx-radio-white;
+    -fx-border-color: -fx-radio-border-color;
+    -fx-border-width: 2;
+    -fx-border-radius: 3;
+    -fx-background-radius: 3;
+    -fx-padding: 2;
+    -fx-min-width: 16;
+    -fx-min-height: 16;
+}
+
+.statistics-checkbox:hover .box {
+    -fx-border-color: -fx-radio-dark-blue;
+    -fx-background-color: -fx-radio-hover-bg;
+}
+
+.statistics-checkbox:selected .box {
+    -fx-background-color: -fx-radio-light-blue;
+    -fx-border-color: -fx-radio-light-blue;
+}
+
+.statistics-checkbox:selected .mark {
+    -fx-background-color: -fx-radio-white;
+    -fx-shape: "M0,4 L3,7 L9,0";
+}
+
+/* ========================================
+LabeledInputRow
+======================================== */
+.labeled-input-row {
+    -fx-alignment: center-left;
+    -fx-spacing: 10;
+}
+
+.labeled-input-row .input-field {
+    -fx-background-color: white;
+    -fx-border-color: #cccccc;
+    -fx-border-width: 1;
+    -fx-border-radius: 4;
+    -fx-background-radius: 4;
+    -fx-padding: 4 8;
+    -fx-font-size: 13px;
+    -fx-text-fill: -fx-text-color-dark;
+    -fx-pref-width: 60;
+    -fx-alignment: center-right;
+}
+
+.labeled-input-row .input-field:hover {
+    -fx-border-color: -fx-base-blue-color;
+}
+
+.labeled-input-row .input-field:focused {
+    -fx-border-color: -fx-base-blue-color;
+    -fx-effect: dropshadow(gaussian, rgba(33, 150, 243, 0.3), 5, 0, 0, 1);
+}
+
+.labeled-input-row .input-field.input-error {
+    -fx-border-color: -fx-status-stopped;
+    -fx-background-color: rgba(244, 67, 54, 0.05);
+}
+
+.labeled-input-row .combobox {
+    -fx-background-color: white;
+    -fx-border-color: #cccccc;
+    -fx-border-width: 1;
+    -fx-border-radius: 4;
+    -fx-background-radius: 4;
+    -fx-padding: 4 8;
+    -fx-font-size: 13px;
+    -fx-text-fill: -fx-text-color-dark;
+    -fx-pref-width: 70;
+}
+
+.labeled-input-row .combobox .arrow-button {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-padding: 2 4;
+    -fx-min-width: 16;
+    -fx-pref-width: 16;
+}
+
+.labeled-input-row .combobox .arrow {
+    -fx-background-color: -fx-text-color-light;
+    -fx-padding: 4;
+    -fx-shape: "M 0 0 L 4 4 L 8 0 Z";
+}
+
+.labeled-input-row .combobox .text {
+    -fx-padding: 0 4 0 0;
+}
+
+.labeled-input-row .combobox > .text-field > .text {
+    -fx-padding: 0 2 0 0;
+}
+
+.labeled-input-row .combobox:hover {
+    -fx-border-color: -fx-base-blue-color;
+}
+
+.labeled-input-row .combobox:focused {
+    -fx-border-color: -fx-base-blue-color;
+    -fx-effect: dropshadow(gaussian, rgba(33, 150, 243, 0.3), 5, 0, 0, 1);
+}
+
+/* ========================================
+    LabeledProbabilityBox
+======================================== */
+.labeled-probability-box {
+    -fx-alignment: center-left;
+    -fx-spacing: 10;
+}
+
+.labeled-probability-box .combobox {
+    -fx-background-color: white;
+    -fx-border-color: #cccccc;
+    -fx-border-width: 1;
+    -fx-border-radius: 4;
+    -fx-background-radius: 4;
+    -fx-padding: 4 8;
+    -fx-font-size: 13px;
+    -fx-text-fill: -fx-text-color-dark;
+    -fx-pref-width: 100;
+}
+
+.labeled-probability-box .combobox:hover {
+    -fx-border-color: -fx-base-blue-color;
+}
+
+.labeled-probability-box .combobox:focused {
+    -fx-border-color: -fx-base-blue-color;
+    -fx-effect: dropshadow(gaussian, rgba(33, 150, 243, 0.3), 5, 0, 0, 1);
+}
+
+.labeled-probability-box .combobox .arrow-button {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+}
+
+.labeled-probability-box .combobox .arrow {
+    -fx-background-color: -fx-text-color-light;
+}
+
+/* ========================================
+Statistics CheckBox
+======================================== */
+.statistics-checkbox {
+    -fx-font-size: 13px;
+    -fx-text-fill: -fx-text-color-dark;
+    -fx-padding: 8 0;
+    -fx-cursor: hand;
+}
+
+.statistics-checkbox .box {
+    -fx-background-color: -fx-radio-white;
+    -fx-border-color: -fx-radio-border-color;
+    -fx-border-width: 2;
+    -fx-border-radius: 3;
+    -fx-background-radius: 3;
+    -fx-padding: 2;
+    -fx-min-width: 16;
+    -fx-min-height: 16;
+}
+
+.statistics-checkbox:hover .box {
+    -fx-border-color: -fx-radio-dark-blue;
+    -fx-background-color: -fx-radio-hover-bg;
+}
+
+.statistics-checkbox:selected .box {
+    -fx-background-color: -fx-radio-light-blue;
+    -fx-border-color: -fx-radio-light-blue;
+}
+
+.statistics-checkbox:selected .mark {
+    -fx-background-color: -fx-radio-white;
+    -fx-shape: "M0,4 L3,7 L9,0";
 }

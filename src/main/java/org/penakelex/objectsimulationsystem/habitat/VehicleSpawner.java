@@ -10,10 +10,13 @@ import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
 public final class VehicleSpawner<T extends Vehicle> {
-    private final int periodMillis;
-    private final double probability;
+    private int period;
+    private TimeUnit periodTimeUnit;
+    private double probability;
     private final VehicleFactory<T> factory;
     private final VehicleImages images;
+
+    private int periodMillis;
 
     private final Class<T> vehicleType;
 
@@ -21,21 +24,43 @@ public final class VehicleSpawner<T extends Vehicle> {
     private final Random random = ThreadLocalRandom.current();
 
     public VehicleSpawner(
-        final int periodMillis,
+        final int period,
+        final TimeUnit periodTimeUnit,
         final double probability,
         final VehicleFactory<T> factory,
         final VehicleImages images,
         final Class<T> vehicleType
     ) {
+        this.period = period;
+        this.periodTimeUnit = periodTimeUnit;
+        this.probability = probability;
         this.factory = factory;
         this.images = images;
-        this.periodMillis = periodMillis;
-        this.probability = probability;
         this.vehicleType = vehicleType;
+
+        updatePeriodMillis();
     }
 
     public Class<T> getVehicleType() {
         return vehicleType;
+    }
+
+    public void updatePeriod(final int period) {
+        this.period = period;
+        updatePeriodMillis();
+    }
+
+    public void updatePeriodTimeUnit(final TimeUnit periodTimeUnit) {
+        this.periodTimeUnit = periodTimeUnit;
+        updatePeriodMillis();
+    }
+
+    private void updatePeriodMillis() {
+        this.periodMillis = period * periodTimeUnit.millisModifier;
+    }
+
+    public void updateProbability(final double probability) {
+        this.probability = probability;
     }
 
     public List<T> trySpawn(

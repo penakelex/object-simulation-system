@@ -24,7 +24,8 @@ public final class Habitat {
     private double width, height;
     private final VehicleSpawner<Truck> truckSpawner;
     private final VehicleSpawner<Car> carSpawner;
-    private final List<VehicleSpawner<? extends Vehicle>> vehicleSpawners;
+    private final List<VehicleSpawner<? extends Vehicle>>
+        vehicleSpawners;
     private final Random random = ThreadLocalRandom.current();
     private final VehicleCollection vehicleCollection;
 
@@ -36,7 +37,8 @@ public final class Habitat {
         final TruckImages truckImages,
         final CarImages carImages
     ) {
-        final var invalidParameters = validateParameters(width, height);
+        final var invalidParameters =
+            validateParameters(width, height);
         if (invalidParameters != null) {
             throw new HabitatCreationException(invalidParameters);
         }
@@ -47,20 +49,50 @@ public final class Habitat {
         this.vehicleCollection.clear();
 
         truckSpawner = new VehicleSpawner<>(
-            Configuration.TRUCK_SPAWN_PERIOD_MILLIS,
+            Configuration.TRUCK_SPAWN_PERIOD,
+            Configuration.TRUCK_SPAWN_TIME_UNIT,
             Configuration.TRUCK_SPAWN_PROBABILITY,
             Truck::new,
             truckImages,
             Truck.class
         );
         carSpawner = new VehicleSpawner<>(
-            Configuration.CAR_SPAWN_PERIOD_MILLIS,
+            Configuration.CAR_SPAWN_PERIOD,
+            Configuration.CAR_SPAWN_TIME_UNIT,
             Configuration.CAR_SPAWN_PROBABILITY,
             Car::new,
             carImages,
             Car.class
         );
         vehicleSpawners = List.of(truckSpawner, carSpawner);
+    }
+
+    public void updateTruckPeriod(final int truckPeriod) {
+        truckSpawner.updatePeriod(truckPeriod);
+    }
+
+    public void updateTruckPeriodTimeUnit(
+        final TimeUnit truckPeriodTimeUnit
+    ) {
+        truckSpawner.updatePeriodTimeUnit(truckPeriodTimeUnit);
+    }
+
+    public void updateTruckProbability(final double truckProbability) {
+        truckSpawner.updateProbability(truckProbability);
+    }
+
+    public void updateCarPeriod(final int carPeriod) {
+        carSpawner.updatePeriod(carPeriod);
+    }
+
+    public void updateCarPeriodTimeUnit(
+        final TimeUnit carPeriodTimeUnit
+    ) {
+        truckSpawner.updatePeriodTimeUnit(carPeriodTimeUnit);
+    }
+
+    public void updateCarProbability(final double carProbability) {
+        carSpawner.updateProbability(carProbability);
     }
 
     private static List<HabitatInvalidParameter> validateParameters(
@@ -70,13 +102,15 @@ public final class Habitat {
         List<HabitatInvalidParameter> invalidParameters = null;
         if (width < 0) {
             invalidParameters = new ArrayList<>(2);
-            invalidParameters.add(new HabitatInvalidParameter.Width(width));
+            invalidParameters.add(new HabitatInvalidParameter.Width(
+                width));
         }
         if (height < 0) {
             if (invalidParameters == null) {
                 invalidParameters = new ArrayList<>(1);
             }
-            invalidParameters.add(new HabitatInvalidParameter.Height(height));
+            invalidParameters.add(new HabitatInvalidParameter.Height(
+                height));
         }
         return invalidParameters;
     }
@@ -97,7 +131,9 @@ public final class Habitat {
                 }
             }
             for (final var newVehicle : spawnedVehicles) {
-                newVehicle.onCanvasSizeUpdated(this.width, this.height);
+                newVehicle.onCanvasSizeUpdated(this.width,
+                    this.height
+                );
                 vehicleCollection.add(newVehicle);
             }
         }
@@ -145,10 +181,9 @@ public final class Habitat {
 
     public VehicleStatistics getStatistics() {
         statisticsDirty = false;
-        return new VehicleStatistics(trucksCount, carsCount, trucksCount + carsCount);
-    }
-
-    public int getVehicleCount() {
-        return vehicleCollection.size();
+        return new VehicleStatistics(trucksCount,
+            carsCount,
+            trucksCount + carsCount
+        );
     }
 }

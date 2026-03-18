@@ -1,31 +1,38 @@
 package org.penakelex.objectsimulationsystem.ui;
 
+import javafx.beans.property.ReadOnlyIntegerProperty;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import org.kordamp.ikonli.javafx.FontIcon;
 
-public final class LabeledValueRow extends HBox {
+import java.util.List;
+
+public final class LabeledProbabilityBox extends HBox {
     private final FontIcon icon = new FontIcon();
     private final Label label = new Label();
-    private final Label valueLabel = new Label();
+    private final ComboBox<String> comboBox = new ComboBox<>();
 
-    public LabeledValueRow() {
-        getStyleClass().add("labeled-value-row");
-
+    public LabeledProbabilityBox() {
+        getStyleClass().add("labeled-probability-box");
         icon.getStyleClass().add("icon");
         label.getStyleClass().add("label");
-        valueLabel.getStyleClass().add("row-value");
+        comboBox.getStyleClass().add("combobox");
 
-        getChildren().addAll(icon, label, valueLabel);
+        getChildren().addAll(icon, label, comboBox);
     }
 
-    public void setValue(final String value) {
-        valueLabel.setText(value);
+    public void initializeProbabilities(
+        final List<String> probabilities,
+        final int initialProbabilityIndex
+    ) {
+        comboBox.getItems().addAll(probabilities);
+        comboBox.setValue(probabilities.get(initialProbabilityIndex));
     }
 
-    public void setValue(final int value) {
-        setValue(String.valueOf(value));
+    public ReadOnlyIntegerProperty selectedIndexProperty() {
+        return comboBox.getSelectionModel().selectedIndexProperty();
     }
 
     public void setLabelText(final String text) {
@@ -46,9 +53,5 @@ public final class LabeledValueRow extends HBox {
 
     public void setIconColor(final String color) {
         icon.setIconColor(Color.web(color));
-    }
-
-    public String getIconColor() {
-        return icon.getIconColor().toString();
     }
 }

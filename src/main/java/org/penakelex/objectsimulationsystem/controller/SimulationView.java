@@ -2,7 +2,6 @@ package org.penakelex.objectsimulationsystem.controller;
 
 import javafx.scene.Node;
 import javafx.scene.canvas.Canvas;
-import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.CheckMenuItem;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
@@ -10,94 +9,33 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import org.kordamp.ikonli.javafx.FontIcon;
 import org.penakelex.objectsimulationsystem.habitat.Habitat;
+import org.penakelex.objectsimulationsystem.habitat.TimeUnit;
 import org.penakelex.objectsimulationsystem.habitat.VehicleStatistics;
 import org.penakelex.objectsimulationsystem.ui.LabeledValueRow;
 
 import java.util.ResourceBundle;
 
 public final class SimulationView {
-    private final MenuItem menuStart, menuPause, menuStop,
-        menuRestart;
-    private final CheckMenuItem menuToggleTime;
-    private final FontIcon menuTimeIcon;
-
-    private final Canvas simulationCanvas;
-    private final GraphicsContext graphicsContext;
-
-    private final LabeledValueRow truckRow, carRow, totalRow;
-    private final LabeledValueRow overlayTruckRow, overlayCarRow,
-        overlayTotalRow;
-
-    private final StackPane statusTimeContainer;
-    private final LabeledValueRow statusTimeRow;
-
-    private final Label overlayTimeLabel;
-    private final Label statusLabel;
-    private final FontIcon statusIcon;
-
-    private final VBox infoContainer, statisticsOverlay;
-
-    private final ResourceBundle resources;
-
-    public SimulationView(
-        final MenuItem menuStart,
-        final MenuItem menuPause,
-        final MenuItem menuStop,
-        final MenuItem menuRestart,
-        final CheckMenuItem menuToggleTime,
-        final FontIcon menuTimeIcon,
-        final Canvas simulationCanvas,
-        final StackPane simulationField,
-        final LabeledValueRow truckRow,
-        final LabeledValueRow carRow,
-        final LabeledValueRow totalRow,
-        final LabeledValueRow overlayTruckRow,
-        final LabeledValueRow overlayCarRow,
-        final LabeledValueRow overlayTotalRow,
-        final StackPane statusTimeContainer,
-        final LabeledValueRow statusTimeRow,
-        final Label overlayTimeLabel,
-        final Label statusLabel,
-        final FontIcon statusIcon,
-        final VBox infoContainer,
-        final VBox statisticsOverlay,
-        final ResourceBundle resources
-    ) {
-        this.menuStart = menuStart;
-        this.menuPause = menuPause;
-        this.menuStop = menuStop;
-        this.menuRestart = menuRestart;
-        this.menuToggleTime = menuToggleTime;
-        this.menuTimeIcon = menuTimeIcon;
-        this.simulationCanvas = simulationCanvas;
-        this.graphicsContext =
-            simulationCanvas.getGraphicsContext2D();
-        this.truckRow = truckRow;
-        this.carRow = carRow;
-        this.totalRow = totalRow;
-        this.overlayTruckRow = overlayTruckRow;
-        this.overlayCarRow = overlayCarRow;
-        this.overlayTotalRow = overlayTotalRow;
-        this.statusTimeRow = statusTimeRow;
-        this.overlayTimeLabel = overlayTimeLabel;
-        this.statusLabel = statusLabel;
-        this.statusIcon = statusIcon;
-        this.infoContainer = infoContainer;
-        this.statusTimeContainer = statusTimeContainer;
-        this.statisticsOverlay = statisticsOverlay;
-        this.resources = resources;
-
-        bindCanvasSize(simulationField);
+    private SimulationView() {
+        throw new UnsupportedOperationException("Utility class");
     }
 
-    private void bindCanvasSize(final StackPane simulationField) {
+    public static void bindCanvasSize(
+        final Canvas simulationCanvas,
+        final StackPane simulationField
+    ) {
         simulationCanvas.widthProperty()
             .bind(simulationField.widthProperty());
         simulationCanvas.heightProperty()
             .bind(simulationField.heightProperty());
     }
 
-    public void draw(final Habitat habitat) {
+    public static void draw(
+        final Canvas simulationCanvas,
+        final Habitat habitat
+    ) {
+        final var graphicsContext =
+            simulationCanvas.getGraphicsContext2D();
         graphicsContext.clearRect(
             0, 0,
             simulationCanvas.getWidth(),
@@ -106,7 +44,13 @@ public final class SimulationView {
         habitat.draw(graphicsContext);
     }
 
-    public void updateMenuItems(final SimulationState state) {
+    public static void updateMenuItems(
+        final SimulationState state,
+        final MenuItem menuStart,
+        final MenuItem menuRestart,
+        final MenuItem menuStop,
+        final MenuItem menuPause
+    ) {
         switch (state) {
             case Stopped -> {
                 menuStart.setDisable(false);
@@ -135,98 +79,123 @@ public final class SimulationView {
         }
     }
 
-    public void updateMenuTimeText(final boolean showTime) {
-        if (showTime) {
-            menuToggleTime.setText(resources.getString("menu.view.show.time"));
-            menuToggleTime.setSelected(true);
-            menuTimeIcon.setIconLiteral("fas-clock");
-            menuTimeIcon.getStyleClass()
-                .setAll("menu-icon", "menu-icon-time-active");
-        } else {
-            menuToggleTime.setText(
-                resources.getString("menu.view.hide.time")
-            );
-            menuToggleTime.setSelected(false);
-            menuTimeIcon.setIconLiteral("fas-eye-slash");
-            menuTimeIcon.getStyleClass()
-                .setAll("menu-icon", "menu-icon-time-inactive");
-        }
-    }
-
-    public void updatePanelStatistics
-        (
-            final VehicleStatistics statistics
-        ) {
-        updateStatisticsRow(truckRow, carRow, totalRow, statistics);
-    }
-
-    public void updateOverlayStatistics(
-        final VehicleStatistics statistics
+    public static void updateMenuTimeText(
+        final boolean showTime,
+        final ResourceBundle resources,
+        final CheckMenuItem menuToggleTime,
+        final FontIcon menuTimeIcon
     ) {
-        updateStatisticsRow(
-            overlayTruckRow,
-            overlayCarRow,
-            overlayTotalRow,
-            statistics
-        );
+        final String textKey, iconLiteral, styleClass;
+
+        if (showTime) {
+            textKey = "menu.view.show.time";
+            iconLiteral = "fas-clock";
+            styleClass = "menu-icon-time-active";
+        } else {
+            textKey = "menu.view.hide.time";
+            iconLiteral = "fas-eye-slash";
+            styleClass = "menu-icon-time-inactive";
+        }
+
+        menuToggleTime.setText(resources.getString(textKey));
+        menuToggleTime.setSelected(showTime);
+        menuTimeIcon.setIconLiteral(iconLiteral);
+        menuTimeIcon.getStyleClass()
+            .setAll("menu-icon", styleClass);
     }
 
-    private void updateStatisticsRow(
+    public static void updatePanelStatistics(
+        final VehicleStatistics statistics,
         final LabeledValueRow truckRow,
         final LabeledValueRow carRow,
-        final LabeledValueRow totalRow,
-        final VehicleStatistics statistics
+        final LabeledValueRow totalRow
     ) {
         truckRow.setValue(statistics.trucks());
         carRow.setValue(statistics.cars());
         totalRow.setValue(statistics.total());
     }
 
-    public void updateStatusTime(
+    public static void updateStatusTime(
         final long elapsedTime,
-        final boolean showTime
+        final boolean showTime,
+        final ResourceBundle resources,
+        final LabeledValueRow statusTimeRow
     ) {
         if (showTime) {
-            statusTimeRow.setValue(formatTime(elapsedTime));
+            final var builder = new StringBuilder();
+
+            final var minutes = elapsedTime / 60_000;
+            final var seconds = elapsedTime / 1000 % 60;
+            final var millis = elapsedTime % 1000;
+
+            if (minutes > 0) {
+                builder.append(resources
+                    .getString("format.time")
+                    .formatted(
+                        minutes,
+                        resources
+                            .getString(TimeUnit.Minutes.messageKey)
+                    )
+                );
+                builder.append(' ');
+            }
+
+            if (seconds > 0) {
+                builder.append(resources
+                    .getString("format.time")
+                    .formatted(
+                        seconds,
+                        resources
+                            .getString(TimeUnit.Seconds.messageKey)
+                    )
+                );
+                builder.append(' ');
+            }
+
+            builder.append(resources
+                .getString("format.time")
+                .formatted(
+                    millis,
+                    resources
+                        .getString(TimeUnit.Millis.messageKey)
+                )
+            );
+
+            statusTimeRow.setValue(builder.toString());
         }
     }
 
-    public void updateOverlayTime(final long elapsedTime) {
-        overlayTimeLabel.setText(formatTime(elapsedTime));
-    }
-
-    private String formatTime(final long elapsedTime) {
-        return resources
-            .getString("format.time.milliseconds")
-            .formatted(elapsedTime);
-    }
-
-    public void updateStatus(final SimulationState state) {
+    public static void updateStatus(
+        final SimulationState state,
+        final ResourceBundle resources,
+        final Label statusLabel,
+        final FontIcon statusIcon
+    ) {
         statusLabel.setText(resources.getString(state.messageKey));
-        statusLabel
-            .getStyleClass()
+        statusLabel.getStyleClass()
             .setAll("status-value", state.styleClass);
         statusIcon.setIconLiteral(state.iconLiteral);
-        statusIcon
-            .getStyleClass()
+        statusIcon.getStyleClass()
             .setAll("status-icon", state.styleClass);
     }
 
-    public void showInfoPanel() {
-        setNodeVisible(infoContainer, true);
-        setNodeVisible(statisticsOverlay, false);
-    }
-
-    public void showOverlay() {
-        setNodeVisible(infoContainer, false);
-        setNodeVisible(statisticsOverlay, true);
-    }
-
-    public void setStatusTimeVisible(final boolean visible) {
+    public static void setStatusTimeVisible(
+        final boolean visible,
+        final StackPane statusTimeContainer,
+        final VBox statusContainer
+    ) {
         setNodeVisible(statusTimeContainer, visible);
+        updateStatusContainerHeight(visible, statusContainer);
     }
 
-    public void setNodeVisible(
+    public static void updateStatusContainerHeight(
+        final boolean isTimeVisible,
+        final VBox statusContainer
+    ) {
+        statusContainer.setMinHeight(isTimeVisible ? 120 : 70);
+    }
+
+    public static void setNodeVisible(
         final Node node,
         final boolean visible
     ) {
@@ -234,7 +203,7 @@ public final class SimulationView {
         node.setManaged(visible);
     }
 
-    public void setNodesVisible(
+    public static void setNodesVisible(
         final boolean visible,
         final Node... nodes
     ) {
@@ -243,7 +212,7 @@ public final class SimulationView {
         }
     }
 
-    private void setMenuItemsDisabled(
+    private static void setMenuItemsDisabled(
         final boolean disabled,
         final MenuItem... menuItems
     ) {
