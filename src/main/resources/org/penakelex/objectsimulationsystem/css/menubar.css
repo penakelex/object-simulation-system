@@ -1,0 +1,137 @@
+/* ========================================
+MenuBar - Базовый стиль
+======================================== */
+.main-menubar {
+    -fx-background-color: -fx-menubar-bg;
+    -fx-border-color: -fx-menubar-border;
+    -fx-border-width: 0 0 1 0;
+    -fx-padding: 0;
+}
+
+/* ====== Пункты верхнего уровня ====== */
+.main-menubar .menu {
+    -fx-font-size: 13px;
+    -fx-font-weight: 500;
+    -fx-padding: 8 12;
+    -fx-cursor: hand;
+    -fx-text-fill: -fx-menubar-text;
+}
+
+.main-menubar .menu:hover {
+    -fx-background-color: -fx-menubar-hover-bg;
+    -fx-background-radius: 4;
+}
+
+.main-menubar .menu:hover .label {
+    -fx-text-fill: -fx-menubar-hover-text;
+}
+
+/* ====== Иконки в меню ====== */
+.main-menubar .menu .ikonli-font-icon,
+.main-menubar .menu-item .ikonli-font-icon {
+    -fx-icon-size: 14px;
+    -fx-icon-color: -fx-menubar-text;
+}
+
+.main-menubar .menu:hover .ikonli-font-icon {
+    -fx-icon-color: -fx-menubar-accent;
+}
+
+/* ====== Выпадающие элементы ====== */
+.main-menubar .menu-item {
+    -fx-font-size: 13px;
+    -fx-padding: 8 16;
+    -fx-graphic-text-gap: 10;
+    -fx-text-fill: -fx-menubar-text;
+}
+
+.main-menubar .menu-item:hover {
+    -fx-background-color: -fx-menubar-item-hover-bg;
+}
+
+.main-menubar .menu-item:hover .label {
+    -fx-text-fill: -fx-menubar-item-hover-text;
+}
+
+.main-menubar .menu-item:hover .ikonli-font-icon {
+    -fx-icon-color: -fx-menubar-accent;
+}
+
+/* ====== CheckMenuItem - Исправленные стили ====== */
+.main-menubar .check-menu-item {
+    -fx-padding: 8 16;
+}
+
+.main-menubar .check-menu-item:hover {
+    -fx-background-color: -fx-menubar-item-hover-bg;
+}
+
+/* ====== CheckMenuItem - Галочка (radio) ====== */
+.main-menubar .check-menu-item .radio {
+    -fx-background-color: transparent;
+    -fx-border-color: -fx-menubar-border;
+    -fx-border-width: 1.5;
+    -fx-border-radius: 3;
+    -fx-background-radius: 3;
+    -fx-padding: 2;
+    -fx-min-width: 16;
+    -fx-min-height: 16;
+}
+
+/* ====== CheckMenuItem - Галочка при наведении ====== */
+.main-menubar .check-menu-item:hover .radio {
+    -fx-border-color: -fx-menubar-accent;
+    -fx-background-color: -fx-menubar-hover-bg;
+}
+
+/* ====== CheckMenuItem - Выбранный (галочка видима) ====== */
+.main-menubar .check-menu-item:selected .radio {
+    -fx-background-color: -fx-menubar-accent;
+    -fx-border-color: -fx-menubar-accent;
+}
+
+.main-menubar .check-menu-item:hover:selected .radio {
+    -fx-background-color: -fx-menubar-accent;
+    -fx-border-color: -fx-menubar-accent;
+}
+
+/* ====== CheckMenuItem - Сама галочка (mark) ====== */
+.main-menubar .check-menu-item .radio .dot {
+    -fx-background-color: -fx-menubar-text;
+    -fx-background-insets: 0;
+    -fx-padding: 0.666667em;
+    -fx-shape: "M0,4 L3,7 L9,0";
+    -fx-scale-shape: true;
+}
+
+/* ====== CheckMenuItem - Галочка белая когда выбрано ====== */
+.main-menubar .check-menu-item:selected .radio .dot {
+    -fx-background-color: white;
+}
+
+.main-menubar .check-menu-item:hover:selected .radio .dot {
+    -fx-background-color: white;
+}
+
+/* ====== Акселераторы ====== */
+.main-menubar .menu-item .accelerator {
+    -fx-text-fill: #999999;
+    -fx-font-size: 11px;
+    -fx-padding: 0 0 0 20;
+}
+
+/* ====== Разделители ====== */
+.main-menubar .separator {
+    -fx-padding: 4 0;
+    -fx-background-color: -fx-menubar-border;
+}
+
+/* ====== Контекстное меню ====== */
+.main-menubar .context-menu {
+    -fx-background-color: white;
+    -fx-border-color: -fx-menubar-border;
+    -fx-border-width: 1;
+    -fx-background-radius: 4;
+    -fx-border-radius: 4;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.15), 10, 0, 0, 2);
+}

@@ -1,13 +1,14 @@
 package org.penakelex.objectsimulationsystem.controller;
 
 import javafx.animation.AnimationTimer;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
-import javafx.scene.control.Label;
-import javafx.scene.control.RadioButton;
-import javafx.scene.control.ToggleGroup;
+import javafx.scene.control.*;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import org.kordamp.ikonli.javafx.FontIcon;
@@ -22,6 +23,11 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 public class SimulationController implements Initializable {
+    @FXML private MenuItem menuStart, menuPause, menuStop,
+        menuRestart;
+    @FXML private CheckMenuItem menuToggleTime;
+    @FXML private FontIcon menuTimeIcon;
+
     @FXML private Canvas simulationCanvas;
     @FXML private StackPane simulationField;
 
@@ -66,6 +72,8 @@ public class SimulationController implements Initializable {
 
         stateModel = new SimulationStateModel();
         view = new SimulationView(
+            menuStart, menuPause, menuStop, menuRestart,
+            menuToggleTime, menuTimeIcon,
             simulationCanvas, simulationField,
             truckRow, carRow, totalRow,
             overlayTruckRow, overlayCarRow, overlayTotalRow,
@@ -78,6 +86,7 @@ public class SimulationController implements Initializable {
 
         stateModel.onStateChanged(state -> {
             updateToolbarButtons(state);
+            view.updateMenuItems(state);
             view.updateStatus(state);
         });
 
@@ -104,6 +113,8 @@ public class SimulationController implements Initializable {
                 }
             }
         };
+
+        initializeMenuAccelerators();
 
         initializeGenerationParameters();
 
@@ -135,6 +146,15 @@ public class SimulationController implements Initializable {
 
         simulationCanvas.setFocusTraversable(true);
         simulationCanvas.requestFocus();
+    }
+
+    private void initializeMenuAccelerators() {
+        menuStart.setAccelerator(new KeyCodeCombination(KeyCode.B));
+        menuPause.setAccelerator(new KeyCodeCombination(KeyCode.P));
+        menuStop.setAccelerator(new KeyCodeCombination(KeyCode.E));
+        menuRestart.setAccelerator(new KeyCodeCombination(KeyCode.R));
+        menuToggleTime
+            .setAccelerator(new KeyCodeCombination(KeyCode.T));
     }
 
     private void initializeGenerationParameters() {
@@ -243,7 +263,24 @@ public class SimulationController implements Initializable {
         stateModel.toggleShowTime();
         view.setStatusTimeVisible(stateModel.isShowTime());
         updateTimeRadio();
+        view.updateMenuTimeText(stateModel.isShowTime());
         simulationCanvas.requestFocus();
+    }
+
+    @FXML
+    private void exitApplication() {
+        stateModel.setState(SimulationState.Stopped);
+        gameTimer.stop();
+        Platform.exit();
+    }
+
+    @FXML
+    private void showAboutDialog() {
+        final var alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(resources.getString("menu.help.about"));
+        alert.setHeaderText(resources.getString("application.title"));
+        alert.setContentText(resources.getString("label.about"));
+        alert.showAndWait();
     }
 
     private void resetStatistics() {

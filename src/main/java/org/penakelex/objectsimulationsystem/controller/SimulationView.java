@@ -3,7 +3,9 @@ package org.penakelex.objectsimulationsystem.controller;
 import javafx.scene.Node;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.CheckMenuItem;
 import javafx.scene.control.Label;
+import javafx.scene.control.MenuItem;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import org.kordamp.ikonli.javafx.FontIcon;
@@ -14,6 +16,10 @@ import org.penakelex.objectsimulationsystem.ui.LabeledValueRow;
 import java.util.ResourceBundle;
 
 public final class SimulationView {
+    private final MenuItem menuStart, menuPause, menuStop,
+        menuRestart;
+    private final CheckMenuItem menuToggleTime;
+    private final FontIcon menuTimeIcon;
 
     private final Canvas simulationCanvas;
     private final GraphicsContext graphicsContext;
@@ -34,6 +40,12 @@ public final class SimulationView {
     private final ResourceBundle resources;
 
     public SimulationView(
+        final MenuItem menuStart,
+        final MenuItem menuPause,
+        final MenuItem menuStop,
+        final MenuItem menuRestart,
+        final CheckMenuItem menuToggleTime,
+        final FontIcon menuTimeIcon,
         final Canvas simulationCanvas,
         final StackPane simulationField,
         final LabeledValueRow truckRow,
@@ -51,6 +63,12 @@ public final class SimulationView {
         final VBox statisticsOverlay,
         final ResourceBundle resources
     ) {
+        this.menuStart = menuStart;
+        this.menuPause = menuPause;
+        this.menuStop = menuStop;
+        this.menuRestart = menuRestart;
+        this.menuToggleTime = menuToggleTime;
+        this.menuTimeIcon = menuTimeIcon;
         this.simulationCanvas = simulationCanvas;
         this.graphicsContext =
             simulationCanvas.getGraphicsContext2D();
@@ -86,6 +104,53 @@ public final class SimulationView {
             simulationCanvas.getHeight()
         );
         habitat.draw(graphicsContext);
+    }
+
+    public void updateMenuItems(final SimulationState state) {
+        switch (state) {
+            case Stopped -> {
+                menuStart.setDisable(false);
+                setMenuItemsDisabled(true,
+                    menuPause,
+                    menuStop,
+                    menuRestart
+                );
+            }
+            case Running -> {
+                menuStart.setDisable(true);
+                setMenuItemsDisabled(false,
+                    menuPause,
+                    menuStop,
+                    menuRestart
+                );
+            }
+            case Paused -> {
+                menuPause.setDisable(true);
+                setMenuItemsDisabled(false,
+                    menuStart,
+                    menuStop,
+                    menuRestart
+                );
+            }
+        }
+    }
+
+    public void updateMenuTimeText(final boolean showTime) {
+        if (showTime) {
+            menuToggleTime.setText(resources.getString("menu.view.show.time"));
+            menuToggleTime.setSelected(true);
+            menuTimeIcon.setIconLiteral("fas-clock");
+            menuTimeIcon.getStyleClass()
+                .setAll("menu-icon", "menu-icon-time-active");
+        } else {
+            menuToggleTime.setText(
+                resources.getString("menu.view.hide.time")
+            );
+            menuToggleTime.setSelected(false);
+            menuTimeIcon.setIconLiteral("fas-eye-slash");
+            menuTimeIcon.getStyleClass()
+                .setAll("menu-icon", "menu-icon-time-inactive");
+        }
     }
 
     public void updatePanelStatistics
@@ -175,6 +240,15 @@ public final class SimulationView {
     ) {
         for (final var node : nodes) {
             setNodeVisible(node, visible);
+        }
+    }
+
+    private void setMenuItemsDisabled(
+        final boolean disabled,
+        final MenuItem... menuItems
+    ) {
+        for (final var item : menuItems) {
+            item.setDisable(disabled);
         }
     }
 }

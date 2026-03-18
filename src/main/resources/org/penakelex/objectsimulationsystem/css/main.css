@@ -7,6 +7,7 @@
 @import url("statistics_overlay.css");
 @import url("toolbar.css");
 @import url("radio_button.css");
+@import url("menubar.css");
 
 .root {
     /* ====== Базовые цвета ====== */
@@ -27,6 +28,16 @@
     -fx-period-icon-color: #607D8B;
     -fx-probability-icon-color: -fx-base-orange-color;
     -fx-overlay-time-color: #FF9800;
+
+    /* ====== MenuBar цвета ====== */
+    -fx-menubar-bg: white;
+    -fx-menubar-border: #e0e0e0;
+    -fx-menubar-text: #333333;
+    -fx-menubar-hover-bg: #e3f2fd;
+    -fx-menubar-hover-text: #1565C0;
+    -fx-menubar-item-hover-bg: #f5f5f5;
+    -fx-menubar-item-hover-text: #333333;
+    -fx-menubar-accent: #1976D2;
 
     /* ====== Toolbar Button фоны (приглушенные) ====== */
     /* Start - зеленый приглушенный */
