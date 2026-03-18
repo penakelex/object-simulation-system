@@ -3,7 +3,7 @@ package org.penakelex.objectsimulationsystem;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
-import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import org.penakelex.objectsimulationsystem.controller.SimulationController;
 import org.penakelex.objectsimulationsystem.habitat.Configuration;
@@ -62,11 +62,11 @@ public class SimulationApplication extends Application {
             resources
         );
 
-        final HBox root;
+        final VBox root;
 
         try {
             root = loader.load();
-        } catch (final IOException _) {
+        } catch (final IOException e) {
             showErrorAndExit(
                 resources,
                 getErrorString(resources, "error.fxml.not_found"),

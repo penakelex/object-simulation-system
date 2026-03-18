@@ -1,0 +1,66 @@
+.radio-button {
+    -fx-font-size: 13px;
+    -fx-text-fill: -fx-text-color-dark;
+    -fx-padding: 4 0;
+    -fx-cursor: hand;
+    -fx-transition: -fx-text-fill 0.15s ease-out;
+}
+
+.radio-button .radio {
+    -fx-background-color: -fx-radio-white;
+    -fx-border-color: -fx-radio-border-color;
+    -fx-border-width: 2;
+    -fx-border-radius: 10;
+    -fx-padding: 2;
+    -fx-background-radius: 10;
+    -fx-transition: all 0.15s ease-out;
+    -fx-min-width: 12;
+    -fx-min-height: -fx-min-width;
+    -fx-pref-width: -fx-min-width;
+    -fx-pref-height: -fx-min-height;
+}
+
+.radio-button:hover .radio {
+    -fx-border-color: -fx-radio-dark-blue;
+    -fx-background-color: -fx-radio-hover-bg;
+}
+
+.radio-button:selected .radio {
+    -fx-border-color: -fx-radio-light-blue;
+    -fx-background-color: -fx-radio-light-blue;
+}
+
+.radio-button:selected .dot {
+    -fx-background-color: -fx-radio-white;
+    -fx-padding: 0;
+    -fx-background-radius: 10;
+    -fx-min-width: 6;
+    -fx-min-height: -fx-min-width;
+    -fx-pref-width: -fx-min-width;
+    -fx-pref-height: -fx-min-height;
+}
+
+.radio-button:focused .radio {
+    -fx-border-width: 2;
+    -fx-border-color: -fx-radio-light-blue;
+    -fx-effect: dropshadow(gaussian, -fx-radio-focus-shadow, 8, 0, 0, 2);
+}
+
+.radio-button {
+    -fx-text-fill: -fx-text-color-dark;
+}
+
+.radio-button:hover {
+    -fx-text-fill: -fx-radio-dark-blue;
+    -fx-font-weight: 600;
+}
+
+.radio-button:selected {
+    -fx-text-fill: -fx-radio-light-blue;
+    -fx-font-weight: 600;
+}
+
+/* При наведении на выбранный - тёмный синий */
+.radio-button:selected:hover {
+    -fx-text-fill: -fx-radio-dark-blue;
+}

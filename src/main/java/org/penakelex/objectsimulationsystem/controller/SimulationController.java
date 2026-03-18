@@ -5,14 +5,16 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
-import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Label;
+import javafx.scene.control.RadioButton;
+import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import org.kordamp.ikonli.javafx.FontIcon;
 import org.penakelex.objectsimulationsystem.habitat.Configuration;
 import org.penakelex.objectsimulationsystem.habitat.Habitat;
 import org.penakelex.objectsimulationsystem.ui.LabeledValueRow;
+import org.penakelex.objectsimulationsystem.ui.ToolbarButton;
 import org.penakelex.objectsimulationsystem.vehicle.images.CarImages;
 import org.penakelex.objectsimulationsystem.vehicle.images.TruckImages;
 
@@ -23,10 +25,16 @@ public class SimulationController implements Initializable {
     @FXML private Canvas simulationCanvas;
     @FXML private StackPane simulationField;
 
+    @FXML private ToolbarButton startButton, stopButton, pauseButton,
+        restartButton;
+
     @FXML private LabeledValueRow truckPeriodRow, truckProbabilityRow,
         carPeriodRow, carProbabilityRow;
 
-    @FXML private Label timeLabel, overlayTimeLabel;
+    @FXML private StackPane statusTimeContainer;
+    @FXML private LabeledValueRow statusTimeRow;
+
+    @FXML private Label overlayTimeLabel;
 
     @FXML private LabeledValueRow truckRow, carRow, totalRow,
         overlayTruckRow, overlayCarRow, overlayTotalRow;
@@ -34,20 +42,18 @@ public class SimulationController implements Initializable {
     @FXML private Label statusLabel;
     @FXML private FontIcon statusIcon;
 
-    @FXML private VBox infoContainer, timeContainer,
-        statisticsOverlay;
+    @FXML private VBox infoContainer, statisticsOverlay;
+
+    @FXML private RadioButton showTimeRadio, hideTimeRadio;
+
+    @FXML private final ToggleGroup timeToggleGroup =
+        new ToggleGroup();
 
     private AnimationTimer gameTimer;
-
     private Habitat habitat;
-    private GraphicsContext graphicsContext;
 
-    private SimulationState state = SimulationState.Stopped;
-
-    private boolean showTime = true;
-
-    private long startTime = 0;
-    private long elapsedTime = 0;
+    private SimulationStateModel stateModel;
+    private SimulationView view;
 
     private ResourceBundle resources;
 
@@ -57,54 +63,62 @@ public class SimulationController implements Initializable {
         final ResourceBundle resources
     ) {
         this.resources = resources;
-        graphicsContext = simulationCanvas.getGraphicsContext2D();
+
+        stateModel = new SimulationStateModel();
+        view = new SimulationView(
+            simulationCanvas, simulationField,
+            truckRow, carRow, totalRow,
+            overlayTruckRow, overlayCarRow, overlayTotalRow,
+            statusTimeContainer,
+            statusTimeRow, overlayTimeLabel,
+            statusLabel, statusIcon,
+            infoContainer, statisticsOverlay,
+            resources
+        );
+
+        stateModel.onStateChanged(state -> {
+            updateToolbarButtons(state);
+            view.updateStatus(state);
+        });
 
         gameTimer = new AnimationTimer() {
             @Override
             public void handle(final long now) {
-                if (state == SimulationState.Running) {
-                    elapsedTime =
-                        System.currentTimeMillis() - startTime;
-                    habitat.update(elapsedTime);
-                    draw();
+                if (stateModel.getState() ==
+                    SimulationState.Running
+                ) {
+                    stateModel.updateTime();
+                    habitat.update(stateModel.getElapsedTime());
+                    view.draw(habitat);
 
                     if (habitat.isStatisticsDirty()) {
-                        updatePanelStatistics();
+                        view.updatePanelStatistics(
+                            habitat.getStatistics()
+                        );
                     }
 
-                    updatePanelTime();
+                    view.updateStatusTime(
+                        stateModel.getElapsedTime(),
+                        stateModel.isShowTime()
+                    );
                 }
             }
         };
 
-        initializeGenerationParameters(
-            truckPeriodRow,
-            truckProbabilityRow,
-            Configuration.TRUCK_SPAWN_PERIOD_MILLIS,
-            Configuration.TRUCK_SPAWN_PROBABILITY
-        );
-        initializeGenerationParameters(
-            carPeriodRow,
-            carProbabilityRow,
-            Configuration.CAR_SPAWN_PERIOD_MILLIS,
-            Configuration.CAR_SPAWN_PROBABILITY
-        );
+        initializeGenerationParameters();
 
-        updateStatusLabel();
+        updateToolbarButtons(stateModel.getState());
+        view.updateStatus(stateModel.getState());
 
-        simulationCanvas.widthProperty()
-            .bind(simulationField.widthProperty());
-        simulationCanvas.heightProperty()
-            .bind(simulationField.heightProperty());
+        setupTimeToggleGroup();
 
         simulationField
             .layoutBoundsProperty()
             .addListener((_, _, newValue) -> {
-                habitat.setSize(
-                    newValue.getWidth(),
+                habitat.setSize(newValue.getWidth(),
                     newValue.getHeight()
                 );
-                draw();
+                view.draw(habitat);
             });
     }
 
@@ -123,20 +137,39 @@ public class SimulationController implements Initializable {
         simulationCanvas.requestFocus();
     }
 
-    private void initializeGenerationParameters(
-        final LabeledValueRow periodRow,
-        final LabeledValueRow probabilityRow,
-        final int period,
-        final double probability
-    ) {
-        periodRow.setValue(resources
+    private void initializeGenerationParameters() {
+        truckPeriodRow.setValue(resources
             .getString("format.period.milliseconds")
-            .formatted(period)
-        );
-        probabilityRow.setValue(resources
+            .formatted(Configuration.TRUCK_SPAWN_PERIOD_MILLIS));
+        truckProbabilityRow.setValue(resources
             .getString("format.probability.percent")
-            .formatted((int) (probability * 100))
-        );
+            .formatted((int) (Configuration.TRUCK_SPAWN_PROBABILITY *
+                100)));
+
+        carPeriodRow.setValue(resources
+            .getString("format.period.milliseconds")
+            .formatted(Configuration.CAR_SPAWN_PERIOD_MILLIS));
+        carProbabilityRow.setValue(resources
+            .getString("format.probability.percent")
+            .formatted((int) (Configuration.CAR_SPAWN_PROBABILITY *
+                100)));
+    }
+
+    private void setupTimeToggleGroup() {
+        showTimeRadio.setToggleGroup(timeToggleGroup);
+        hideTimeRadio.setToggleGroup(timeToggleGroup);
+
+        timeToggleGroup
+            .selectedToggleProperty()
+            .addListener((_, _, newValue) -> {
+                final var shouldBeVisible = newValue == showTimeRadio;
+
+                if (shouldBeVisible != stateModel.isShowTime()) {
+                    stateModel.toggleShowTime();
+                }
+
+                view.setStatusTimeVisible(stateModel.isShowTime());
+            });
     }
 
     public void initializeHabitatImages(
@@ -149,142 +182,118 @@ public class SimulationController implements Initializable {
             truckImages,
             carImages
         );
-
         updatePanelStatisticsWithTime();
     }
 
+    @FXML
     private void startSimulation() {
-        if (state == SimulationState.Running) {
+        if (stateModel.getState() == SimulationState.Running) {
             return;
         }
 
-        startTime = System.currentTimeMillis() - elapsedTime;
-        state = SimulationState.Running;
-
-        infoContainer.setVisible(true);
-        infoContainer.setManaged(true);
-
-        statisticsOverlay.setVisible(false);
-        statisticsOverlay.setManaged(false);
-
-        updateStatusLabel();
-
+        stateModel.startTimer();
+        stateModel.setState(SimulationState.Running);
+        view.showInfoPanel();
+        view.setStatusTimeVisible(stateModel.isShowTime());
         simulationCanvas.requestFocus();
         gameTimer.start();
     }
 
+    @FXML
     private void stopSimulation() {
-        if (state == SimulationState.Stopped) {
+        if (stateModel.getState() == SimulationState.Stopped) {
             return;
         }
 
-        state = SimulationState.Stopped;
+        stateModel.setState(SimulationState.Stopped);
         gameTimer.stop();
 
-        updateOverlayStatisticsWithTime();
-
-        infoContainer.setVisible(false);
-        infoContainer.setManaged(false);
-
-        statisticsOverlay.setVisible(true);
-        statisticsOverlay.setManaged(true);
+        view.updateOverlayStatistics(habitat.getStatistics());
+        view.updateOverlayTime(stateModel.getElapsedTime());
+        view.setStatusTimeVisible(false);
+        view.showOverlay();
 
         resetStatistics();
-        updateStatusLabel();
+        simulationCanvas.requestFocus();
     }
 
+    @FXML
     private void pauseSimulation() {
-        if (state != SimulationState.Running) {
+        if (stateModel.getState() != SimulationState.Running) {
             return;
         }
 
-        state = SimulationState.Paused;
-        updateStatusLabel();
+        stateModel.setState(SimulationState.Paused);
+        simulationCanvas.requestFocus();
     }
 
+    @FXML
     private void restartSimulation() {
-        if (state == SimulationState.Stopped) {
+        if (stateModel.getState() == SimulationState.Stopped) {
             return;
         }
 
         resetStatistics();
-        draw();
+        view.draw(habitat);
+        simulationCanvas.requestFocus();
+    }
+
+    @FXML
+    private void toggleTimeDisplay() {
+        stateModel.toggleShowTime();
+        view.setStatusTimeVisible(stateModel.isShowTime());
+        updateTimeRadio();
+        simulationCanvas.requestFocus();
     }
 
     private void resetStatistics() {
-        startTime = System.currentTimeMillis();
-        elapsedTime = 0;
+        stateModel.resetTimer();
         habitat.reset();
         updatePanelStatisticsWithTime();
     }
 
-    private void toggleTimeDisplay() {
-        showTime = !showTime;
-        timeContainer.setVisible(showTime);
-        timeContainer.setManaged(showTime);
-    }
-
-    private void draw() {
-        graphicsContext.clearRect(
-            0,
-            0,
-            simulationCanvas.getWidth(),
-            simulationCanvas.getHeight()
-        );
-
-        habitat.draw(graphicsContext);
-    }
-
     private void updatePanelStatisticsWithTime() {
-        updatePanelStatistics();
-        updatePanelTime();
-    }
-
-    private void updatePanelStatistics() {
-        updateStatistics(truckRow, carRow, totalRow);
-    }
-
-    private void updatePanelTime() {
-        updateTime(timeLabel);
-    }
-
-    private void updateOverlayStatisticsWithTime() {
-        updateStatistics(
-            overlayTruckRow,
-            overlayCarRow,
-            overlayTotalRow
+        view.updatePanelStatistics(habitat.getStatistics());
+        view.updateStatusTime(
+            stateModel.getElapsedTime(),
+            stateModel.isShowTime()
         );
-        updateTime(overlayTimeLabel);
     }
 
-    private void updateStatistics(
-        final LabeledValueRow truckRow,
-        final LabeledValueRow carRow,
-        final LabeledValueRow totalRow
-    ) {
-        final var statistics = habitat.getStatistics();
-
-        truckRow.setValue(statistics.trucks());
-        carRow.setValue(statistics.cars());
-        totalRow.setValue(statistics.trucks() + statistics.cars());
-    }
-
-    private void updateTime(final Label timeLabel) {
-        if (showTime) {
-            timeLabel.setText(resources
-                .getString("format.time.milliseconds")
-                .formatted(elapsedTime)
-            );
+    private void updateToolbarButtons(final SimulationState state) {
+        switch (state) {
+            case Stopped -> {
+                view.setNodeVisible(startButton, true);
+                view.setNodesVisible(false,
+                    pauseButton,
+                    stopButton,
+                    restartButton
+                );
+            }
+            case Running -> {
+                view.setNodeVisible(startButton, false);
+                view.setNodesVisible(true,
+                    pauseButton,
+                    stopButton,
+                    restartButton
+                );
+            }
+            case Paused -> {
+                view.setNodeVisible(pauseButton, false);
+                view.setNodesVisible(true,
+                    startButton,
+                    stopButton,
+                    restartButton
+                );
+            }
         }
     }
 
-    private void updateStatusLabel() {
-        statusLabel.setText(resources.getString(state.messageKey));
-        statusLabel.getStyleClass()
-            .setAll("status-value", state.styleClass);
-
-        statusIcon.setIconLiteral(state.iconLiteral);
-        statusIcon.getStyleClass()
-            .setAll("status-icon", state.styleClass);
+    private void updateTimeRadio() {
+        if (stateModel.isShowTime()) {
+            showTimeRadio.setSelected(true);
+        } else {
+            hideTimeRadio.setSelected(true);
+        }
     }
 }
