@@ -17,7 +17,6 @@ public final class SimulationStateModel {
     private Consumer<SimulationState> stateChangeListener;
 
     public SimulationStateModel() {
-
         state.addListener((_, _, newState) ->
             stateChangeListener.accept(newState)
         );
@@ -56,6 +55,12 @@ public final class SimulationStateModel {
 
     public boolean isShowTime() {
         return showTime;
+    }
+
+    public boolean isShowTimeStateChecked() {
+        return showTime && (state.get() != SimulationState.Stopped
+            || startTime == 0
+        );
     }
 
     public void toggleShowTime() {

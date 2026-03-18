@@ -4,7 +4,6 @@ import javafx.animation.AnimationTimer;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
@@ -133,21 +132,6 @@ public class SimulationController implements Initializable {
             });
     }
 
-    public void setupKeyboardHandler(final Scene scene) {
-        scene.setOnKeyPressed(event -> {
-            switch (event.getCode()) {
-                case B -> startSimulation();
-                case E -> stopSimulation();
-                case P -> pauseSimulation();
-                case T -> toggleTimeDisplay();
-                case R -> restartSimulation();
-            }
-        });
-
-        simulationCanvas.setFocusTraversable(true);
-        simulationCanvas.requestFocus();
-    }
-
     private void initializeMenuAccelerators() {
         menuStart.setAccelerator(new KeyCodeCombination(KeyCode.B));
         menuPause.setAccelerator(new KeyCodeCombination(KeyCode.P));
@@ -188,7 +172,9 @@ public class SimulationController implements Initializable {
                     stateModel.toggleShowTime();
                 }
 
-                view.setStatusTimeVisible(stateModel.isShowTime());
+                view.setStatusTimeVisible(
+                    stateModel.isShowTimeStateChecked()
+                );
             });
     }
 
@@ -261,7 +247,7 @@ public class SimulationController implements Initializable {
     @FXML
     private void toggleTimeDisplay() {
         stateModel.toggleShowTime();
-        view.setStatusTimeVisible(stateModel.isShowTime());
+        view.setStatusTimeVisible(stateModel.isShowTimeStateChecked());
         updateTimeRadio();
         view.updateMenuTimeText(stateModel.isShowTime());
         simulationCanvas.requestFocus();

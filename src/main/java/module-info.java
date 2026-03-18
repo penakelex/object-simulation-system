@@ -18,4 +18,5 @@ module org.penakelex.objectsimulationsystem {
     exports org.penakelex.objectsimulationsystem.vehicle.exceptions;
     exports org.penakelex.objectsimulationsystem.controller;
     opens org.penakelex.objectsimulationsystem.controller to javafx.fxml;
+    exports org.penakelex.objectsimulationsystem.collection;
 }

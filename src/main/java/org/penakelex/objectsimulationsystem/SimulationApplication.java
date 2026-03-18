@@ -96,7 +96,5 @@ public class SimulationApplication extends Application {
         stage.setMinWidth(root.getMinWidth());
         stage.setMinHeight(root.getMinHeight());
         stage.show();
-
-        controller.setupKeyboardHandler(scene);
     }
 }
