@@ -1,6 +1,6 @@
 package org.penakelex.objectsimulationsystem.ui;
 
-import org.penakelex.objectsimulationsystem.habitat.TimeUnit;
+import org.penakelex.objectsimulationsystem.model.habitat.TimeUnit;
 
 import java.util.ResourceBundle;
 

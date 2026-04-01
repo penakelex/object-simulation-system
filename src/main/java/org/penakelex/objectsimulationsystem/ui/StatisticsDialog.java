@@ -4,7 +4,7 @@ import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import org.penakelex.objectsimulationsystem.habitat.VehicleStatistics;
+import org.penakelex.objectsimulationsystem.model.habitat.VehicleStatistics;
 
 import java.util.ResourceBundle;
 

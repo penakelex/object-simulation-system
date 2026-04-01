@@ -5,10 +5,10 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import org.penakelex.objectsimulationsystem.controller.SimulationController;
-import org.penakelex.objectsimulationsystem.habitat.Configuration;
-import org.penakelex.objectsimulationsystem.vehicle.images.CarImages;
-import org.penakelex.objectsimulationsystem.vehicle.images.TruckImages;
+import org.penakelex.objectsimulationsystem.view.SimulationViewController;
+import org.penakelex.objectsimulationsystem.model.habitat.Configuration;
+import org.penakelex.objectsimulationsystem.model.vehicle.images.CarImages;
+import org.penakelex.objectsimulationsystem.model.vehicle.images.TruckImages;
 
 import java.io.IOException;
 import java.util.Objects;
@@ -87,7 +87,7 @@ public class SimulationApplication extends Application {
                 .toExternalForm()
         );
 
-        final SimulationController controller =
+        final SimulationViewController controller =
             loader.getController();
         controller.initializeHabitatImages(truckImages, carImages);
 

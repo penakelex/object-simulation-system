@@ -8,15 +8,20 @@ module org.penakelex.objectsimulationsystem {
     opens org.penakelex.objectsimulationsystem to javafx.fxml;
 
     exports org.penakelex.objectsimulationsystem;
-    exports org.penakelex.objectsimulationsystem.behaviour;
-    exports org.penakelex.objectsimulationsystem.habitat;
+    exports org.penakelex.objectsimulationsystem.model.behaviour;
+    exports org.penakelex.objectsimulationsystem.model.habitat;
     exports org.penakelex.objectsimulationsystem.ui;
-    exports org.penakelex.objectsimulationsystem.vehicle;
-    exports org.penakelex.objectsimulationsystem.vehicle.images;
-    exports org.penakelex.objectsimulationsystem.vehicle.images.exceptions;
-    exports org.penakelex.objectsimulationsystem.habitat.exceptions;
-    exports org.penakelex.objectsimulationsystem.vehicle.exceptions;
-    exports org.penakelex.objectsimulationsystem.controller;
-    opens org.penakelex.objectsimulationsystem.controller to javafx.fxml;
-    exports org.penakelex.objectsimulationsystem.collection;
+    exports org.penakelex.objectsimulationsystem.model.vehicle;
+    exports org.penakelex.objectsimulationsystem.model.vehicle.images;
+    exports org.penakelex.objectsimulationsystem.model.vehicle.images.exceptions;
+    exports org.penakelex.objectsimulationsystem.model.habitat.exceptions;
+    exports org.penakelex.objectsimulationsystem.model.vehicle.exceptions;
+    exports org.penakelex.objectsimulationsystem.model.collection;
+    exports org.penakelex.objectsimulationsystem.ui.components;
+    exports org.penakelex.objectsimulationsystem.viewmodel;
+    opens org.penakelex.objectsimulationsystem.viewmodel to javafx.fxml;
+    exports org.penakelex.objectsimulationsystem.view;
+    opens org.penakelex.objectsimulationsystem.view to javafx.fxml;
+    exports org.penakelex.objectsimulationsystem.ui.helpers;
+    opens org.penakelex.objectsimulationsystem.ui.helpers to javafx.fxml;
 }
