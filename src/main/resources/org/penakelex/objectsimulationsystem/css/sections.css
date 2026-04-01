@@ -31,3 +31,7 @@
 .total-vehicles-parameters-row .icon {
     -fx-icon-color: -fx-total-icon-color;
 }
+
+.lifetime-row .icon {
+    -fx-icon-color: -fx-lifetime-icon-color;
+}

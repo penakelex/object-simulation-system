@@ -97,12 +97,4 @@ public final class LabeledInputRow extends HBox {
     public String getIconColor() {
         return icon.getIconColor().toString();
     }
-
-    public void setPromptText(final String text) {
-        textField.setPromptText(text);
-    }
-
-    public String getPromptText() {
-        return textField.getPromptText();
-    }
 }

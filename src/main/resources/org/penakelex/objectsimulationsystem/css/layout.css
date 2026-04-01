@@ -5,7 +5,7 @@
     -fx-background-color: -fx-control-panel-background-color;
     -fx-border-color: -fx-control-panel-border-color;
     -fx-border-width: 0 0 0 1;
-    -fx-min-width: 330;
+    -fx-min-width: 350;
     -fx-pref-width: -fx-min-width;
 }
 

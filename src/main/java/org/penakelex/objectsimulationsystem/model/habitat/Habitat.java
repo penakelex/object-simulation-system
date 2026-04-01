@@ -22,10 +22,12 @@ public final class Habitat {
 
     private boolean statisticsDirty = true;
     private double width, height;
+
     private final VehicleSpawner<Truck> truckSpawner;
     private final VehicleSpawner<Car> carSpawner;
     private final
     List<VehicleSpawner<? extends Vehicle>> vehicleSpawners;
+
     private final Random random = ThreadLocalRandom.current();
     private final VehicleCollection vehicleCollection;
 
@@ -52,6 +54,8 @@ public final class Habitat {
             Configuration.TRUCK_SPAWN_PERIOD,
             Configuration.TRUCK_SPAWN_TIME_UNIT,
             Configuration.TRUCK_SPAWN_PROBABILITY,
+            Configuration.TRUCK_LIFETIME,
+            Configuration.TRUCK_LIFETIME_TIME_UNIT,
             Truck::new,
             truckImages,
             Truck.class
@@ -60,39 +64,13 @@ public final class Habitat {
             Configuration.CAR_SPAWN_PERIOD,
             Configuration.CAR_SPAWN_TIME_UNIT,
             Configuration.CAR_SPAWN_PROBABILITY,
+            Configuration.CAR_LIFETIME,
+            Configuration.CAR_LIFETIME_TIME_UNIT,
             Car::new,
             carImages,
             Car.class
         );
         vehicleSpawners = List.of(truckSpawner, carSpawner);
-    }
-
-    public void updateTruckPeriod(final int truckPeriod) {
-        truckSpawner.updatePeriod(truckPeriod);
-    }
-
-    public void updateTruckPeriodTimeUnit(
-        final TimeUnit truckPeriodTimeUnit
-    ) {
-        truckSpawner.updatePeriodTimeUnit(truckPeriodTimeUnit);
-    }
-
-    public void updateTruckProbability(final double truckProbability) {
-        truckSpawner.updateProbability(truckProbability);
-    }
-
-    public void updateCarPeriod(final int carPeriod) {
-        carSpawner.updatePeriod(carPeriod);
-    }
-
-    public void updateCarPeriodTimeUnit(
-        final TimeUnit carPeriodTimeUnit
-    ) {
-        truckSpawner.updatePeriodTimeUnit(carPeriodTimeUnit);
-    }
-
-    public void updateCarProbability(final double carProbability) {
-        carSpawner.updateProbability(carProbability);
     }
 
     private static List<HabitatInvalidParameter> validateParameters(
@@ -120,6 +98,58 @@ public final class Habitat {
         return invalidParameters;
     }
 
+    public void updateTruckPeriod(final int truckPeriod) {
+        truckSpawner.updatePeriod(truckPeriod);
+    }
+
+    public void updateTruckPeriodTimeUnit(
+        final TimeUnit truckPeriodTimeUnit
+    ) {
+        truckSpawner.updatePeriodTimeUnit(truckPeriodTimeUnit);
+    }
+
+    public void updateTruckProbability(final double truckProbability) {
+        truckSpawner.updateProbability(truckProbability);
+    }
+
+    public void updateTruckLifeTime(final int truckLifeTime) {
+        truckSpawner.updateLifeTime(truckLifeTime);
+    }
+
+    public void updateTruckLifeTimeUnit(
+        final TimeUnit truckLifeTimeUnit
+    ) {
+        truckSpawner.updateLifeTimeUnit(truckLifeTimeUnit);
+    }
+
+    public void updateCarPeriod(final int carPeriod) {
+        carSpawner.updatePeriod(carPeriod);
+    }
+
+    public void updateCarPeriodTimeUnit(
+        final TimeUnit carPeriodTimeUnit
+    ) {
+        carSpawner.updatePeriodTimeUnit(carPeriodTimeUnit);
+    }
+
+    public void updateCarProbability(final double carProbability) {
+        carSpawner.updateProbability(carProbability);
+    }
+
+    public void updateCarLifeTime(final int carLifeTime) {
+        carSpawner.updateLifeTime(carLifeTime);
+    }
+
+    public void updateCarLifeTimeUnit(
+        final TimeUnit carLifeTimeUnit
+    ) {
+        carSpawner.updateLifeTimeUnit(carLifeTimeUnit);
+    }
+
+    public VehicleCollection getVehicleCollection() {
+        return vehicleCollection;
+    }
+
     public void update(final long currentTimeMillis) {
         for (final var spawner : vehicleSpawners) {
             final var spawnedVehicles = spawner.trySpawn(
@@ -142,6 +172,17 @@ public final class Habitat {
                     .onCanvasSizeUpdated(this.width, this.height);
                 vehicleCollection.add(newVehicle);
             }
+        }
+
+        final var expiredIDs = vehicleCollection
+            .getAll()
+            .stream()
+            .filter(vehicle -> vehicle.isExpired(currentTimeMillis))
+            .map(Vehicle::getId)
+            .toList();
+
+        if (!expiredIDs.isEmpty()) {
+            vehicleCollection.removeByIds(expiredIDs);
         }
 
         for (final var vehicle : vehicleCollection.getAll()) {

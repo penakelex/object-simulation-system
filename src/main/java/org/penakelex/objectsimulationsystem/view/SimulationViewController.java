@@ -34,7 +34,7 @@ import java.util.stream.IntStream;
 
 public final class SimulationViewController implements Initializable {
     @FXML private MenuItem menuStart, menuRestart, menuStop,
-        menuPause;
+        menuPause, menuCurrentObjects;
     @FXML private CheckMenuItem menuToggleTime;
     @FXML private FontIcon menuTimeIcon;
     @FXML private Canvas simulationCanvas;
@@ -54,6 +54,8 @@ public final class SimulationViewController implements Initializable {
     @FXML private LabeledInputRow truckPeriodInput, carPeriodInput;
     @FXML private LabeledProbabilityBox truckProbabilityBox,
         carProbabilityBox;
+    @FXML private LabeledInputRow truckLifetimeInput,
+        carLifetimeInput;
 
     private SimulationViewModel viewModel;
     private AnimationTimer gameTimer;
@@ -226,6 +228,16 @@ public final class SimulationViewController implements Initializable {
         alert.showAndWait();
     }
 
+    @FXML
+    private void showCurrentObjectsDialog() {
+        CurrentObjectsDialog.showDialog(
+            stage,
+            viewModel.getHabitat()
+                .getVehicleCollection(),
+            resources
+        );
+    }
+
     private void updateUIState(final SimulationState state) {
         SimulationViewHelper.updateMenuItems(state,
             menuStart,
@@ -365,7 +377,7 @@ public final class SimulationViewController implements Initializable {
         truckPeriodInput
             .textProperty()
             .addListener((_, _, newValue) -> {
-                final var period = validatePeriod(newValue);
+                final var period = validatePeriodOrLifeTime(newValue);
 
                 if (period.isPresent()) {
                     viewModel.getHabitat()
@@ -389,7 +401,8 @@ public final class SimulationViewController implements Initializable {
             .textFieldFocusedProperty()
             .addListener((_, _, focused) ->
                 onInputRowFocusChange(
-                    focused, truckPeriodInput,
+                    focused,
+                    truckPeriodInput,
                     Configuration.TRUCK_SPAWN_PERIOD,
                     Configuration.TRUCK_SPAWN_TIME_UNIT
                 )
@@ -398,7 +411,7 @@ public final class SimulationViewController implements Initializable {
         carPeriodInput
             .textProperty()
             .addListener((_, _, newValue) -> {
-                final var period = validatePeriod(newValue);
+                final var period = validatePeriodOrLifeTime(newValue);
 
                 if (period.isPresent()) {
                     viewModel.getHabitat()
@@ -441,13 +454,101 @@ public final class SimulationViewController implements Initializable {
                 viewModel.getHabitat()
                     .updateCarProbability(newIndex.intValue() / 10.)
             );
+
+        truckLifetimeInput.setTextFieldValue(
+            Configuration.TRUCK_LIFETIME
+        );
+        truckLifetimeInput.initializeComboBoxValues(
+            periodInputsTimeUnits,
+            resources.getString(
+                Configuration.TRUCK_LIFETIME_TIME_UNIT.messageKey
+            )
+        );
+
+        carLifetimeInput.setTextFieldValue(
+            Configuration.CAR_LIFETIME
+        );
+        carLifetimeInput.initializeComboBoxValues(
+            periodInputsTimeUnits,
+            resources.getString(
+                Configuration.CAR_LIFETIME_TIME_UNIT.messageKey
+            )
+        );
+
+        truckLifetimeInput
+            .textProperty()
+            .addListener((_, _, newValue) -> {
+                final var lifetime =
+                    validatePeriodOrLifeTime(newValue);
+
+                if (lifetime.isPresent()) {
+                    viewModel.getHabitat()
+                        .updateTruckLifeTime(lifetime.get());
+                    truckLifetimeInput.setError(false);
+                } else {
+                    truckLifetimeInput.setError(true);
+                }
+            });
+        truckLifetimeInput
+            .comboBoxValueProperty()
+            .addListener((_, _, newValue) ->
+                findTimeUnitMatch(newValue).ifPresent(timeUnit ->
+                    viewModel.getHabitat()
+                        .updateTruckLifeTimeUnit(timeUnit)
+                )
+            );
+        truckLifetimeInput
+            .textFieldFocusedProperty()
+            .addListener((_, _, focused) ->
+                onInputRowFocusChange(
+                    focused,
+                    truckLifetimeInput,
+                    Configuration.TRUCK_LIFETIME,
+                    Configuration.TRUCK_LIFETIME_TIME_UNIT
+                )
+            );
+
+        carLifetimeInput
+            .textProperty()
+            .addListener((_, _, newValue) -> {
+                final var lifetime =
+                    validatePeriodOrLifeTime(newValue);
+
+                if (lifetime.isPresent()) {
+                    viewModel.getHabitat()
+                        .updateCarLifeTime(lifetime.get());
+                    carLifetimeInput.setError(false);
+                } else {
+                    carLifetimeInput.setError(true);
+                }
+            });
+        carLifetimeInput
+            .comboBoxValueProperty()
+            .addListener((_, _, newValue) ->
+                findTimeUnitMatch(newValue).ifPresent(timeUnit ->
+                    viewModel.getHabitat()
+                        .updateCarLifeTimeUnit(timeUnit)
+                )
+            );
+        carLifetimeInput
+            .textFieldFocusedProperty()
+            .addListener((_, _, focused) ->
+                onInputRowFocusChange(
+                    focused,
+                    carLifetimeInput,
+                    Configuration.CAR_LIFETIME,
+                    Configuration.CAR_LIFETIME_TIME_UNIT
+                )
+            );
     }
 
-    private Optional<Integer> validatePeriod(final String newPeriod) {
+    private Optional<Integer> validatePeriodOrLifeTime(
+        final String newValue
+    ) {
         try {
-            final var period = Integer.parseUnsignedInt(newPeriod);
-            if (period > 0) {
-                return Optional.of(period);
+            final var value = Integer.parseUnsignedInt(newValue);
+            if (value > 0) {
+                return Optional.of(value);
             }
         } catch (final NumberFormatException _) {
         }
@@ -467,7 +568,7 @@ public final class SimulationViewController implements Initializable {
 
         final var fieldText = input.getFieldText();
 
-        if (validatePeriod(fieldText).isPresent()) {
+        if (validatePeriodOrLifeTime(fieldText).isPresent()) {
             return;
         }
 
@@ -517,6 +618,11 @@ public final class SimulationViewController implements Initializable {
         );
         menuToggleTime.setAccelerator(KeyCodeCombination.valueOf(
             resources.getString("label.controls.keybind.time"))
+        );
+        menuCurrentObjects.setAccelerator(KeyCodeCombination.valueOf(
+            resources.getString(
+                "label.controls.keybind.current.objects")
+            )
         );
     }
 

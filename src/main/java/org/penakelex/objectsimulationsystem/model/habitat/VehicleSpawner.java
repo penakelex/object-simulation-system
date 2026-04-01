@@ -12,11 +12,17 @@ import java.util.concurrent.ThreadLocalRandom;
 public final class VehicleSpawner<T extends Vehicle> {
     private int period;
     private TimeUnit periodTimeUnit;
+
     private double probability;
+
+    private int lifeTime;
+    private TimeUnit lifeTimeUnit;
+
     private final VehicleFactory<T> factory;
     private final VehicleImages images;
 
     private int periodMillis;
+    private long lifeTimeMillis;
 
     private final Class<T> vehicleType;
 
@@ -27,6 +33,8 @@ public final class VehicleSpawner<T extends Vehicle> {
         final int period,
         final TimeUnit periodTimeUnit,
         final double probability,
+        final int lifeTime,
+        final TimeUnit lifeTimeUnit,
         final VehicleFactory<T> factory,
         final VehicleImages images,
         final Class<T> vehicleType
@@ -34,11 +42,14 @@ public final class VehicleSpawner<T extends Vehicle> {
         this.period = period;
         this.periodTimeUnit = periodTimeUnit;
         this.probability = probability;
+        this.lifeTime = lifeTime;
+        this.lifeTimeUnit = lifeTimeUnit;
         this.factory = factory;
         this.images = images;
         this.vehicleType = vehicleType;
 
         updatePeriodMillis();
+        updateLifeTimeMillis();
     }
 
     public Class<T> getVehicleType() {
@@ -61,6 +72,21 @@ public final class VehicleSpawner<T extends Vehicle> {
 
     public void updateProbability(final double probability) {
         this.probability = probability;
+    }
+
+    public void updateLifeTime(final int lifeTime) {
+        this.lifeTime = lifeTime;
+        updateLifeTimeMillis();
+    }
+
+    public void updateLifeTimeUnit(final TimeUnit lifeTimeUnit) {
+        this.lifeTimeUnit = lifeTimeUnit;
+        updateLifeTimeMillis();
+    }
+
+    private void updateLifeTimeMillis() {
+        lifeTimeMillis =
+            (long) lifeTime * lifeTimeUnit.millisModifier;
     }
 
     public List<T> trySpawn(
@@ -96,6 +122,7 @@ public final class VehicleSpawner<T extends Vehicle> {
                     position.getLeft(),
                     position.getRight(),
                     currentTimeMillis,
+                    lifeTimeMillis,
                     images.getRandomImage()
                 )
             );

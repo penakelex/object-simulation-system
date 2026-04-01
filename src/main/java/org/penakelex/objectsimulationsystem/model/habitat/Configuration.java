@@ -8,9 +8,15 @@ public final class Configuration {
     public static final int TRUCK_SPAWN_PERIOD;
     public static final TimeUnit TRUCK_SPAWN_TIME_UNIT;
     public static final double TRUCK_SPAWN_PROBABILITY;
+    public static final int TRUCK_LIFETIME;
+    public static final TimeUnit TRUCK_LIFETIME_TIME_UNIT;
+
     public static final int CAR_SPAWN_PERIOD;
     public static final TimeUnit CAR_SPAWN_TIME_UNIT;
     public static final double CAR_SPAWN_PROBABILITY;
+    public static final int CAR_LIFETIME;
+    public static final TimeUnit CAR_LIFETIME_TIME_UNIT;
+
     public static final double VEHICLE_RELATIVE_SIZE;
     public static final int VEHICLE_IMAGE_SIZE;
     public static final String VEHICLE_IMAGES_BASE_PATH;
@@ -36,6 +42,16 @@ public final class Configuration {
             "habitat.truck.spawn.probability",
             "Truck spawn"
         );
+        TRUCK_LIFETIME = validatePositiveInt(
+            configuration,
+            "habitat.truck.lifetime",
+            "Truck lifetime"
+        );
+        TRUCK_LIFETIME_TIME_UNIT = validateTimeUnitString(
+            configuration,
+            "habitat.truck.lifetime.time.unit"
+        );
+
         CAR_SPAWN_PERIOD = validatePositiveInt(
             configuration,
             "habitat.car.spawn.period",
@@ -50,6 +66,16 @@ public final class Configuration {
             "habitat.car.spawn.probability",
             "Car spawn"
         );
+        CAR_LIFETIME = validatePositiveInt(
+            configuration,
+            "habitat.car.lifetime",
+            "Car lifetime"
+        );
+        CAR_LIFETIME_TIME_UNIT = validateTimeUnitString(
+            configuration,
+            "habitat.car.lifetime.time.unit"
+        );
+
         VEHICLE_RELATIVE_SIZE = validateRange(
             configuration,
             "vehicle.relative.size",

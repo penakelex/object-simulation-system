@@ -213,6 +213,28 @@
 }
 
 /* ========================================
+    Current objects button
+======================================== */
+.current-objects-button .icon {
+    -fx-icon-color: -fx-lifetime-icon-color;
+}
+
+.current-objects-button:hover {
+    -fx-background-color: rgba(156, 39, 176, 0.12);
+    -fx-effect: dropshadow(gaussian, rgba(156, 39, 176, 0.25), 8, 0, 0, 2);
+}
+
+.current-objects-button:pressed {
+    -fx-background-color: rgba(156, 39, 176, 0.30);
+    -fx-effect: dropshadow(gaussian, rgba(156, 39, 176, 0.25), 4, 0, 0, 1);
+}
+
+.current-objects-button:hover .icon,
+.current-objects-button:pressed .icon {
+    -fx-icon-color: -fx-lifetime-icon-color;
+}
+
+/* ========================================
     Tooltip для ToolbarButton
 ======================================== */
 .toolbar-button .tooltip {

@@ -79,6 +79,25 @@ public abstract sealed class VehicleInvalidParameter implements
         }
     }
 
+    public static final class LifeTime
+        extends VehicleInvalidParameter
+    {
+        private final long lifeTime;
+
+        public LifeTime(final long lifeTime) {
+            this.lifeTime = lifeTime;
+        }
+
+        public long getLifeTime() {
+            return lifeTime;
+        }
+
+        @Override
+        public Object getParameterValue() {
+            return lifeTime;
+        }
+    }
+
     public static final class Image extends VehicleInvalidParameter {
         @Override
         public Object getParameterValue() {

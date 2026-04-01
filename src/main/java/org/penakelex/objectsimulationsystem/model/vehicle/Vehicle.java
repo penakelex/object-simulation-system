@@ -16,6 +16,7 @@ public abstract sealed class Vehicle implements IBehaviour
     protected final int id;
     protected final double relativeX, relativeY;
     protected final long spawnTime;
+    protected final long lifetime;
     protected final Image image;
 
     private final double imageWidth, imageHeight;
@@ -28,6 +29,7 @@ public abstract sealed class Vehicle implements IBehaviour
         final double relativeX,
         final double relativeY,
         final long spawnTime,
+        final long lifetime,
         final Image image
     ) {
         final var invalidParameters = validateParameters(
@@ -35,6 +37,7 @@ public abstract sealed class Vehicle implements IBehaviour
             relativeX,
             relativeY,
             spawnTime,
+            lifetime,
             image
         );
 
@@ -46,6 +49,7 @@ public abstract sealed class Vehicle implements IBehaviour
         this.relativeX = relativeX;
         this.relativeY = relativeY;
         this.spawnTime = spawnTime;
+        this.lifetime = lifetime;
         this.image = image;
 
         this.imageWidth = image.getWidth();
@@ -57,43 +61,54 @@ public abstract sealed class Vehicle implements IBehaviour
         final double relativeX,
         final double relativeY,
         final long spawnTime,
+        final long lifetime,
         final Image image
     ) {
         List<VehicleInvalidParameter> invalidParameters = null;
 
         if (id < 0) {
-            invalidParameters = new ArrayList<>(5);
+            invalidParameters = new ArrayList<>(6);
             invalidParameters.add(new VehicleInvalidParameter.Id(id));
         }
 
         if (relativeX < 0 || relativeX > 1) {
             if (invalidParameters == null) {
-                invalidParameters = new ArrayList<>(4);
+                invalidParameters = new ArrayList<>(5);
             }
 
-            invalidParameters.add(new VehicleInvalidParameter.RelativeX(
-                relativeX
-            ));
+            invalidParameters.add(
+                new VehicleInvalidParameter.RelativeX(relativeX)
+            );
         }
 
         if (relativeY < 0 || relativeY > 1) {
             if (invalidParameters == null) {
-                invalidParameters = new ArrayList<>(3);
+                invalidParameters = new ArrayList<>(4);
             }
 
-            invalidParameters.add(new VehicleInvalidParameter.RelativeY(
-                relativeY
-            ));
+            invalidParameters.add(
+                new VehicleInvalidParameter.RelativeY(relativeY)
+            );
         }
 
         if (spawnTime < 0) {
             if (invalidParameters == null) {
+                invalidParameters = new ArrayList<>(3);
+            }
+
+            invalidParameters.add(
+                new VehicleInvalidParameter.SpawnTime(spawnTime)
+            );
+        }
+
+        if (lifetime <= 0) {
+            if (invalidParameters == null) {
                 invalidParameters = new ArrayList<>(2);
             }
 
-            invalidParameters.add(new VehicleInvalidParameter.SpawnTime(
-                spawnTime
-            ));
+            invalidParameters.add(
+                new VehicleInvalidParameter.LifeTime(lifetime)
+            );
         }
 
         if (image == null) {
@@ -105,6 +120,28 @@ public abstract sealed class Vehicle implements IBehaviour
         }
 
         return invalidParameters;
+    }
+
+    public boolean isExpired(final long currentTime) {
+        return currentTime - spawnTime >= lifetime;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public long getSpawnTime() {
+        return spawnTime;
+    }
+
+    public long getLifetime() {
+        return lifetime;
+    }
+
+    public long getRemainingTime(final long currentTime) {
+        return isExpired(currentTime)
+            ? 0
+            : lifetime - (currentTime - spawnTime);
     }
 
     public void onCanvasSizeUpdated(

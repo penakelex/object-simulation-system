@@ -199,3 +199,56 @@
     -fx-min-width: 500;
     -fx-pref-width: 550;
 }
+
+/* ✅ Стили для ListView в диалоге */
+.dialog-list-view {
+    -fx-font-size: 13px;
+    -fx-background-color: rgba(255, 255, 255, 0.95);
+    -fx-border-color: -fx-separator-color;
+    -fx-border-width: 1;
+    -fx-border-radius: 6;
+    -fx-background-radius: 6;
+    -fx-padding: 8;
+}
+
+.dialog-list-view .list-cell {
+    -fx-background-color: transparent;
+    -fx-padding: 8 12;
+    -fx-border-color: -fx-separator-color;
+    -fx-border-width: 0 0 1 0;
+}
+
+.dialog-list-view .list-cell:last-visible {
+    -fx-border-width: 0;
+}
+
+.dialog-list-view .list-cell:selected {
+    -fx-background-color: -fx-menubar-hover-bg;
+}
+
+/* ✅ Контейнер ячейки */
+.vehicle-info-cell {
+    -fx-spacing: 4;
+    -fx-padding: 4 0;
+}
+
+/* ✅ ID объекта */
+.vehicle-id {
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-text-fill: -fx-text-color-dark;
+}
+
+/* ✅ Время рождения */
+.vehicle-spawn-time {
+    -fx-font-size: 11px;
+    -fx-text-fill: -fx-period-icon-color;
+}
+
+/* ✅ Размер диалога текущих объектов */
+.current-objects-dialog-pane {
+    -fx-min-width: 500;
+    -fx-pref-width: 550;
+    -fx-min-height: 400;
+    -fx-pref-height: 450;
+}

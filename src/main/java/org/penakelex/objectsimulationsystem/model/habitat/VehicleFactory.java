@@ -10,6 +10,7 @@ public interface VehicleFactory<T extends Vehicle> {
         final double relativeX,
         final double relativeY,
         final long spawnTime,
+        final long lifeTime,
         final Image image
     );
 }

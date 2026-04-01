@@ -53,7 +53,7 @@
             <MenuItem fx:id="menuStart"
                       text="%menu.simulation.start"
                       onAction="#startSimulation"
-                      accelerator="B">
+                      accelerator="%label.controls.keybind.start">
                 <graphic>
                     <FontIcon iconLiteral="fas-play" iconSize="14"/>
                 </graphic>
@@ -61,7 +61,7 @@
             <MenuItem fx:id="menuPause"
                       text="%menu.simulation.pause"
                       onAction="#pauseSimulation"
-                      accelerator="P">
+                      accelerator="%label.controls.keybind.pause">
                 <graphic>
                     <FontIcon iconLiteral="fas-pause" iconSize="14"/>
                 </graphic>
@@ -69,7 +69,7 @@
             <MenuItem fx:id="menuStop"
                       text="%menu.simulation.stop"
                       onAction="#stopSimulation"
-                      accelerator="E">
+                      accelerator="%label.controls.keybind.stop">
                 <graphic>
                     <FontIcon iconLiteral="fas-stop" iconSize="14"/>
                 </graphic>
@@ -78,7 +78,7 @@
             <MenuItem fx:id="menuRestart"
                       text="%menu.simulation.restart"
                       onAction="#restartSimulation"
-                      accelerator="R">
+                      accelerator="%label.controls.keybind.restart">
                 <graphic>
                     <FontIcon iconLiteral="fas-redo" iconSize="14"/>
                 </graphic>
@@ -92,7 +92,7 @@
             <CheckMenuItem fx:id="menuToggleTime"
                            text="%menu.view.show.time"
                            onAction="#toggleTimeDisplay"
-                           accelerator="T"
+                           accelerator="label.controls.keybind.time"
                            selected="true">
                 <graphic>
                     <FontIcon fx:id="menuTimeIcon"
@@ -100,6 +100,17 @@
                               styleClass="menu-icon, menu-icon-time-active"/>
                 </graphic>
             </CheckMenuItem>
+
+            <SeparatorMenuItem/>
+
+            <MenuItem fx:id="menuCurrentObjects"
+                      text="%menu.view.current.objects"
+                      onAction="#showCurrentObjectsDialog"
+                      accelerator="%label.controls.keybind.current.objects">
+                <graphic>
+                    <FontIcon iconLiteral="fas-list" iconSize="14"/>
+                </graphic>
+            </MenuItem>
         </Menu>
 
         <Menu text="%menu.help" mnemonicParsing="false">
@@ -156,6 +167,13 @@
                 keyBind="%label.controls.keybind.time"
                 onAction="#toggleTimeDisplay"
                 styleClass="time-toggle-button"/>
+
+        <ToolbarButton
+                iconLiteral="fas-list"
+                actionText="%label.controls.current.objects"
+                keyBind="%label.controls.keybind.current.objects"
+                onAction="#showCurrentObjectsDialog"
+                styleClass="current-objects-button"/>
     </ToolBar>
 
     <HBox VBox.vgrow="ALWAYS">
@@ -178,12 +196,15 @@
                             <LabeledInputRow fx:id="truckPeriodInput"
                                              iconLiteral="fas-clock"
                                              labelText="%label.generation.period"
-                                             styleClass="period-row"
-                                             promptText="%placeholder.period.millis"/>
+                                             styleClass="period-row"/>
                             <LabeledProbabilityBox fx:id="truckProbabilityBox"
                                                    iconLiteral="fas-percentage"
                                                    labelText="%label.generation.probability"
                                                    styleClass="probability-row"/>
+                            <LabeledInputRow fx:id="truckLifetimeInput"
+                                             iconLiteral="fas-hourglass-half"
+                                             labelText="%label.lifetime"
+                                             styleClass="lifetime-row"/>
                         </IconedSection>
                         <IconedSection iconLiteral="fas-car"
                                        title="%label.cars"
@@ -191,12 +212,15 @@
                             <LabeledInputRow fx:id="carPeriodInput"
                                              iconLiteral="fas-clock"
                                              labelText="%label.generation.period"
-                                             styleClass="period-row"
-                                             promptText="%placeholder.period.millis"/>
+                                             styleClass="period-row"/>
                             <LabeledProbabilityBox fx:id="carProbabilityBox"
                                                    iconLiteral="fas-percentage"
                                                    labelText="%label.generation.probability"
                                                    styleClass="probability-row"/>
+                            <LabeledInputRow fx:id="carLifetimeInput"
+                                             iconLiteral="fas-hourglass-half"
+                                             labelText="%label.lifetime"
+                                             styleClass="lifetime-row"/>
                         </IconedSection>
                     </IconedSection>
 
