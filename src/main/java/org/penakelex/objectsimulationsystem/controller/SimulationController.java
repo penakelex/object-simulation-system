@@ -51,8 +51,7 @@ public class SimulationController implements Initializable {
 
     @FXML private RadioButton showTimeRadio, hideTimeRadio;
 
-    @FXML private final ToggleGroup timeToggleGroup =
-        new ToggleGroup();
+    @FXML final ToggleGroup timeToggleGroup = new ToggleGroup();
 
     @FXML private CheckBox showStatisticsCheckBox;
 
@@ -61,8 +60,6 @@ public class SimulationController implements Initializable {
         carProbabilityBox;
 
     private Stage stage;
-
-    private boolean showStatisticsDialogEnabled = false;
 
     private AnimationTimer gameTimer;
     private Habitat habitat;
@@ -151,7 +148,7 @@ public class SimulationController implements Initializable {
         showStatisticsCheckBox
             .selectedProperty()
             .addListener((_, _, newValue) ->
-                showStatisticsDialogEnabled = newValue
+                showStatisticsCheckBox.setSelected(newValue)
             );
     }
 
@@ -339,7 +336,8 @@ public class SimulationController implements Initializable {
             .stream(TimeUnit.values())
             .filter(timeUnit -> resources
                 .getString(timeUnit.messageKey)
-                .equals(stringTimeUnit))
+                .equals(stringTimeUnit)
+            )
             .findFirst();
     }
 
@@ -426,7 +424,7 @@ public class SimulationController implements Initializable {
 
         SimulationView.setNodeVisible(infoContainer, false);
 
-        if (showStatisticsDialogEnabled) {
+        if (showStatisticsCheckBox.isSelected()) {
             SimulationView.setStatusTimeVisible(false,
                 statusTimeContainer,
                 statusContainer
@@ -448,6 +446,7 @@ public class SimulationController implements Initializable {
 
             if (!shouldStop) {
                 stateModel.setState(SimulationState.Running);
+                stateModel.startTimer();
                 gameTimer.start();
                 SimulationView.setNodeVisible(infoContainer, true);
                 return;
@@ -507,7 +506,14 @@ public class SimulationController implements Initializable {
         final var alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle(resources.getString("menu.help.about"));
         alert.setHeaderText(resources.getString("application.title"));
-        alert.setContentText(resources.getString("label.about"));
+
+        final var descriptionLabel =
+            new Label(resources.getString("label.about"));
+        descriptionLabel.getStyleClass().add("about-dialog-info");
+
+        alert.getDialogPane().setContent(descriptionLabel);
+        alert.getDialogPane().getStyleClass().add("dialog-pane");
+
         alert.showAndWait();
     }
 

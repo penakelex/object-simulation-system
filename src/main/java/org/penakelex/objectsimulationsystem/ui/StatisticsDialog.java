@@ -22,59 +22,60 @@ public final class StatisticsDialog {
         final var alert = new Alert(Alert.AlertType.INFORMATION);
         alert.initOwner(owner);
         alert.initModality(Modality.APPLICATION_MODAL);
-        alert.setTitle(
-            resources.getString("dialog.statistics.title")
-        );
-        alert.setHeaderText(
-            resources.getString("dialog.statistics.header")
-        );
+        alert.setTitle(resources.getString(
+            "dialog.statistics.title"
+        ));
+        alert.setHeaderText(resources.getString(
+            "dialog.statistics.header"
+        ));
 
-        final var content = new VBox(10);
-        content.setStyle("-fx-padding: 10;");
+        final var content = new VBox();
+        content.getStyleClass().add("dialog-content");
 
         final var textArea = new TextArea();
         textArea.setEditable(false);
         textArea.setWrapText(true);
-        textArea.setStyle(
-            "-fx-font-size: 14px; -fx-font-family: 'Consolas', monospace;");
+        textArea.getStyleClass().add("dialog-text-area");
 
-        final var timeFormatted = resources
-            .getString("format.time.milliseconds")
-            .formatted(elapsedTime);
+        final var text = resources
+            .getString("dialog.statistics.content")
+            .formatted(
+                statistics.trucks(),
+                statistics.cars(),
+                statistics.total(),
+                TimeFormatter.formatTime(elapsedTime, resources)
+            );
 
-        final var text =
-            resources.getString("dialog.statistics.content")
-                .formatted(
-                    statistics.trucks(),
-                    statistics.cars(),
-                    statistics.total(),
-                    timeFormatted
-                );
-
-        textArea.setPrefRowCount((int) text.lines().count());
-        textArea.setPrefColumnCount(text
-            .lines()
+        final var lines = text.lines().count();
+        final var maxLineLength = text.lines()
             .map(String::length)
             .max(Integer::compareTo)
-            .orElse(0)
-        );
+            .orElse(0);
+
+        textArea.setPrefRowCount((int) lines);
+        textArea.setPrefColumnCount(maxLineLength);
+        textArea.setText(text);
 
         content.getChildren().add(textArea);
-        alert.getDialogPane().setContent(content);
+        final var alertDialogPane = alert.getDialogPane();
+        alertDialogPane.setContent(content);
+        alertDialogPane.getStyleClass().add("dialog-pane");
+        alertDialogPane.getStyleClass()
+            .add("statistics-dialog-pane");
 
-        final var okButton = new ButtonType(
+        final var okButtonType = new ButtonType(
             resources.getString("dialog.button.ok"),
             ButtonBar.ButtonData.OK_DONE
         );
-        final var cancelButton = new ButtonType(
+        final var cancelButtonType = new ButtonType(
             resources.getString("dialog.button.cancel"),
             ButtonBar.ButtonData.CANCEL_CLOSE
         );
+        alert.getButtonTypes().setAll(okButtonType, cancelButtonType);
 
-        alert.getButtonTypes().setAll(okButton, cancelButton);
-
-        return alert.showAndWait()
-            .filter(buttonType -> buttonType == okButton)
+        final var result = alert.showAndWait();
+        return result
+            .filter(type -> type == okButtonType)
             .isPresent();
     }
 }

@@ -1,0 +1,201 @@
+/* ========================================
+Диалоговые окна - Базовые стили
+======================================== */
+
+/* Контейнер содержимого диалога */
+.dialog-content {
+    -fx-padding: 15;
+    -fx-spacing: 10;
+    -fx-background-color: transparent;
+}
+
+/* TextArea в диалогах статистики */
+.dialog-text-area {
+    -fx-font-size: 14px;
+    -fx-font-family: "Consolas", "Courier New", monospace;
+    -fx-text-fill: -fx-text-color-dark;
+    -fx-background-color: rgba(255, 255, 255, 0.95);
+    -fx-border-color: -fx-separator-color;
+    -fx-border-width: 1;
+    -fx-border-radius: 6;
+    -fx-background-radius: 6;
+    -fx-padding: 12;
+    -fx-wrap-text: true;
+    -fx-pref-width: 450;
+    -fx-pref-height: 200;
+    -fx-min-width: 400;
+    -fx-min-height: 180;
+}
+
+.dialog-text-area .content {
+    -fx-background-color: transparent;
+}
+
+.dialog-text-area .scroll-pane {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+}
+
+.dialog-text-area .scroll-pane .viewport {
+    -fx-background-color: transparent;
+}
+
+/* ========================================
+Панель кнопок диалога
+======================================== */
+
+.dialog-button-bar {
+    -fx-spacing: 15;
+    -fx-padding: 10 15 15 15;
+    -fx-alignment: center;
+}
+
+/* Кнопки диалога */
+.dialog-button {
+    -fx-background-color: -fx-base-blue-color;
+    -fx-text-fill: white;
+    -fx-font-size: 13px;
+    -fx-font-weight: 600;
+    -fx-padding: 10 25;
+    -fx-background-radius: 6;
+    -fx-border-radius: 6;
+    -fx-cursor: hand;
+    -fx-min-width: 120;
+    -fx-pref-width: 140;
+    -fx-max-width: 180;
+    -fx-alignment: center;
+}
+
+.dialog-button:hover {
+    -fx-background-color: -fx-radio-dark-blue;
+    -fx-effect: dropshadow(gaussian, rgba(33, 150, 243, 0.4), 8, 0, 0, 2);
+}
+
+.dialog-button:pressed {
+    -fx-background-color: -fx-radio-light-blue;
+    -fx-effect: dropshadow(gaussian, rgba(33, 150, 243, 0.3), 4, 0, 0, 1);
+}
+
+/* Кнопка OK */
+.dialog-button.default-button {
+    -fx-background-color: -fx-base-blue-color;
+}
+
+.dialog-button.default-button:hover {
+    -fx-background-color: -fx-radio-dark-blue;
+}
+
+/* Кнопка Cancel */
+.dialog-button.cancel-button {
+    -fx-background-color: -fx-text-color-light;
+}
+
+.dialog-button.cancel-button:hover {
+    -fx-background-color: #888888;
+}
+
+/* ========================================
+Диалог ошибки
+======================================== */
+.error-dialog-message {
+    -fx-font-size: 14px;
+    -fx-text-fill: -fx-status-stopped;
+    -fx-wrap-text: true;
+}
+
+/* ========================================
+Диалог "О программе"
+======================================== */
+
+.about-dialog-info {
+    -fx-font-size: 12px;
+    -fx-text-fill: -fx-text-color-light;
+    -fx-line-spacing: 4;
+}
+
+/* ========================================
+Общий стиль для всех диалогов
+======================================== */
+
+.dialog-pane {
+    -fx-background-color: white;
+    -fx-padding: 0;
+}
+
+.dialog-pane .header-panel {
+    -fx-background-color: -fx-menubar-bg;
+    -fx-border-color: -fx-separator-color;
+    -fx-border-width: 0 0 1 0;
+    -fx-padding: 12 15;
+}
+
+.dialog-pane .header-panel .label {
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-text-fill: -fx-text-color-dark;
+}
+
+.dialog-pane .content {
+    -fx-padding: 0;
+}
+
+/* Увеличиваем минимальный размер диалога статистики */
+.statistics-dialog-pane {
+    -fx-min-width: 500;
+    -fx-pref-width: 550;
+}
+
+/* ========================================
+Панель кнопок диалога
+======================================== */
+
+.dialog-pane .button-bar {
+    -fx-padding: 15 15 10 15;
+    -fx-spacing: 15;
+    -fx-alignment: center;
+}
+
+/* Кнопки диалога */
+.dialog-pane .button {
+    -fx-background-color: -fx-base-blue-color;
+    -fx-text-fill: white;
+    -fx-font-size: 13px;
+    -fx-font-weight: 600;
+    -fx-padding: 10 25;
+    -fx-background-radius: 6;
+    -fx-border-radius: 6;
+    -fx-cursor: hand;
+    -fx-min-width: 120;
+    -fx-pref-width: 140;
+    -fx-max-width: 180;
+}
+
+.dialog-pane .button:hover {
+    -fx-background-color: -fx-radio-dark-blue;
+    -fx-effect: dropshadow(gaussian, rgba(33, 150, 243, 0.4), 8, 0, 0, 2);
+}
+
+.dialog-pane .button:pressed {
+    -fx-background-color: -fx-radio-light-blue;
+    -fx-effect: dropshadow(gaussian, rgba(33, 150, 243, 0.3), 4, 0, 0, 1);
+}
+
+/* Кнопка OK */
+.dialog-pane .button.default-button {
+    -fx-background-color: -fx-base-blue-color;
+}
+
+/* Кнопка Cancel */
+.dialog-pane .button.cancel-button {
+    -fx-background-color: -fx-text-color-light;
+}
+
+.dialog-pane .button.cancel-button:hover {
+    -fx-background-color: #888888;
+}
+
+/* Увеличиваем минимальный размер диалога статистики */
+.statistics-dialog-pane {
+    -fx-min-width: 500;
+    -fx-pref-width: 550;
+}

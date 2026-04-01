@@ -240,6 +240,7 @@
                                        title="%label.show.statistics.title">
                             <CheckBox fx:id="showStatisticsCheckBox"
                                       text="%label.show.statistics"
+                                      selected="true"
                                       styleClass="statistics-checkbox"/>
                         </IconedSection>
                     </IconedSection>

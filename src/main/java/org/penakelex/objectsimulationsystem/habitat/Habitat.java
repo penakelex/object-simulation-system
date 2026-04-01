@@ -143,7 +143,8 @@ public final class Habitat {
         }
     }
 
-    private Pair<Double, Double> generateVehicleStartingRelativePosition() {
+    private Pair<Double, Double>
+    generateVehicleStartingRelativePosition() {
         return Pair.of(
             random.nextDouble() * MAX_RELATIVE_VEHICLE_POSITION,
             random.nextDouble() * MAX_RELATIVE_VEHICLE_POSITION
@@ -168,6 +169,7 @@ public final class Habitat {
         if (this.width == width && this.height == height) {
             return;
         }
+
         this.width = width;
         this.height = height;
         for (final var vehicle : vehicleCollection.getAll()) {

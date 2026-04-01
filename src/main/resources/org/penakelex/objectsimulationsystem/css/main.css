@@ -8,6 +8,7 @@
 @import url("toolbar.css");
 @import url("radio_button.css");
 @import url("menubar.css");
+@import url("dialogs.css");
 
 .root {
     /* ====== Базовые цвета ====== */
@@ -79,8 +80,8 @@
 
     /* ====== RadioButton цвета ====== */
     -fx-radio-border-color: #999999;
-    -fx-radio-dark-blue: #1565C0;      /* Hover */
-    -fx-radio-light-blue: #42A5F5;     /* Selected */
+    -fx-radio-dark-blue: #1565C0;
+    -fx-radio-light-blue: #42A5F5;
     -fx-radio-white: white;
 
     /* ====== RadioButton фоны (прозрачные) ====== */

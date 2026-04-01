@@ -9,9 +9,9 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import org.kordamp.ikonli.javafx.FontIcon;
 import org.penakelex.objectsimulationsystem.habitat.Habitat;
-import org.penakelex.objectsimulationsystem.habitat.TimeUnit;
 import org.penakelex.objectsimulationsystem.habitat.VehicleStatistics;
 import org.penakelex.objectsimulationsystem.ui.LabeledValueRow;
+import org.penakelex.objectsimulationsystem.ui.TimeFormatter;
 
 import java.util.ResourceBundle;
 
@@ -122,46 +122,10 @@ public final class SimulationView {
         final LabeledValueRow statusTimeRow
     ) {
         if (showTime) {
-            final var builder = new StringBuilder();
-
-            final var minutes = elapsedTime / 60_000;
-            final var seconds = elapsedTime / 1000 % 60;
-            final var millis = elapsedTime % 1000;
-
-            if (minutes > 0) {
-                builder.append(resources
-                    .getString("format.time")
-                    .formatted(
-                        minutes,
-                        resources
-                            .getString(TimeUnit.Minutes.messageKey)
-                    )
-                );
-                builder.append(' ');
-            }
-
-            if (seconds > 0) {
-                builder.append(resources
-                    .getString("format.time")
-                    .formatted(
-                        seconds,
-                        resources
-                            .getString(TimeUnit.Seconds.messageKey)
-                    )
-                );
-                builder.append(' ');
-            }
-
-            builder.append(resources
-                .getString("format.time")
-                .formatted(
-                    millis,
-                    resources
-                        .getString(TimeUnit.Millis.messageKey)
-                )
-            );
-
-            statusTimeRow.setValue(builder.toString());
+            statusTimeRow.setValue(TimeFormatter.formatTime(
+                elapsedTime,
+                resources
+            ));
         }
     }
 

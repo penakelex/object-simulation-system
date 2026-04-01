@@ -2,6 +2,7 @@ package org.penakelex.objectsimulationsystem.ui;
 
 import javafx.application.Platform;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Label;
 
 import java.text.MessageFormat;
 import java.util.Arrays;
@@ -25,7 +26,13 @@ public final class ErrorDialog {
                 ? headerText
                 : getErrorString(resources, "error.header")
         );
-        alert.setContentText(contentText);
+
+        final var message = new Label(contentText);
+        message.getStyleClass().add("error-dialog-message");
+        alert.getDialogPane().setContent(message);
+
+        alert.getDialogPane().getStyleClass().add("dialog-pane");
+
         alert.showAndWait();
         Platform.exit();
     }
