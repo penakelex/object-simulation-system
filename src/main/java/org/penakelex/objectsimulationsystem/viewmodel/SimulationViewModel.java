@@ -8,7 +8,6 @@ import org.penakelex.objectsimulationsystem.model.vehicle.images.TruckImages;
 import java.util.function.Consumer;
 
 public final class SimulationViewModel {
-
     private final ObjectProperty<SimulationState> state =
         new SimpleObjectProperty<>(SimulationState.Stopped);
 
@@ -82,6 +81,11 @@ public final class SimulationViewModel {
         }
 
         startTime = System.currentTimeMillis() - elapsedTime.get();
+
+        if (habitat != null) {
+            habitat.startAI();
+        }
+
         setState(SimulationState.Running);
     }
 
@@ -90,12 +94,20 @@ public final class SimulationViewModel {
             return;
         }
 
+        if (habitat != null) {
+            habitat.stopAI();
+        }
         setState(SimulationState.Stopped);
     }
 
     public void pauseSimulation() {
         if (state.get() != SimulationState.Running) {
             return;
+        }
+
+        if (habitat != null) {
+            habitat.pauseTruckAI();
+            habitat.pauseCarAI();
         }
 
         setState(SimulationState.Paused);
@@ -168,6 +180,42 @@ public final class SimulationViewModel {
     private void setState(final SimulationState newState) {
         if (state.get() != newState) {
             state.set(newState);
+        }
+    }
+
+    public void pauseTruckAI() {
+        if (habitat != null) {
+            habitat.pauseTruckAI();
+        }
+    }
+
+    public void resumeTruckAI() {
+        if (habitat != null) {
+            habitat.resumeTruckAI();
+        }
+    }
+
+    public void pauseCarAI() {
+        if (habitat != null) {
+            habitat.pauseCarAI();
+        }
+    }
+
+    public void resumeCarAI() {
+        if (habitat != null) {
+            habitat.resumeCarAI();
+        }
+    }
+
+    public void setTruckAIPriority(final int priority) {
+        if (habitat != null) {
+            habitat.setTruckAIPriority(priority);
+        }
+    }
+
+    public void setCarAIPriority(final int priority) {
+        if (habitat != null) {
+            habitat.setCarAIPriority(priority);
         }
     }
 }

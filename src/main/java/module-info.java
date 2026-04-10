@@ -4,6 +4,7 @@ module org.penakelex.objectsimulationsystem {
     requires org.apache.commons.lang3;
     requires org.kordamp.ikonli.javafx;
     requires org.kordamp.ikonli.fontawesome5;
+    requires java.desktop;
 
     opens org.penakelex.objectsimulationsystem to javafx.fxml;
 

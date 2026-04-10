@@ -10,12 +10,14 @@ public final class Configuration {
     public static final double TRUCK_SPAWN_PROBABILITY;
     public static final int TRUCK_LIFETIME;
     public static final TimeUnit TRUCK_LIFETIME_TIME_UNIT;
+    public static final int TRUCK_MOVEMENT_SPEED;
 
     public static final int CAR_SPAWN_PERIOD;
     public static final TimeUnit CAR_SPAWN_TIME_UNIT;
     public static final double CAR_SPAWN_PROBABILITY;
     public static final int CAR_LIFETIME;
     public static final TimeUnit CAR_LIFETIME_TIME_UNIT;
+    public static final int CAR_MOVEMENT_SPEED;
 
     public static final double VEHICLE_RELATIVE_SIZE;
     public static final int VEHICLE_IMAGE_SIZE;
@@ -51,6 +53,11 @@ public final class Configuration {
             configuration,
             "habitat.truck.lifetime.time.unit"
         );
+        TRUCK_MOVEMENT_SPEED = validatePositiveInt(
+            configuration,
+            "habitat.truck.movement.speed",
+            "Truck movement speed"
+        );
 
         CAR_SPAWN_PERIOD = validatePositiveInt(
             configuration,
@@ -74,6 +81,11 @@ public final class Configuration {
         CAR_LIFETIME_TIME_UNIT = validateTimeUnitString(
             configuration,
             "habitat.car.lifetime.time.unit"
+        );
+        CAR_MOVEMENT_SPEED = validatePositiveInt(
+            configuration,
+            "habitat.car.movement.speed",
+            "Car movement speed"
         );
 
         VEHICLE_RELATIVE_SIZE = validateRange(
@@ -109,12 +121,14 @@ public final class Configuration {
     private static int validatePositiveInt(
         final ResourceBundle config,
         final String key,
-        final String paramName
+        final String parameterName
     ) {
         final var value = Integer.parseInt(config.getString(key));
         if (value < 1) {
             throw new IllegalArgumentException(
-                "%s must be positive: %d".formatted(paramName, value)
+                "%s must be positive: %d".formatted(
+                    parameterName, value
+                )
             );
         }
         return value;
@@ -123,13 +137,13 @@ public final class Configuration {
     private static double validateProbability(
         final ResourceBundle config,
         final String key,
-        final String paramName
+        final String parameterName
     ) {
         final var value = Double.parseDouble(config.getString(key));
         if (value <= 0.0 || value > 1.0) {
             throw new IllegalArgumentException(
                 "%s probability must be in [0, 1]: %f".formatted(
-                    paramName, value
+                    parameterName, value
                 )
             );
         }
@@ -139,7 +153,7 @@ public final class Configuration {
     private static double validateRange(
         final ResourceBundle config,
         final String key,
-        final String paramName,
+        final String parameterName,
         final double min,
         final double max
     ) {
@@ -147,7 +161,7 @@ public final class Configuration {
         if (value <= min || value > max) {
             throw new IllegalArgumentException(
                 "%s must be in (%f, %f]: %f"
-                    .formatted(paramName, min, max, value)
+                    .formatted(parameterName, min, max, value)
             );
         }
         return value;

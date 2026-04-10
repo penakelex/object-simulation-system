@@ -204,3 +204,15 @@
     -fx-translate-x: 2;
     -fx-translate-y: 2;
 }
+
+
+.ai-button {
+    -fx-background-color: -fx-base-blue-color;
+    -fx-text-fill: white;
+    -fx-font-size: 12px;
+    -fx-padding: 4 10;
+    -fx-background-radius: 4;
+    -fx-min-width: 30;
+}
+.ai-button:hover { -fx-background-color: -fx-radio-dark-blue; }
+.ai-button:disabled { -fx-opacity: 0.6; }

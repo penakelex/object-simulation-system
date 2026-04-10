@@ -2,6 +2,8 @@ package org.penakelex.objectsimulationsystem.model.habitat;
 
 import javafx.scene.canvas.GraphicsContext;
 import org.apache.commons.lang3.tuple.Pair;
+import org.penakelex.objectsimulationsystem.model.ai.CarAI;
+import org.penakelex.objectsimulationsystem.model.ai.TruckAI;
 import org.penakelex.objectsimulationsystem.model.collection.VehicleCollection;
 import org.penakelex.objectsimulationsystem.model.habitat.exceptions.HabitatCreationException;
 import org.penakelex.objectsimulationsystem.model.habitat.exceptions.HabitatInvalidParameter;
@@ -27,6 +29,9 @@ public final class Habitat {
     private final VehicleSpawner<Car> carSpawner;
     private final
     List<VehicleSpawner<? extends Vehicle>> vehicleSpawners;
+
+    private TruckAI truckAI;
+    private CarAI carAI;
 
     private final Random random = ThreadLocalRandom.current();
     private final VehicleCollection vehicleCollection;
@@ -184,10 +189,6 @@ public final class Habitat {
         if (!expiredIDs.isEmpty()) {
             vehicleCollection.removeByIds(expiredIDs);
         }
-
-        for (final var vehicle : vehicleCollection.getAll()) {
-            vehicle.update(currentTimeMillis);
-        }
     }
 
     private Pair<Double, Double>
@@ -196,6 +197,78 @@ public final class Habitat {
             random.nextDouble() * MAX_RELATIVE_VEHICLE_POSITION,
             random.nextDouble() * MAX_RELATIVE_VEHICLE_POSITION
         );
+    }
+
+    public void startAI() {
+        truckAI = new TruckAI(() -> vehicleCollection
+            .getAll()
+            .stream()
+            .filter(vehicle -> vehicle instanceof Truck)
+            .map(vehicle -> (Truck) vehicle)
+            .toList(),
+            Configuration.TRUCK_MOVEMENT_SPEED,
+            width,
+            height
+        );
+        carAI = new CarAI(() -> vehicleCollection
+            .getAll()
+            .stream()
+            .filter(vehicle -> vehicle instanceof Car)
+            .map(vehicle -> (Car) vehicle)
+            .toList(),
+            Configuration.CAR_MOVEMENT_SPEED,
+            width,
+            height
+        );
+
+        truckAI.start();
+        carAI.start();
+    }
+
+    public void stopAI() {
+        if (truckAI != null) {
+            truckAI.stop();
+        }
+
+        if (carAI != null) {
+            carAI.stop();
+        }
+    }
+
+    public void pauseTruckAI() {
+        if (truckAI != null) {
+            truckAI.pause();
+        }
+    }
+
+    public void resumeTruckAI() {
+        if (truckAI != null) {
+            truckAI.resume();
+        }
+    }
+
+    public void pauseCarAI() {
+        if (carAI != null) {
+            carAI.pause();
+        }
+    }
+
+    public void resumeCarAI() {
+        if (carAI != null) {
+            carAI.resume();
+        }
+    }
+
+    public void setTruckAIPriority(final int priority) {
+        if (truckAI != null) {
+            truckAI.setPriority(priority);
+        }
+    }
+
+    public void setCarAIPriority(final int priority) {
+        if (carAI != null) {
+            carAI.setPriority(priority);
+        }
     }
 
     public void draw(final GraphicsContext context) {
@@ -209,6 +282,7 @@ public final class Habitat {
         trucksCount = 0;
         carsCount = 0;
         statisticsDirty = true;
+        stopAI();
         vehicleSpawners.forEach(VehicleSpawner::reset);
     }
 

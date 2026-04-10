@@ -27,6 +27,7 @@ import org.penakelex.objectsimulationsystem.viewmodel.SimulationViewModel;
 
 import java.net.URL;
 import java.util.ResourceBundle;
+import java.util.stream.IntStream;
 
 public final class SimulationViewController implements Initializable {
     @FXML private MenuItem menuStart, menuRestart, menuStop,
@@ -52,6 +53,8 @@ public final class SimulationViewController implements Initializable {
         carProbabilityBox;
     @FXML private LabeledInputRow truckLifetimeInput,
         carLifetimeInput;
+    @FXML private ComboBox<Integer> comboTruckPriority,
+        comboCarPriority;
 
     private SimulationViewModel viewModel;
     private AnimationTimer gameTimer;
@@ -105,6 +108,9 @@ public final class SimulationViewController implements Initializable {
 
         setupLayoutListener();
         updateUIState(viewModel.getState());
+
+        initPriorityComboBoxes();
+        bindAIControls();
     }
 
     private void bindUI() {
@@ -124,6 +130,34 @@ public final class SimulationViewController implements Initializable {
             simulationCanvas,
             simulationField
         );
+    }
+
+    private void initPriorityComboBoxes() {
+        var priorities = IntStream.rangeClosed(1, 10)
+            .boxed()
+            .toList();
+
+        comboTruckPriority.getItems().addAll(priorities);
+        comboCarPriority.getItems().addAll(priorities);
+        comboTruckPriority.setValue(Thread.NORM_PRIORITY);
+        comboCarPriority.setValue(Thread.NORM_PRIORITY);
+    }
+
+    private void bindAIControls() {
+        comboTruckPriority.valueProperty()
+            .addListener((_, _, newValue) -> {
+                if (viewModel.getHabitat() != null &&
+                    newValue != null) {
+                    viewModel.setTruckAIPriority(newValue);
+                }
+            });
+        comboCarPriority.valueProperty()
+            .addListener((_, _, newValue) -> {
+                if (viewModel.getHabitat() != null &&
+                    newValue != null) {
+                    viewModel.setCarAIPriority(newValue);
+                }
+            });
     }
 
     @FXML
@@ -222,6 +256,26 @@ public final class SimulationViewController implements Initializable {
             viewModel.getHabitat().getVehicleCollection(),
             resources
         );
+    }
+
+    @FXML
+    private void pauseTruckAI() {
+        viewModel.pauseTruckAI();
+    }
+
+    @FXML
+    private void resumeTruckAI() {
+        viewModel.resumeTruckAI();
+    }
+
+    @FXML
+    private void pauseCarAI() {
+        viewModel.pauseCarAI();
+    }
+
+    @FXML
+    private void resumeCarAI() {
+        viewModel.resumeCarAI();
     }
 
     private void updateUIState(final SimulationState state) {

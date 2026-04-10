@@ -14,15 +14,23 @@ public abstract sealed class Vehicle implements IBehaviour
     permits Truck, Car
 {
     protected final int id;
-    protected final double relativeX, relativeY;
+    protected final double spawnRelativeX, spawnRelativeY;
     protected final long spawnTime;
     protected final long lifetime;
     protected final Image image;
 
     private final double imageWidth, imageHeight;
 
-    private double absoluteX, absoluteY;
+    private double currentRelativeX, currentRelativeY;
+    private double targetRelativeX, targetRelativeY;
+
+    private double canvasWidth, canvasHeight;
     private double scaledWidth, scaledHeight;
+
+    private double movementSpeed;
+    private volatile boolean hasTarget = false;
+    private volatile boolean arrived = false;
+    private volatile boolean initialized = false;
 
     public Vehicle(
         final int id,
@@ -33,12 +41,7 @@ public abstract sealed class Vehicle implements IBehaviour
         final Image image
     ) {
         final var invalidParameters = validateParameters(
-            id,
-            relativeX,
-            relativeY,
-            spawnTime,
-            lifetime,
-            image
+            id, relativeX, relativeY, spawnTime, lifetime, image
         );
 
         if (invalidParameters != null) {
@@ -46,12 +49,11 @@ public abstract sealed class Vehicle implements IBehaviour
         }
 
         this.id = id;
-        this.relativeX = relativeX;
-        this.relativeY = relativeY;
+        this.spawnRelativeX = relativeX;
+        this.spawnRelativeY = relativeY;
         this.spawnTime = spawnTime;
         this.lifetime = lifetime;
         this.image = image;
-
         this.imageWidth = image.getWidth();
         this.imageHeight = image.getHeight();
     }
@@ -105,10 +107,8 @@ public abstract sealed class Vehicle implements IBehaviour
             if (invalidParameters == null) {
                 invalidParameters = new ArrayList<>(2);
             }
-
-            invalidParameters.add(
-                new VehicleInvalidParameter.LifeTime(lifetime)
-            );
+            invalidParameters
+                .add(new VehicleInvalidParameter.LifeTime(lifetime));
         }
 
         if (image == null) {
@@ -116,7 +116,8 @@ public abstract sealed class Vehicle implements IBehaviour
                 invalidParameters = new ArrayList<>(1);
             }
 
-            invalidParameters.add(new VehicleInvalidParameter.Image());
+            invalidParameters
+                .add(new VehicleInvalidParameter.Image());
         }
 
         return invalidParameters;
@@ -138,40 +139,102 @@ public abstract sealed class Vehicle implements IBehaviour
         return lifetime;
     }
 
-    public long getRemainingTime(final long currentTime) {
-        return isExpired(currentTime)
-            ? 0
-            : lifetime - (currentTime - spawnTime);
-    }
-
-    public void onCanvasSizeUpdated(
-        final double canvasWidth,
-        final double canvasHeight
+    public synchronized void onCanvasSizeUpdated(
+        final double width,
+        final double height
     ) {
-        this.absoluteX = this.relativeX * canvasWidth;
-        this.absoluteY = this.relativeY * canvasHeight;
+        this.canvasWidth = width;
+        this.canvasHeight = height;
+
+        if (!initialized) {
+            this.currentRelativeX = this.spawnRelativeX;
+            this.currentRelativeY = this.spawnRelativeY;
+            this.initialized = true;
+        }
 
         final var imageScale = Math.min(
-            canvasWidth * Configuration.VEHICLE_RELATIVE_SIZE /
-                imageWidth,
-            canvasHeight * Configuration.VEHICLE_RELATIVE_SIZE /
-                imageHeight
+            width * Configuration.VEHICLE_RELATIVE_SIZE / imageWidth,
+            height * Configuration.VEHICLE_RELATIVE_SIZE / imageHeight
         );
 
-        scaledWidth = imageWidth * imageScale;
-        scaledHeight = imageHeight * imageScale;
+        this.scaledWidth = imageWidth * imageScale;
+        this.scaledHeight = imageHeight * imageScale;
+    }
+
+    public synchronized void setMovementSpeed(final double speed) {
+        this.movementSpeed = speed;
+    }
+
+    public synchronized void setTarget(
+        final double absoluteTargetX,
+        final double absoluteTargetY
+    ) {
+        if (canvasWidth > 0 && canvasHeight > 0) {
+            this.targetRelativeX = absoluteTargetX / canvasWidth;
+            this.targetRelativeY = absoluteTargetY / canvasHeight;
+            this.hasTarget = true;
+            this.arrived = false;
+        }
+    }
+
+    public synchronized boolean hasTarget() {
+        return hasTarget;
+    }
+
+    public boolean isArrived() {
+        return arrived;
+    }
+
+    public synchronized double getAbsoluteX() {
+        return currentRelativeX * canvasWidth;
+    }
+
+    public synchronized double getAbsoluteY() {
+        return currentRelativeY * canvasHeight;
+    }
+
+    public synchronized void markArrived() {
+        this.arrived = true;
+        this.hasTarget = false;
     }
 
     @Override
-    public void update(final long time) {
+    public synchronized void update(final long currentTime) {
+    }
+
+    public synchronized void move(final double deltaTimeSeconds) {
+        if (!hasTarget || arrived || canvasWidth <= 0) {
+            return;
+        }
+
+        double absoluteX = currentRelativeX * canvasWidth;
+        double absoluteY = currentRelativeY * canvasHeight;
+        final double absoluteTargetX = targetRelativeX * canvasWidth;
+        final double absoluteTargetY = targetRelativeY * canvasHeight;
+
+        final double dx = absoluteTargetX - absoluteX;
+        final double dy = absoluteTargetY - absoluteY;
+        final double distance = Math.hypot(dx, dy);
+        final double step = movementSpeed * deltaTimeSeconds;
+
+        if (distance <= step) {
+            absoluteX = absoluteTargetX;
+            absoluteY = absoluteTargetY;
+            arrived = true;
+        } else {
+            absoluteX += (dx / distance) * step;
+            absoluteY += (dy / distance) * step;
+        }
+
+        currentRelativeX = absoluteX / canvasWidth;
+        currentRelativeY = absoluteY / canvasHeight;
     }
 
     @Override
-    public void draw(final GraphicsContext context) {
-        context.drawImage(
-            image,
-            absoluteX,
-            absoluteY,
+    public synchronized void draw(final GraphicsContext context) {
+        context.drawImage(image,
+            currentRelativeX * canvasWidth,
+            currentRelativeY * canvasHeight,
             scaledWidth,
             scaledHeight
         );
