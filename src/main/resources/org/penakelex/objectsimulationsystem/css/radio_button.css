@@ -46,10 +46,7 @@
     -fx-effect: dropshadow(gaussian, -fx-radio-focus-shadow, 8, 0, 0, 2);
 }
 
-.radio-button {
-    -fx-text-fill: -fx-text-color-dark;
-}
-
+/* Состояния текста */
 .radio-button:hover {
     -fx-text-fill: -fx-radio-dark-blue;
     -fx-font-weight: 600;
@@ -60,7 +57,6 @@
     -fx-font-weight: 600;
 }
 
-/* При наведении на выбранный - тёмный синий */
 .radio-button:selected:hover {
     -fx-text-fill: -fx-radio-dark-blue;
 }

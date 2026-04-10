@@ -1,6 +1,6 @@
 /* ========================================
-   IconedSection
-   ======================================== */
+    IconedSection
+======================================== */
 .iconed-section {
     -fx-spacing: 5;
     -fx-background-color: transparent;
@@ -30,11 +30,16 @@
 }
 
 /* ========================================
-   LabeledValueRow
-   ======================================== */
+    LabeledValueRow
+======================================== */
 .labeled-value-row {
     -fx-alignment: center-left;
     -fx-spacing: 10;
+}
+
+.labeled-value-row .label,
+.labeled-value-row .row-value {
+    -fx-font-size: 13px;
 }
 
 .labeled-value-row .label {
@@ -46,18 +51,13 @@
     -fx-text-alignment: right;
 }
 
-.labeled-value-row .label,
-.labeled-value-row .row-value {
-    -fx-font-size: 13px;
-}
-
 .labeled-value-row .icon {
     -fx-icon-size: 14px;
 }
 
 /* ========================================
-   KeyActionRow
-   ======================================== */
+    KeyActionRow
+======================================== */
 .key-action-pair {
     -fx-alignment: center-left;
     -fx-spacing: 8;
@@ -69,7 +69,7 @@
 }
 
 /* ========================================
-Statistics CheckBox
+    Statistics CheckBox
 ======================================== */
 .statistics-checkbox {
     -fx-font-size: 13px;
@@ -105,7 +105,7 @@ Statistics CheckBox
 }
 
 /* ========================================
-LabeledInputRow
+    LabeledInputRow
 ======================================== */
 .labeled-input-row {
     -fx-alignment: center-left;
@@ -151,6 +151,15 @@ LabeledInputRow
     -fx-pref-width: 70;
 }
 
+.labeled-input-row .combobox:hover {
+    -fx-border-color: -fx-base-blue-color;
+}
+
+.labeled-input-row .combobox:focused {
+    -fx-border-color: -fx-base-blue-color;
+    -fx-effect: dropshadow(gaussian, rgba(33, 150, 243, 0.3), 5, 0, 0, 1);
+}
+
 .labeled-input-row .combobox .arrow-button {
     -fx-background-color: transparent;
     -fx-border-color: transparent;
@@ -171,15 +180,6 @@ LabeledInputRow
 
 .labeled-input-row .combobox > .text-field > .text {
     -fx-padding: 0 2 0 0;
-}
-
-.labeled-input-row .combobox:hover {
-    -fx-border-color: -fx-base-blue-color;
-}
-
-.labeled-input-row .combobox:focused {
-    -fx-border-color: -fx-base-blue-color;
-    -fx-effect: dropshadow(gaussian, rgba(33, 150, 243, 0.3), 5, 0, 0, 1);
 }
 
 /* ========================================
@@ -218,40 +218,4 @@ LabeledInputRow
 
 .labeled-probability-box .combobox .arrow {
     -fx-background-color: -fx-text-color-light;
-}
-
-/* ========================================
-Statistics CheckBox
-======================================== */
-.statistics-checkbox {
-    -fx-font-size: 13px;
-    -fx-text-fill: -fx-text-color-dark;
-    -fx-padding: 8 0;
-    -fx-cursor: hand;
-}
-
-.statistics-checkbox .box {
-    -fx-background-color: -fx-radio-white;
-    -fx-border-color: -fx-radio-border-color;
-    -fx-border-width: 2;
-    -fx-border-radius: 3;
-    -fx-background-radius: 3;
-    -fx-padding: 2;
-    -fx-min-width: 16;
-    -fx-min-height: 16;
-}
-
-.statistics-checkbox:hover .box {
-    -fx-border-color: -fx-radio-dark-blue;
-    -fx-background-color: -fx-radio-hover-bg;
-}
-
-.statistics-checkbox:selected .box {
-    -fx-background-color: -fx-radio-light-blue;
-    -fx-border-color: -fx-radio-light-blue;
-}
-
-.statistics-checkbox:selected .mark {
-    -fx-background-color: -fx-radio-white;
-    -fx-shape: "M0,4 L3,7 L9,0";
 }

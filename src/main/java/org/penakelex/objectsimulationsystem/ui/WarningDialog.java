@@ -4,7 +4,6 @@ import javafx.geometry.Point2D;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.TextArea;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -14,23 +13,21 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import org.kordamp.ikonli.javafx.FontIcon;
-import org.penakelex.objectsimulationsystem.model.habitat.VehicleStatistics;
+import org.penakelex.objectsimulationsystem.SimulationApplication;
 import org.penakelex.objectsimulationsystem.ui.helpers.MutableHolder;
 
 import java.util.ResourceBundle;
 
-public final class StatisticsDialog {
-    private StatisticsDialog() {
+public final class WarningDialog {
+    private WarningDialog() {
         throw new UnsupportedOperationException("Utility class");
     }
 
-    public static boolean showStatisticsDialog(
+    public static void showWarning(
         final Stage ownerStage,
-        final VehicleStatistics simulationStatistics,
-        final long elapsedTimeInMillis,
-        final ResourceBundle localizedResources
+        final ResourceBundle localizedResources,
+        final String warningMessage
     ) {
-        final var dialogResult = new MutableHolder<>(false);
         final var dialogStage = new Stage();
 
         dialogStage.initOwner(ownerStage);
@@ -40,22 +37,13 @@ public final class StatisticsDialog {
         final var rootContainer = createRootContainer();
         rootContainer.getChildren().addAll(
             createHeaderContainer(localizedResources, dialogStage),
-            createStatisticsContentContainer(simulationStatistics,
-                elapsedTimeInMillis,
-                localizedResources
-            ),
-            createButtonBarContainer(localizedResources,
-                dialogResult,
-                dialogStage
-            )
+            createWarningContentContainer(warningMessage),
+            createButtonBarContainer(localizedResources, dialogStage)
         );
 
         final var dialogScene = new Scene(rootContainer);
-        dialogScene
-            .getStylesheets()
-            .addAll(ownerStage.getScene().getStylesheets());
+        applyStylesheets(dialogScene, ownerStage);
 
-        // Закрытие по Escape
         dialogScene.setOnKeyPressed(event -> {
             if (event.getCode() == KeyCode.ESCAPE) {
                 dialogStage.close();
@@ -66,15 +54,11 @@ public final class StatisticsDialog {
         dialogStage.sizeToScene();
         dialogStage.centerOnScreen();
         dialogStage.showAndWait();
-
-        return dialogResult.getContainedValue();
     }
 
     private static VBox createRootContainer() {
         final var container = new VBox();
-        container
-            .getStyleClass()
-            .addAll("dialog-pane", "statistics-dialog-pane");
+        container.getStyleClass().addAll("dialog-pane");
         return container;
     }
 
@@ -85,8 +69,9 @@ public final class StatisticsDialog {
         final var headerContainer = new HBox();
         headerContainer.getStyleClass().add("dialog-header");
 
-        final var titleLabel = new Label(localizedResources.getString(
-            "dialog.statistics.header"));
+        final var titleLabel = new Label(localizedResources
+            .getString("error.title")
+        );
         titleLabel.getStyleClass().add("dialog-header-label");
 
         final var spacer = new Region();
@@ -97,8 +82,7 @@ public final class StatisticsDialog {
         closeButton.setGraphic(new FontIcon("fas-times"));
         closeButton.setOnAction(_ -> dialogStage.close());
 
-        headerContainer
-            .getChildren()
+        headerContainer.getChildren()
             .addAll(titleLabel, spacer, closeButton);
         setupWindowDragging(headerContainer, dialogStage);
 
@@ -127,60 +111,55 @@ public final class StatisticsDialog {
         });
     }
 
-    private static VBox createStatisticsContentContainer(
-        final VehicleStatistics statistics,
-        final long elapsedTimeInMillis,
-        final ResourceBundle resources
+    private static VBox createWarningContentContainer(
+        final String warningMessage
     ) {
         final var contentContainer = new VBox();
         contentContainer.getStyleClass().add("dialog-content");
 
-        final var statisticsTextArea = new TextArea();
-        statisticsTextArea.setEditable(false);
-        statisticsTextArea.setWrapText(true);
-        statisticsTextArea.setFocusTraversable(false);
-        statisticsTextArea.getStyleClass().add("dialog-text-area");
+        final var messageLabel = new Label(warningMessage);
+        messageLabel.getStyleClass().add("error-dialog-message");
+        messageLabel.setWrapText(true);
+        messageLabel.setFocusTraversable(false);
 
-        final var formattedContent = resources
-            .getString("dialog.statistics.content")
-            .formatted(
-                statistics.trucks(),
-                statistics.cars(),
-                statistics.total(),
-                TimeFormatter.formatTime(elapsedTimeInMillis,
-                    resources
-                )
-            );
-        statisticsTextArea.setText(formattedContent);
-
-        contentContainer.getChildren().add(statisticsTextArea);
+        contentContainer.getChildren().add(messageLabel);
         return contentContainer;
     }
 
     private static HBox createButtonBarContainer(
-        final ResourceBundle resources,
-        final MutableHolder<Boolean> operationResult,
+        final ResourceBundle localizedResources,
         final Stage dialogStage
     ) {
         final var buttonBarContainer = new HBox();
         buttonBarContainer.getStyleClass().add("dialog-button-bar");
 
-        final var cancelButton =
-            new Button(resources.getString("dialog.button.cancel"));
-        cancelButton.getStyleClass().add("cancel");
-        cancelButton.setOnAction(_ -> dialogStage.close());
+        final var okButton = new Button(localizedResources
+            .getString("dialog.button.ok")
+        );
+        okButton.setDefaultButton(true);
+        okButton.setOnAction(_ -> dialogStage.close());
 
-        final var confirmButton =
-            new Button(resources.getString("dialog.button.ok"));
-        confirmButton.setDefaultButton(true);
-        confirmButton.setOnAction(_ -> {
-            operationResult.setContainedValue(true);
-            dialogStage.close();
-        });
-
-        buttonBarContainer
-            .getChildren()
-            .addAll(cancelButton, confirmButton);
+        buttonBarContainer.getChildren().add(okButton);
         return buttonBarContainer;
+    }
+
+    private static void applyStylesheets(
+        final Scene dialogScene,
+        final Stage ownerStage
+    ) {
+        if (ownerStage != null && ownerStage.getScene() != null) {
+            final var ownerStylesheets =
+                ownerStage.getScene().getStylesheets();
+            if (!ownerStylesheets.isEmpty()) {
+                dialogScene.getStylesheets().addAll(ownerStylesheets);
+                return;
+            }
+        }
+
+        final var cssURL = SimulationApplication.class
+            .getResource("css/main.css");
+        if (cssURL != null) {
+            dialogScene.getStylesheets().add(cssURL.toExternalForm());
+        }
     }
 }

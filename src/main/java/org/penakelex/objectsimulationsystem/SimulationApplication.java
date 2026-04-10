@@ -5,6 +5,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import org.penakelex.objectsimulationsystem.ui.ErrorDialog;
 import org.penakelex.objectsimulationsystem.view.SimulationViewController;
 import org.penakelex.objectsimulationsystem.model.habitat.Configuration;
 import org.penakelex.objectsimulationsystem.model.vehicle.images.CarImages;
@@ -15,7 +16,6 @@ import java.util.Objects;
 import java.util.ResourceBundle;
 
 import static org.penakelex.objectsimulationsystem.ui.ErrorDialog.getErrorString;
-import static org.penakelex.objectsimulationsystem.ui.ErrorDialog.showErrorAndExit;
 
 public class SimulationApplication extends Application {
     @Override
@@ -25,13 +25,11 @@ public class SimulationApplication extends Application {
         try {
             resources = ResourceBundle.getBundle("messages");
         } catch (final Exception exception) {
-            showErrorAndExit(
+            ErrorDialog.showErrorAndExit(
+                stage,
                 null,
-                getErrorString(
-                    null,
-                    "error.resources.not_found"
-                ),
-                exception.getLocalizedMessage()
+                getErrorString(null, "error.resources.not_found"),
+                getErrorString(null, "error.header")
             );
             return;
         }
@@ -43,7 +41,8 @@ public class SimulationApplication extends Application {
             truckImages = new TruckImages();
             carImages = new CarImages();
         } catch (final Exception exception) {
-            showErrorAndExit(
+            ErrorDialog.showErrorAndExit(
+                stage,
                 resources,
                 getErrorString(
                     resources,
@@ -51,7 +50,7 @@ public class SimulationApplication extends Application {
                     Configuration.VEHICLE_IMAGES_BASE_PATH,
                     exception.getLocalizedMessage()
                 ),
-                null
+                getErrorString(resources, "error.header")
             );
             return;
         }
@@ -67,10 +66,11 @@ public class SimulationApplication extends Application {
         try {
             root = loader.load();
         } catch (final IOException _) {
-            showErrorAndExit(
+            ErrorDialog.showErrorAndExit(
+                stage,
                 resources,
                 getErrorString(resources, "error.fxml.not_found"),
-                null
+                getErrorString(resources, "error.header")
             );
             return;
         }

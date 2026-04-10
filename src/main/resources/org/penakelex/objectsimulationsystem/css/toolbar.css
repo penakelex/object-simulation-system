@@ -30,38 +30,25 @@
     -fx-effect: null;
 }
 
-/* ========================================
-    ToolbarButton - Hover (общий)
-======================================== */
+.toolbar-button .icon {
+    -fx-icon-size: 15px;
+    -fx-icon-color: -fx-text-color-dark;
+    -fx-transition: -fx-icon-color 0.15s ease-out;
+}
+
 .toolbar-button:hover {
     -fx-effect: dropshadow(gaussian, -fx-toolbar-time-shadow, 8, 0, 0, 2);
 }
 
-/* ========================================
-    ToolbarButton - Pressed (общий)
-======================================== */
 .toolbar-button:pressed {
     -fx-effect: dropshadow(gaussian, -fx-toolbar-time-shadow, 4, 0, 0, 1);
 }
 
-/* ========================================
-    ToolbarButton - Focused (убираем визуальный эффект)
-======================================== */
 .toolbar-button:focused {
     -fx-background-color: rgba(33, 150, 243, 0.25);
     -fx-effect: dropshadow(gaussian, rgba(33, 150, 243, 0.5), 12, 0, 0, 3);
     -fx-border-color: transparent;
     -fx-border-width: 0;
-}
-
-
-/* ========================================
-    Toolbar Icon
-======================================== */
-.toolbar-button .icon {
-    -fx-icon-size: 15px;
-    -fx-icon-color: -fx-text-color-dark;
-    -fx-transition: -fx-icon-color 0.15s ease-out;
 }
 
 .toolbar-button:hover .icon {
@@ -73,7 +60,7 @@
 }
 
 /* ========================================
-    Start Button - Зеленый
+    Start Button
 ======================================== */
 .start-button .icon {
     -fx-icon-color: -fx-status-running;
@@ -84,28 +71,22 @@
     -fx-effect: dropshadow(gaussian, -fx-toolbar-start-shadow, 8, 0, 0, 2);
 }
 
-.start-button:pressed:hover,
 .start-button:pressed {
     -fx-background-color: -fx-toolbar-start-bg-pressed;
     -fx-effect: dropshadow(gaussian, -fx-toolbar-start-shadow, 4, 0, 0, 1);
 }
 
-.start-button:focused {
-    -fx-background-color: -fx-toolbar-start-bg-hover;
-    -fx-effect: dropshadow(gaussian, -fx-toolbar-start-shadow, 12, 0, 0, 3);
-}
-
 .start-button:hover .icon,
-.start-button:focused .icon,
-.start-button:pressed .icon {
+.start-button:pressed .icon,
+.start-button:focused .icon {
     -fx-icon-color: -fx-base-green-color;
 }
 
 /* ========================================
-    Stop Button - Красный
+    Stop Button
 ======================================== */
 .stop-button .icon,
-.stop-button:focused .icon{
+.stop-button:focused .icon {
     -fx-icon-color: -fx-status-stopped;
 }
 
@@ -114,25 +95,19 @@
     -fx-effect: dropshadow(gaussian, -fx-toolbar-stop-shadow, 8, 0, 0, 2);
 }
 
-.stop-button:pressed:hover,
 .stop-button:pressed {
     -fx-background-color: -fx-toolbar-stop-bg-pressed;
     -fx-effect: dropshadow(gaussian, -fx-toolbar-stop-shadow, 4, 0, 0, 1);
 }
 
-.stop-button:focused {
-    -fx-background-color: -fx-toolbar-stop-bg-hover;
-    -fx-effect: dropshadow(gaussian, -fx-toolbar-stop-shadow, 12, 0, 0, 3);
-}
-
 .stop-button:hover .icon,
-.stop-button:focused .icon,
-.stop-button:pressed .icon {
+.stop-button:pressed .icon,
+.stop-button:focused .icon {
     -fx-icon-color: -fx-base-red-color;
 }
 
 /* ========================================
-    Pause Button - Оранжевый
+    Pause Button
 ======================================== */
 .pause-button .icon {
     -fx-icon-color: -fx-status-paused;
@@ -143,25 +118,19 @@
     -fx-effect: dropshadow(gaussian, -fx-toolbar-pause-shadow, 8, 0, 0, 2);
 }
 
-.pause-button:pressed:hover,
 .pause-button:pressed {
     -fx-background-color: -fx-toolbar-pause-bg-pressed;
     -fx-effect: dropshadow(gaussian, -fx-toolbar-pause-shadow, 4, 0, 0, 1);
 }
 
-.pause-button:focused {
-    -fx-background-color: -fx-toolbar-pause-bg-hover;
-    -fx-effect: dropshadow(gaussian, -fx-toolbar-pause-shadow, 12, 0, 0, 3);
-}
-
 .pause-button:hover .icon,
-.pause-button:focused .icon,
-.pause-button:pressed .icon {
+.pause-button:pressed .icon,
+.pause-button:focused .icon {
     -fx-icon-color: -fx-base-orange-color;
 }
 
 /* ========================================
-    Time Toggle Button - Синий
+    Time Toggle Button
 ======================================== */
 .time-toggle-button .icon {
     -fx-icon-color: -fx-base-blue-color;
@@ -172,19 +141,13 @@
     -fx-effect: dropshadow(gaussian, -fx-toolbar-time-shadow, 8, 0, 0, 2);
 }
 
-.time-toggle-button:pressed:hover,
 .time-toggle-button:pressed {
     -fx-background-color: -fx-toolbar-time-bg-pressed;
     -fx-effect: dropshadow(gaussian, -fx-toolbar-time-shadow, 4, 0, 0, 1);
 }
 
-.time-toggle-button:focused {
-    -fx-background-color: -fx-toolbar-time-bg-hover;
-    -fx-effect: dropshadow(gaussian, -fx-toolbar-time-shadow, 12, 0, 0, 3);
-}
-
 /* ========================================
-    Restart Button - Зеленый (как Start)
+    Restart Button
 ======================================== */
 .restart-button .icon {
     -fx-icon-color: -fx-status-running;
@@ -195,20 +158,14 @@
     -fx-effect: dropshadow(gaussian, -fx-toolbar-restart-shadow, 8, 0, 0, 2);
 }
 
-.restart-button:pressed:hover,
 .restart-button:pressed {
     -fx-background-color: -fx-toolbar-restart-bg-pressed;
     -fx-effect: dropshadow(gaussian, -fx-toolbar-restart-shadow, 4, 0, 0, 1);
 }
 
-.restart-button:focused {
-    -fx-background-color: -fx-toolbar-restart-bg-hover;
-    -fx-effect: dropshadow(gaussian, -fx-toolbar-restart-shadow, 12, 0, 0, 3);
-}
-
 .restart-button:hover .icon,
-.restart-button:focused .icon,
-.restart-button:pressed .icon {
+.restart-button:pressed .icon,
+.restart-button:focused .icon {
     -fx-icon-color: -fx-base-green-color;
 }
 

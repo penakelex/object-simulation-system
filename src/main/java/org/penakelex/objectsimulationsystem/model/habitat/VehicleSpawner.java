@@ -94,15 +94,13 @@ public final class VehicleSpawner<T extends Vehicle> {
         final RelativePositionGenerator relativePositionGenerator,
         final IdSupplier idSupplier
     ) {
-        final var elapsedSinceLastSpawn =
-            currentTimeMillis - lastSpawnTime;
+        final var spawnsNeeded =
+            (int) ((currentTimeMillis - lastSpawnTime) /
+                periodMillis);
 
-        if (elapsedSinceLastSpawn < periodMillis) {
+        if (spawnsNeeded == 0) {
             return List.of();
         }
-
-        final var spawnsNeeded =
-            (int) (elapsedSinceLastSpawn / periodMillis);
 
         lastSpawnTime += (long) spawnsNeeded * periodMillis;
 
@@ -121,7 +119,7 @@ public final class VehicleSpawner<T extends Vehicle> {
                     idSupplier.getNextId(),
                     position.getLeft(),
                     position.getRight(),
-                    currentTimeMillis,
+                    lastSpawnTime,
                     lifeTimeMillis,
                     images.getRandomImage()
                 )

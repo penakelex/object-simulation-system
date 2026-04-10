@@ -1,15 +1,82 @@
 /* ========================================
-Диалоговые окна - Базовые стили
+    Кастомный диалог - Базовая структура
 ======================================== */
+.dialog-pane {
+    -fx-background-color: #f9f9f9;
+    -fx-border-color: -fx-separator-color;
+    -fx-border-width: 1;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.15), 15, 0, 0, 5);
+    -fx-padding: 0;
+    -fx-min-width: 400;
+    -fx-pref-width: 450;
+    -fx-border-radius: 0;
+    -fx-background-radius: 0;
+}
 
-/* Контейнер содержимого диалога */
+/* ========================================
+    Хедер диалога
+======================================== */
+.dialog-header {
+    -fx-background-color: -fx-menubar-bg;
+    -fx-border-color: -fx-separator-color;
+    -fx-border-width: 0 0 1 0;
+    -fx-padding: 12 15;
+    -fx-alignment: center-left;
+    -fx-cursor: default;
+}
+
+.dialog-header-label {
+    -fx-font-size: 16px;
+    -fx-font-weight: 700;
+    -fx-text-fill: -fx-text-color-dark;
+}
+
+.dialog-close-button {
+    -fx-background-color: transparent;
+    -fx-padding: 4;
+    -fx-cursor: hand;
+    -fx-background-radius: 4;
+    -fx-border-radius: 4;
+    -fx-min-width: 28;
+    -fx-min-height: -fx-min-width;
+    -fx-pref-width: -fx-min-width;
+    -fx-pref-height: -fx-min-height;
+}
+
+.dialog-close-button .ikonli-font-icon {
+    -fx-icon-color: -fx-text-color-light;
+    -fx-icon-size: 16px;
+    -fx-transition: -fx-icon-color 0.15s ease-out;
+}
+
+.dialog-close-button:hover {
+    -fx-background-color: rgba(244, 67, 54, 0.1);
+}
+
+.dialog-close-button:hover .ikonli-font-icon {
+    -fx-icon-color: -fx-status-stopped;
+}
+
+.dialog-close-button:pressed {
+    -fx-background-color: rgba(244, 67, 54, 0.2);
+}
+
+.dialog-close-button:pressed .ikonli-font-icon {
+    -fx-icon-color: -fx-base-red-color;
+    -fx-effect: dropshadow(gaussian, rgba(244, 67, 54, 0.3), 4, 0, 0, 1);
+}
+
+/* ========================================
+    Контент диалога
+======================================== */
 .dialog-content {
     -fx-padding: 15;
     -fx-spacing: 10;
     -fx-background-color: transparent;
+    -fx-min-height: 0;
+    -fx-alignment: center;
 }
 
-/* TextArea в диалогах статистики */
 .dialog-text-area {
     -fx-font-size: 14px;
     -fx-font-family: "Consolas", "Courier New", monospace;
@@ -22,185 +89,95 @@
     -fx-padding: 12;
     -fx-wrap-text: true;
     -fx-pref-width: 450;
-    -fx-pref-height: 200;
-    -fx-min-width: 400;
-    -fx-min-height: 180;
+    -fx-pref-height: 180;
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
 }
 
-.dialog-text-area .content {
-    -fx-background-color: transparent;
-}
-
-.dialog-text-area .scroll-pane {
-    -fx-background-color: transparent;
-    -fx-border-color: transparent;
-}
-
+.dialog-text-area .content,
+.dialog-text-area .scroll-pane,
 .dialog-text-area .scroll-pane .viewport {
     -fx-background-color: transparent;
 }
 
 /* ========================================
-Панель кнопок диалога
+    Панель кнопок
 ======================================== */
-
 .dialog-button-bar {
-    -fx-spacing: 15;
-    -fx-padding: 10 15 15 15;
-    -fx-alignment: center;
+    -fx-padding: 12 15 15 15;
+    -fx-spacing: 10;
+    -fx-alignment: center-right;
+    -fx-background-color: transparent;
 }
 
-/* Кнопки диалога */
-.dialog-button {
+.dialog-button-bar .button {
     -fx-background-color: -fx-base-blue-color;
     -fx-text-fill: white;
     -fx-font-size: 13px;
     -fx-font-weight: 600;
-    -fx-padding: 10 25;
+    -fx-padding: 8 20;
     -fx-background-radius: 6;
     -fx-border-radius: 6;
     -fx-cursor: hand;
-    -fx-min-width: 120;
-    -fx-pref-width: 140;
-    -fx-max-width: 180;
-    -fx-alignment: center;
+    -fx-min-width: 90;
 }
 
-.dialog-button:hover {
+.dialog-button-bar .button:hover {
     -fx-background-color: -fx-radio-dark-blue;
-    -fx-effect: dropshadow(gaussian, rgba(33, 150, 243, 0.4), 8, 0, 0, 2);
+    -fx-effect: dropshadow(gaussian, rgba(33, 150, 243, 0.4), 6, 0, 0, 2);
 }
 
-.dialog-button:pressed {
+.dialog-button-bar .button:pressed {
     -fx-background-color: -fx-radio-light-blue;
-    -fx-effect: dropshadow(gaussian, rgba(33, 150, 243, 0.3), 4, 0, 0, 1);
+    -fx-effect: dropshadow(gaussian, rgba(33, 150, 243, 0.3), 3, 0, 0, 1);
 }
 
-/* Кнопка OK */
-.dialog-button.default-button {
-    -fx-background-color: -fx-base-blue-color;
+.dialog-button-bar .button.cancel {
+    -fx-background-color: transparent;
+    -fx-text-fill: -fx-text-color-light;
+    -fx-border-color: -fx-separator-color;
+    -fx-border-width: 1;
 }
 
-.dialog-button.default-button:hover {
-    -fx-background-color: -fx-radio-dark-blue;
-}
-
-/* Кнопка Cancel */
-.dialog-button.cancel-button {
-    -fx-background-color: -fx-text-color-light;
-}
-
-.dialog-button.cancel-button:hover {
-    -fx-background-color: #888888;
+.dialog-button-bar .button.cancel:hover {
+    -fx-background-color: rgba(0, 0, 0, 0.03);
+    -fx-text-fill: -fx-text-color-dark;
+    -fx-effect: none;
 }
 
 /* ========================================
-Диалог ошибки
+    Специфичные элементы
 ======================================== */
 .error-dialog-message {
     -fx-font-size: 14px;
     -fx-text-fill: -fx-status-stopped;
     -fx-wrap-text: true;
-}
-
-/* ========================================
-Диалог "О программе"
-======================================== */
-
-.about-dialog-info {
-    -fx-font-size: 12px;
-    -fx-text-fill: -fx-text-color-light;
     -fx-line-spacing: 4;
 }
 
-/* ========================================
-Общий стиль для всех диалогов
-======================================== */
-
-.dialog-pane {
-    -fx-background-color: white;
-    -fx-padding: 0;
-}
-
-.dialog-pane .header-panel {
-    -fx-background-color: -fx-menubar-bg;
-    -fx-border-color: -fx-separator-color;
-    -fx-border-width: 0 0 1 0;
-    -fx-padding: 12 15;
-}
-
-.dialog-pane .header-panel .label {
-    -fx-font-size: 16px;
-    -fx-font-weight: bold;
+.about-dialog-info {
+    -fx-font-size: 13px;
     -fx-text-fill: -fx-text-color-dark;
-}
-
-.dialog-pane .content {
-    -fx-padding: 0;
-}
-
-/* Увеличиваем минимальный размер диалога статистики */
-.statistics-dialog-pane {
-    -fx-min-width: 500;
-    -fx-pref-width: 550;
-}
-
-/* ========================================
-Панель кнопок диалога
-======================================== */
-
-.dialog-pane .button-bar {
-    -fx-padding: 15 15 10 15;
-    -fx-spacing: 15;
+    -fx-line-spacing: 5;
     -fx-alignment: center;
 }
 
-/* Кнопки диалога */
-.dialog-pane .button {
-    -fx-background-color: -fx-base-blue-color;
-    -fx-text-fill: white;
-    -fx-font-size: 13px;
-    -fx-font-weight: 600;
-    -fx-padding: 10 25;
-    -fx-background-radius: 6;
-    -fx-border-radius: 6;
-    -fx-cursor: hand;
-    -fx-min-width: 120;
-    -fx-pref-width: 140;
-    -fx-max-width: 180;
-}
-
-.dialog-pane .button:hover {
-    -fx-background-color: -fx-radio-dark-blue;
-    -fx-effect: dropshadow(gaussian, rgba(33, 150, 243, 0.4), 8, 0, 0, 2);
-}
-
-.dialog-pane .button:pressed {
-    -fx-background-color: -fx-radio-light-blue;
-    -fx-effect: dropshadow(gaussian, rgba(33, 150, 243, 0.3), 4, 0, 0, 1);
-}
-
-/* Кнопка OK */
-.dialog-pane .button.default-button {
-    -fx-background-color: -fx-base-blue-color;
-}
-
-/* Кнопка Cancel */
-.dialog-pane .button.cancel-button {
-    -fx-background-color: -fx-text-color-light;
-}
-
-.dialog-pane .button.cancel-button:hover {
-    -fx-background-color: #888888;
-}
-
-/* Увеличиваем минимальный размер диалога статистики */
+/* Размеры специфичных диалогов */
 .statistics-dialog-pane {
-    -fx-min-width: 500;
-    -fx-pref-width: 550;
+    -fx-min-width: 480;
+    -fx-pref-width: 520;
 }
 
-/* ✅ Стили для ListView в диалоге */
+.current-objects-dialog-pane {
+    -fx-min-width: 480;
+    -fx-pref-width: 520;
+    -fx-min-height: 350;
+    -fx-pref-height: 400;
+}
+
+/* ========================================
+    ListView в диалогах
+======================================== */
 .dialog-list-view {
     -fx-font-size: 13px;
     -fx-background-color: rgba(255, 255, 255, 0.95);
@@ -208,12 +185,13 @@
     -fx-border-width: 1;
     -fx-border-radius: 6;
     -fx-background-radius: 6;
-    -fx-padding: 8;
+    -fx-padding: 6;
+    -fx-min-height: 150;
 }
 
 .dialog-list-view .list-cell {
     -fx-background-color: transparent;
-    -fx-padding: 8 12;
+    -fx-padding: 8 10;
     -fx-border-color: -fx-separator-color;
     -fx-border-width: 0 0 1 0;
 }
@@ -224,31 +202,65 @@
 
 .dialog-list-view .list-cell:selected {
     -fx-background-color: -fx-menubar-hover-bg;
+    -fx-border-color: transparent;
 }
 
-/* ✅ Контейнер ячейки */
+.dialog-list-view .list-cell:empty {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+}
+
+/* Контейнер ячейки (VBox) */
 .vehicle-info-cell {
-    -fx-spacing: 4;
-    -fx-padding: 4 0;
+    -fx-spacing: 3;
+    -fx-padding: 2 0;
 }
 
-/* ✅ ID объекта */
 .vehicle-id {
-    -fx-font-size: 14px;
-    -fx-font-weight: bold;
+    -fx-font-size: 13px;
+    -fx-font-weight: 600;
     -fx-text-fill: -fx-text-color-dark;
 }
 
-/* ✅ Время рождения */
 .vehicle-spawn-time {
     -fx-font-size: 11px;
     -fx-text-fill: -fx-period-icon-color;
 }
 
-/* ✅ Размер диалога текущих объектов */
-.current-objects-dialog-pane {
-    -fx-min-width: 500;
-    -fx-pref-width: 550;
-    -fx-min-height: 400;
-    -fx-pref-height: 450;
+/* ========================================
+    Плейсхолдер пустого списка
+======================================== */
+.dialog-list-empty-label {
+    -fx-font-size: 13px;
+    -fx-text-fill: -fx-text-color-light;
+    -fx-alignment: center;
+    -fx-opacity: 0.8;
+}
+
+/* ========================================
+    ScrollBar внутри ListView диалога
+======================================== */
+.dialog-list-view .scroll-bar:vertical {
+    -fx-pref-width: 8;
+    -fx-background-color: transparent;
+}
+
+.dialog-list-view .scroll-bar:vertical .thumb {
+    -fx-background-color: #c0c0c0;
+    -fx-background-radius: 4;
+    -fx-min-height: 30;
+}
+
+.dialog-list-view .scroll-bar:vertical .thumb:hover {
+    -fx-background-color: #a0a0a0;
+}
+
+.dialog-list-view .scroll-bar:vertical .increment-button,
+.dialog-list-view .scroll-bar:vertical .decrement-button {
+    -fx-background-color: transparent;
+    -fx-padding: 0;
+}
+
+.dialog-list-view .scroll-bar:vertical .track {
+    -fx-background-color: transparent;
 }

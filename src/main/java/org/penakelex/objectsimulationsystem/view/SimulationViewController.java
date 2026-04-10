@@ -13,13 +13,12 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import org.kordamp.ikonli.javafx.FontIcon;
-import org.penakelex.objectsimulationsystem.model.habitat.Configuration;
-import org.penakelex.objectsimulationsystem.model.habitat.TimeUnit;
 import org.penakelex.objectsimulationsystem.ui.*;
 import org.penakelex.objectsimulationsystem.ui.components.LabeledInputRow;
 import org.penakelex.objectsimulationsystem.ui.components.LabeledProbabilityBox;
 import org.penakelex.objectsimulationsystem.ui.components.LabeledValueRow;
 import org.penakelex.objectsimulationsystem.ui.components.ToolbarButton;
+import org.penakelex.objectsimulationsystem.ui.helpers.ParameterPanelInitializer;
 import org.penakelex.objectsimulationsystem.ui.helpers.SimulationViewHelper;
 import org.penakelex.objectsimulationsystem.model.vehicle.images.CarImages;
 import org.penakelex.objectsimulationsystem.model.vehicle.images.TruckImages;
@@ -27,10 +26,7 @@ import org.penakelex.objectsimulationsystem.viewmodel.SimulationState;
 import org.penakelex.objectsimulationsystem.viewmodel.SimulationViewModel;
 
 import java.net.URL;
-import java.util.Arrays;
-import java.util.Optional;
 import java.util.ResourceBundle;
-import java.util.stream.IntStream;
 
 public final class SimulationViewController implements Initializable {
     @FXML private MenuItem menuStart, menuRestart, menuStop,
@@ -94,9 +90,20 @@ public final class SimulationViewController implements Initializable {
 
         initializeMenuAccelerators();
         setupTimeToggleGroup();
-        initializeInputFields();
-        setupLayoutListener();
 
+        ParameterPanelInitializer.initialize(
+            viewModel::getHabitat,
+            resources,
+            stage,
+            truckPeriodInput,
+            carPeriodInput,
+            truckProbabilityBox,
+            carProbabilityBox,
+            truckLifetimeInput,
+            carLifetimeInput
+        );
+
+        setupLayoutListener();
         updateUIState(viewModel.getState());
     }
 
@@ -192,19 +199,8 @@ public final class SimulationViewController implements Initializable {
     @FXML
     private void toggleTimeDisplay() {
         viewModel.toggleShowTime();
-        SimulationViewHelper.setStatusTimeVisible(
-            viewModel.isShowTime(),
-            statusTimeContainer,
-            statusContainer
-        );
         updateTimeRadio();
-        SimulationViewHelper.updateMenuTimeText(
-            viewModel.isShowTime(),
-            resources,
-            menuToggleTime,
-            menuTimeIcon
-        );
-        simulationCanvas.requestFocus();
+        syncTimeDisplayUI();
     }
 
     @FXML
@@ -216,24 +212,14 @@ public final class SimulationViewController implements Initializable {
 
     @FXML
     private void showAboutDialog() {
-        final var alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle(resources.getString("menu.help.about"));
-        alert.setHeaderText(resources.getString("application.title"));
-
-        final var descriptionLabel =
-            new Label(resources.getString("label.about"));
-        descriptionLabel.getStyleClass().add("about-dialog-info");
-        alert.getDialogPane().setContent(descriptionLabel);
-        alert.getDialogPane().getStyleClass().add("dialog-pane");
-        alert.showAndWait();
+        AboutDialog.showAboutDialog(stage, resources);
     }
 
     @FXML
     private void showCurrentObjectsDialog() {
         CurrentObjectsDialog.showDialog(
             stage,
-            viewModel.getHabitat()
-                .getVehicleCollection(),
+            viewModel.getHabitat().getVehicleCollection(),
             resources
         );
     }
@@ -320,287 +306,24 @@ public final class SimulationViewController implements Initializable {
 
                 if (shouldBeVisible != viewModel.isShowTime()) {
                     viewModel.toggleShowTime();
+                    syncTimeDisplayUI();
                 }
-
-                SimulationViewHelper.setStatusTimeVisible(
-                    viewModel.isShowTime(),
-                    statusTimeContainer,
-                    statusContainer
-                );
             });
     }
 
-    private void initializeInputFields() {
-        final var periodInputsTimeUnits = Arrays
-            .stream(TimeUnit.values())
-            .map(timeUnit ->
-                resources.getString(timeUnit.messageKey)
-            )
-            .toList();
-
-        truckPeriodInput.setTextFieldValue(
-            Configuration.TRUCK_SPAWN_PERIOD
+    private void syncTimeDisplayUI() {
+        SimulationViewHelper.setStatusTimeVisible(
+            viewModel.isShowTime(),
+            statusTimeContainer,
+            statusContainer
         );
-        truckPeriodInput.initializeComboBoxValues(
-            periodInputsTimeUnits,
-            resources.getString(
-                Configuration.TRUCK_SPAWN_TIME_UNIT.messageKey
-            )
+        SimulationViewHelper.updateMenuTimeText(
+            viewModel.isShowTime(),
+            resources,
+            menuToggleTime,
+            menuTimeIcon
         );
-
-        carPeriodInput.setTextFieldValue(
-            Configuration.CAR_SPAWN_PERIOD
-        );
-        carPeriodInput.initializeComboBoxValues(
-            periodInputsTimeUnits,
-            resources.getString(
-                Configuration.CAR_SPAWN_TIME_UNIT.messageKey
-            )
-        );
-
-        final var probabilities = IntStream.rangeClosed(0, 10)
-            .mapToObj(i -> resources
-                .getString("format.probability.percent")
-                .formatted(i * 10)
-            )
-            .toList();
-
-        truckProbabilityBox.initializeProbabilities(
-            probabilities,
-            (int) (Configuration.TRUCK_SPAWN_PROBABILITY * 10.)
-        );
-        carProbabilityBox.initializeProbabilities(
-            probabilities,
-            (int) (Configuration.CAR_SPAWN_PROBABILITY * 10.)
-        );
-
-        truckPeriodInput
-            .textProperty()
-            .addListener((_, _, newValue) -> {
-                final var period = validatePeriodOrLifeTime(newValue);
-
-                if (period.isPresent()) {
-                    viewModel.getHabitat()
-                        .updateTruckPeriod(period.get());
-                    truckPeriodInput.setError(false);
-                } else {
-                    truckPeriodInput.setError(true);
-                }
-            });
-
-        truckPeriodInput
-            .comboBoxValueProperty()
-            .addListener((_, _, newValue) ->
-                findTimeUnitMatch(newValue).ifPresent(timeUnit ->
-                    viewModel.getHabitat()
-                        .updateTruckPeriodTimeUnit(timeUnit)
-                )
-            );
-
-        truckPeriodInput
-            .textFieldFocusedProperty()
-            .addListener((_, _, focused) ->
-                onInputRowFocusChange(
-                    focused,
-                    truckPeriodInput,
-                    Configuration.TRUCK_SPAWN_PERIOD,
-                    Configuration.TRUCK_SPAWN_TIME_UNIT
-                )
-            );
-
-        carPeriodInput
-            .textProperty()
-            .addListener((_, _, newValue) -> {
-                final var period = validatePeriodOrLifeTime(newValue);
-
-                if (period.isPresent()) {
-                    viewModel.getHabitat()
-                        .updateCarPeriod(period.get());
-                    carPeriodInput.setError(false);
-                } else {
-                    carPeriodInput.setError(true);
-                }
-            });
-
-        carPeriodInput
-            .comboBoxValueProperty()
-            .addListener((_, _, newValue) ->
-                findTimeUnitMatch(newValue).ifPresent(timeUnit ->
-                    viewModel.getHabitat()
-                        .updateCarPeriodTimeUnit(timeUnit)
-                )
-            );
-
-        carPeriodInput
-            .textFieldFocusedProperty()
-            .addListener((_, _, focused) ->
-                onInputRowFocusChange(
-                    focused,
-                    carPeriodInput,
-                    Configuration.CAR_SPAWN_PERIOD,
-                    Configuration.CAR_SPAWN_TIME_UNIT
-                )
-            );
-
-        truckProbabilityBox
-            .selectedIndexProperty()
-            .addListener((_, _, newIndex) ->
-                viewModel.getHabitat()
-                    .updateTruckProbability(newIndex.intValue() / 10.)
-            );
-        carProbabilityBox
-            .selectedIndexProperty()
-            .addListener((_, _, newIndex) ->
-                viewModel.getHabitat()
-                    .updateCarProbability(newIndex.intValue() / 10.)
-            );
-
-        truckLifetimeInput.setTextFieldValue(
-            Configuration.TRUCK_LIFETIME
-        );
-        truckLifetimeInput.initializeComboBoxValues(
-            periodInputsTimeUnits,
-            resources.getString(
-                Configuration.TRUCK_LIFETIME_TIME_UNIT.messageKey
-            )
-        );
-
-        carLifetimeInput.setTextFieldValue(
-            Configuration.CAR_LIFETIME
-        );
-        carLifetimeInput.initializeComboBoxValues(
-            periodInputsTimeUnits,
-            resources.getString(
-                Configuration.CAR_LIFETIME_TIME_UNIT.messageKey
-            )
-        );
-
-        truckLifetimeInput
-            .textProperty()
-            .addListener((_, _, newValue) -> {
-                final var lifetime =
-                    validatePeriodOrLifeTime(newValue);
-
-                if (lifetime.isPresent()) {
-                    viewModel.getHabitat()
-                        .updateTruckLifeTime(lifetime.get());
-                    truckLifetimeInput.setError(false);
-                } else {
-                    truckLifetimeInput.setError(true);
-                }
-            });
-        truckLifetimeInput
-            .comboBoxValueProperty()
-            .addListener((_, _, newValue) ->
-                findTimeUnitMatch(newValue).ifPresent(timeUnit ->
-                    viewModel.getHabitat()
-                        .updateTruckLifeTimeUnit(timeUnit)
-                )
-            );
-        truckLifetimeInput
-            .textFieldFocusedProperty()
-            .addListener((_, _, focused) ->
-                onInputRowFocusChange(
-                    focused,
-                    truckLifetimeInput,
-                    Configuration.TRUCK_LIFETIME,
-                    Configuration.TRUCK_LIFETIME_TIME_UNIT
-                )
-            );
-
-        carLifetimeInput
-            .textProperty()
-            .addListener((_, _, newValue) -> {
-                final var lifetime =
-                    validatePeriodOrLifeTime(newValue);
-
-                if (lifetime.isPresent()) {
-                    viewModel.getHabitat()
-                        .updateCarLifeTime(lifetime.get());
-                    carLifetimeInput.setError(false);
-                } else {
-                    carLifetimeInput.setError(true);
-                }
-            });
-        carLifetimeInput
-            .comboBoxValueProperty()
-            .addListener((_, _, newValue) ->
-                findTimeUnitMatch(newValue).ifPresent(timeUnit ->
-                    viewModel.getHabitat()
-                        .updateCarLifeTimeUnit(timeUnit)
-                )
-            );
-        carLifetimeInput
-            .textFieldFocusedProperty()
-            .addListener((_, _, focused) ->
-                onInputRowFocusChange(
-                    focused,
-                    carLifetimeInput,
-                    Configuration.CAR_LIFETIME,
-                    Configuration.CAR_LIFETIME_TIME_UNIT
-                )
-            );
-    }
-
-    private Optional<Integer> validatePeriodOrLifeTime(
-        final String newValue
-    ) {
-        try {
-            final var value = Integer.parseUnsignedInt(newValue);
-            if (value > 0) {
-                return Optional.of(value);
-            }
-        } catch (final NumberFormatException _) {
-        }
-
-        return Optional.empty();
-    }
-
-    private void onInputRowFocusChange(
-        final boolean focused,
-        final LabeledInputRow input,
-        final int defaultPeriod,
-        final TimeUnit defaultPeriodTimeUnit
-    ) {
-        if (focused) {
-            return;
-        }
-
-        final var fieldText = input.getFieldText();
-
-        if (validatePeriodOrLifeTime(fieldText).isPresent()) {
-            return;
-        }
-
-        viewModel.pauseSimulation();
-
-        final var wrongTimeUnit = input.getComboBoxValue();
-        final var defaultPeriodTimeUnitLabel =
-            resources.getString(defaultPeriodTimeUnit.messageKey);
-
-        input.setTextFieldValue(defaultPeriod);
-        input.setComboBoxValue(defaultPeriodTimeUnitLabel);
-        input.setError(false);
-
-        showErrorDialog(resources
-            .getString("error.invalid.period")
-            .formatted(
-                fieldText,
-                wrongTimeUnit,
-                defaultPeriod,
-                defaultPeriodTimeUnitLabel
-            )
-        );
-    }
-
-    private Optional<TimeUnit> findTimeUnitMatch(
-        final String stringTimeUnit
-    ) {
-        return Arrays.stream(TimeUnit.values())
-            .filter(timeUnit -> resources
-                .getString(timeUnit.messageKey)
-                .equals(stringTimeUnit))
-            .findFirst();
+        simulationCanvas.requestFocus();
     }
 
     private void initializeMenuAccelerators() {
@@ -620,8 +343,8 @@ public final class SimulationViewController implements Initializable {
             resources.getString("label.controls.keybind.time"))
         );
         menuCurrentObjects.setAccelerator(KeyCodeCombination.valueOf(
-            resources.getString(
-                "label.controls.keybind.current.objects")
+                resources.getString(
+                    "label.controls.keybind.current.objects")
             )
         );
     }
@@ -640,15 +363,6 @@ public final class SimulationViewController implements Initializable {
                     );
                 }
             });
-    }
-
-    private void showErrorDialog(final String message) {
-        final var alert = new Alert(Alert.AlertType.WARNING);
-        alert.initOwner(stage);
-        alert.setTitle(resources.getString("error.title"));
-        alert.setHeaderText(resources.getString("error.header"));
-        alert.setContentText(message);
-        alert.showAndWait();
     }
 
     public void setStage(final Stage stage) {
