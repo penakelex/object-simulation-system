@@ -35,3 +35,7 @@
 .lifetime-row .icon {
     -fx-icon-color: -fx-lifetime-icon-color;
 }
+
+.speed-row .icon {
+    -fx-icon-color: -fx-speed-icon-color;
+}

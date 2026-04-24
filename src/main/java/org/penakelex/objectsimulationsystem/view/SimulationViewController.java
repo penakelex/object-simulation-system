@@ -36,7 +36,8 @@ public final class SimulationViewController implements Initializable {
         restartButton;
     @FXML private StackPane statusTimeContainer;
     @FXML private LabeledValueRow statusTimeRow;
-    @FXML private LabeledValueRow truckRow, carRow, totalRow;
+    @FXML private LabeledValueRow truckRow, carRow, totalRow,
+        currentTruckRow, currentCarRow;
     @FXML private Label statusLabel;
     @FXML private FontIcon statusIcon;
     @FXML private VBox infoContainer, statusContainer;
@@ -46,6 +47,7 @@ public final class SimulationViewController implements Initializable {
     @FXML private LabeledInputRow truckPeriodInput, carPeriodInput;
     @FXML private LabeledProbabilityBox truckProbabilityBox,
         carProbabilityBox;
+    @FXML private LabeledUnitInputRow truckSpeedInput, carSpeedInput;
     @FXML private LabeledInputRow truckLifetimeInput,
         carLifetimeInput;
     @FXML private AIControlRow truckAIControl, carAIControl;
@@ -66,36 +68,8 @@ public final class SimulationViewController implements Initializable {
         bindUI();
 
         gameTimer = new AnimationTimer() {
-            private int frameCount = 0;
-            private long lastFpsUpdateNs = 0;
-            private long previousFrameNs = 0;
-            private static final long ONE_SECOND_NS = 1_000_000_000L;
-            private static final long LONG_FRAME_THRESHOLD_NS =
-                20_000_000L;
-
             @Override
             public void handle(final long now) {
-                frameCount++;
-
-                if (now - lastFpsUpdateNs >= ONE_SECOND_NS) {
-                    IO.println(String.format("[FPS] %.1f",
-                        frameCount * 1e9 / (now - lastFpsUpdateNs)
-                    ));
-                    frameCount = 0;
-                    lastFpsUpdateNs = now;
-                }
-
-                if (previousFrameNs > 0) {
-                    final long deltaNs = now - previousFrameNs;
-                    if (deltaNs > LONG_FRAME_THRESHOLD_NS) {
-                        IO.println(String.format(
-                            "[WARN] Длинный кадр: %d мс",
-                            deltaNs / 1_000_000
-                        ));
-                    }
-                }
-                previousFrameNs = now;
-
                 if (viewModel.getState() == SimulationState.Running) {
                     SimulationViewHelper.draw(simulationCanvas,
                         viewModel.getHabitat()
@@ -122,7 +96,9 @@ public final class SimulationViewController implements Initializable {
             truckProbabilityBox,
             carProbabilityBox,
             truckLifetimeInput,
-            carLifetimeInput
+            carLifetimeInput,
+            truckSpeedInput,
+            carSpeedInput
         );
 
         setupLayoutListener();
@@ -142,9 +118,16 @@ public final class SimulationViewController implements Initializable {
         viewModel.totalCountProperty().addListener((_, _, newValue) ->
             totalRow.setValue(newValue.intValue())
         );
+        viewModel.currentTruckCountProperty()
+            .addListener((_, _, newValue) ->
+                currentTruckRow.setValue(newValue.intValue())
+            );
+        viewModel.currentCarCountProperty()
+            .addListener((_, _, newValue) ->
+                currentCarRow.setValue(newValue.intValue())
+            );
 
         viewModel.onStateChanged(this::updateUIState);
-
         SimulationViewHelper.bindCanvasSize(
             simulationCanvas,
             simulationField
@@ -362,7 +345,9 @@ public final class SimulationViewController implements Initializable {
             viewModel.getHabitat().getStatistics(),
             truckRow,
             carRow,
-            totalRow
+            totalRow,
+            currentTruckRow,
+            currentCarRow
         );
         SimulationViewHelper.updateStatusTime(
             viewModel.getElapsedTime(),
@@ -466,5 +451,13 @@ public final class SimulationViewController implements Initializable {
             carImages
         );
         updatePanelStatisticsWithTime();
+
+        Platform.runLater(() -> {
+            final var habitat = viewModel.getHabitat();
+
+            if (habitat != null) {
+                SimulationViewHelper.draw(simulationCanvas, habitat);
+            }
+        });
     }
 }

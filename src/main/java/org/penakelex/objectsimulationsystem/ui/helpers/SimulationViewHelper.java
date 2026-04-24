@@ -109,11 +109,15 @@ public final class SimulationViewHelper {
         final VehicleStatistics statistics,
         final LabeledValueRow truckRow,
         final LabeledValueRow carRow,
-        final LabeledValueRow totalRow
+        final LabeledValueRow totalRow,
+        final LabeledValueRow currentTruckRow,
+        final LabeledValueRow currentCarRow
     ) {
         truckRow.setValue(statistics.trucks());
         carRow.setValue(statistics.cars());
         totalRow.setValue(statistics.total());
+        currentTruckRow.setValue(statistics.currentTrucks());
+        currentCarRow.setValue(statistics.currentCars());
     }
 
     public static void updateStatusTime(

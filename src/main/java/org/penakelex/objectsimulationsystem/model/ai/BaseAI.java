@@ -14,14 +14,18 @@ public abstract sealed class BaseAI<T extends Vehicle>
     implements Runnable permits TruckAI, CarAI
 {
     protected final Supplier<Iterator<T>> vehiclesSupplier;
-    protected final double speed;
-
+    protected volatile double speed;
     private final Thread thread;
     private final Object pauseLock = new Object();
+
     private final AtomicBoolean running = new AtomicBoolean(true);
 
-    private static final int FRAME_INTERVAL_MS;
+    private final AtomicBoolean simulationActive =
+        new AtomicBoolean(true);
+    private final AtomicBoolean userPaused = new AtomicBoolean(false);
+
     private long lastUpdateTime = 0;
+    private static final int FRAME_INTERVAL_MS;
 
     static {
         final var refreshRate = GraphicsEnvironment
@@ -29,7 +33,6 @@ public abstract sealed class BaseAI<T extends Vehicle>
             .getDefaultScreenDevice()
             .getDisplayMode()
             .getRefreshRate();
-
         FRAME_INTERVAL_MS = refreshRate > 0
             ? (int) Math.round(1e3 / refreshRate)
             : 16;
@@ -50,21 +53,47 @@ public abstract sealed class BaseAI<T extends Vehicle>
         if (thread.getState() == Thread.State.NEW) {
             thread.start();
         } else {
-            resume();
+            onSimulationResume();
         }
     }
 
-    public void resume() {
-        running.set(true);
-        lastUpdateTime = System.currentTimeMillis();
-
-        synchronized (pauseLock) {
-            pauseLock.notifyAll();
-        }
+    public void onSimulationResume() {
+        simulationActive.set(true);
+        syncRunningState();
     }
 
-    public void pause() {
-        running.set(false);
+    public void onSimulationPause() {
+        simulationActive.set(false);
+        syncRunningState();
+    }
+
+    public void pauseByUser() {
+        userPaused.set(true);
+        syncRunningState();
+    }
+
+    public void resumeByUser() {
+        userPaused.set(false);
+        syncRunningState();
+    }
+
+    private synchronized void syncRunningState() {
+        final var shouldBeRunning =
+            simulationActive.get() && !userPaused.get();
+
+        if (running.get() == shouldBeRunning) {
+            return;
+        }
+
+        running.set(shouldBeRunning);
+
+        if (shouldBeRunning) {
+            lastUpdateTime = System.currentTimeMillis();
+
+            synchronized (pauseLock) {
+                pauseLock.notifyAll();
+            }
+        }
     }
 
     public void setPriority(final int priority) {
@@ -72,6 +101,12 @@ public abstract sealed class BaseAI<T extends Vehicle>
             Thread.MAX_PRIORITY,
             Math.max(Thread.MIN_PRIORITY, priority)
         ));
+    }
+
+    public void updateSpeed(final double newSpeed) {
+        if (newSpeed > 0) {
+            speed = newSpeed;
+        }
     }
 
     public boolean isRunning() {
@@ -112,16 +147,12 @@ public abstract sealed class BaseAI<T extends Vehicle>
             ? currentTime - lastUpdateTime
             : FRAME_INTERVAL_MS;
         lastUpdateTime = currentTime;
-
         final double deltaTimeSeconds = deltaTimeMs / 1e3;
 
-        for (
-            final var vehicle : (Iterable<T>) vehiclesSupplier::get
-        ) {
+        for (final var vehicle : (Iterable<T>) vehiclesSupplier::get) {
             if (vehicle.isArrived()) {
                 continue;
             }
-
             if (!vehicle.hasTarget()) {
                 if (isVehicleArrivedAtSpawn(
                     vehicle.getRelativeX(),
@@ -131,7 +162,6 @@ public abstract sealed class BaseAI<T extends Vehicle>
                     continue;
                 } else {
                     final var targetPoint = getRelativeTargetPoint();
-
                     vehicle.setMovementSpeed(speed);
                     vehicle.setTarget(
                         targetPoint.getX(),
@@ -139,7 +169,6 @@ public abstract sealed class BaseAI<T extends Vehicle>
                     );
                 }
             }
-
             vehicle.move(deltaTimeSeconds);
         }
     }

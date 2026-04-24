@@ -290,3 +290,54 @@
     -fx-padding: 4;
     -fx-shape: "M 0 0 L 4 4 L 8 0 Z";
 }
+
+/* ========================================
+    LabeledUnitInputRow
+======================================== */
+.labeled-unit-input-row {
+    -fx-alignment: center-left;
+    -fx-spacing: 8;
+}
+
+.labeled-unit-input-row .icon {
+    -fx-icon-size: 14px;
+}
+
+.labeled-unit-input-row .label {
+    -fx-font-size: 13px;
+    -fx-text-fill: -fx-text-color-light;
+}
+
+.labeled-unit-input-row .input-field {
+    -fx-background-color: white;
+    -fx-border-color: #cccccc;
+    -fx-border-width: 1;
+    -fx-border-radius: 4;
+    -fx-background-radius: 4;
+    -fx-padding: 4 8;
+    -fx-font-size: 13px;
+    -fx-text-fill: -fx-text-color-dark;
+    -fx-pref-width: 60;
+    -fx-alignment: center-right;
+}
+
+.labeled-unit-input-row .input-field:hover {
+    -fx-border-color: -fx-base-blue-color;
+}
+
+.labeled-unit-input-row .input-field:focused {
+    -fx-border-color: -fx-base-blue-color;
+    -fx-effect: dropshadow(gaussian, rgba(33, 150, 243, 0.3), 5, 0, 0, 1);
+}
+
+.labeled-unit-input-row .input-field.input-error {
+    -fx-border-color: -fx-status-stopped;
+    -fx-background-color: rgba(244, 67, 54, 0.05);
+}
+
+.labeled-unit-input-row .unit-label {
+    -fx-font-size: 12px;
+    -fx-text-fill: -fx-text-color-light;
+    -fx-font-weight: 500;
+    -fx-padding: 0 0 0 4;
+}

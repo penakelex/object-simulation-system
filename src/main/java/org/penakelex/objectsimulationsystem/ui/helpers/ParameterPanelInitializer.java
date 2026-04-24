@@ -7,6 +7,7 @@ import org.penakelex.objectsimulationsystem.model.habitat.TimeUnit;
 import org.penakelex.objectsimulationsystem.ui.WarningDialog;
 import org.penakelex.objectsimulationsystem.ui.components.LabeledInputRow;
 import org.penakelex.objectsimulationsystem.ui.components.LabeledProbabilityBox;
+import org.penakelex.objectsimulationsystem.ui.components.LabeledUnitInputRow;
 
 import java.util.Arrays;
 import java.util.List;
@@ -30,7 +31,9 @@ public final class ParameterPanelInitializer {
         final LabeledProbabilityBox truckProbabilityBox,
         final LabeledProbabilityBox carProbabilityBox,
         final LabeledInputRow truckLifetimeInput,
-        final LabeledInputRow carLifetimeInput
+        final LabeledInputRow carLifetimeInput,
+        final LabeledUnitInputRow truckSpeedInput,
+        final LabeledUnitInputRow carSpeedInput
     ) {
         final var timeUnitLabels = Arrays.stream(TimeUnit.values())
             .map(timeUnit -> resources
@@ -107,6 +110,22 @@ public final class ParameterPanelInitializer {
             timeUnitLabels,
             Habitat::updateCarLifeTime,
             Habitat::updateCarLifeTimeUnit
+        );
+
+        initializeSpeedInput(
+            habitatSupplier,
+            resources,
+            ownerStage,
+            truckSpeedInput,
+            Configuration.TRUCK_MOVEMENT_SPEED,
+            Habitat::updateTruckSpeed
+        );
+        initializeSpeedInput(
+            habitatSupplier,
+            resources, ownerStage,
+            carSpeedInput,
+            Configuration.CAR_MOVEMENT_SPEED,
+            Habitat::updateCarSpeed
         );
     }
 
@@ -241,6 +260,55 @@ public final class ParameterPanelInitializer {
                 );
             }
         });
+    }
+
+    private static void initializeSpeedInput(
+        final Supplier<Habitat> habitatSupplier,
+        final ResourceBundle resources,
+        final Stage ownerStage,
+        final LabeledUnitInputRow input,
+        final int defaultValue,
+        final BiConsumer<Habitat, Double> speedSetter
+    ) {
+        input.setTextFieldValue(defaultValue);
+
+        input.textProperty().addListener((_, _, newValue) -> {
+            final var habitat = habitatSupplier.get();
+            if (habitat == null) {
+                return;
+            }
+
+            final var validated = validatePositiveInteger(newValue);
+            if (validated.isPresent()) {
+                speedSetter.accept(habitat,
+                    validated.get().doubleValue()
+                );
+                input.setError(false);
+            } else {
+                input.setError(true);
+            }
+        });
+
+        input.textFieldFocusedProperty()
+            .addListener((_, _, focused) -> {
+                if (focused) {
+                    return;
+                }
+
+                final var fieldText = input.getFieldText();
+
+                if (validatePositiveInteger(fieldText).isPresent()) {
+                    return;
+                }
+
+                input.setTextFieldValue(defaultValue);
+                input.setError(false);
+                WarningDialog.showWarning(
+                    ownerStage, resources,
+                    resources.getString("error.invalid.speed")
+                        .formatted(fieldText, defaultValue)
+                );
+            });
     }
 
     private static Optional<Integer> validatePositiveInteger(final String value) {

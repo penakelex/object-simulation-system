@@ -26,6 +26,10 @@ public final class SimulationViewModel {
         new SimpleIntegerProperty(0);
     private final IntegerProperty totalCount =
         new SimpleIntegerProperty(0);
+    private final IntegerProperty currentTruckCount =
+        new SimpleIntegerProperty(0);
+    private final IntegerProperty currentCarCount =
+        new SimpleIntegerProperty(0);
 
     private Habitat habitat;
     private long startTime = 0;
@@ -82,11 +86,23 @@ public final class SimulationViewModel {
         return totalCount;
     }
 
+    public IntegerProperty currentTruckCountProperty() {
+        return currentTruckCount;
+    }
+
+    public IntegerProperty currentCarCountProperty() {
+        return currentCarCount;
+    }
+
     public SimulationState getState() {
         return state.get();
     }
 
     public long getElapsedTime() {
+        if (state.get() == SimulationState.Running) {
+            return System.currentTimeMillis() - startTime;
+        }
+
         return elapsedTime.get();
     }
 
@@ -116,6 +132,7 @@ public final class SimulationViewModel {
 
         simulationRunning = false;
         habitat.pauseAI();
+        elapsedTime.set(System.currentTimeMillis() - startTime);
         setState(SimulationState.Stopped);
     }
 
@@ -126,6 +143,7 @@ public final class SimulationViewModel {
 
         simulationRunning = false;
         habitat.pauseAI();
+        elapsedTime.set(System.currentTimeMillis() - startTime);
         setState(SimulationState.Paused);
     }
 
@@ -147,6 +165,8 @@ public final class SimulationViewModel {
             truckCount.set(statistics.trucks());
             carCount.set(statistics.cars());
             totalCount.set(statistics.total());
+            currentTruckCount.set(statistics.currentTrucks());
+            currentCarCount.set(statistics.currentCars());
         }
     }
 

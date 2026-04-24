@@ -21,8 +21,9 @@
 <?import org.penakelex.objectsimulationsystem.ui.components.IconedSection?>
 <?import org.penakelex.objectsimulationsystem.ui.components.LabeledValueRow?>
 <?import org.penakelex.objectsimulationsystem.ui.components.ToolbarButton?>
-<?import org.penakelex.objectsimulationsystem.ui.components.LabeledProbabilityBox?>
 <?import org.penakelex.objectsimulationsystem.ui.components.LabeledInputRow?>
+<?import org.penakelex.objectsimulationsystem.ui.components.LabeledProbabilityBox?>
+<?import org.penakelex.objectsimulationsystem.ui.components.LabeledUnitInputRow?>
 
 
 <VBox xmlns="http://javafx.com/javafx/25"
@@ -129,53 +130,47 @@
     </MenuBar>
 
     <ToolBar styleClass="main-toolbar">
-        <ToolbarButton
-                fx:id="startButton"
-                iconLiteral="fas-play"
-                actionText="%label.controls.start"
-                keyBind="%label.controls.keybind.start"
-                onAction="#startSimulation"
-                styleClass="start-button"/>
+        <ToolbarButton fx:id="startButton"
+                       iconLiteral="fas-play"
+                       actionText="%label.controls.start"
+                       keyBind="%label.controls.keybind.start"
+                       onAction="#startSimulation"
+                       styleClass="start-button"/>
 
-        <ToolbarButton
-                fx:id="restartButton"
-                iconLiteral="fas-redo"
-                actionText="%label.controls.restart"
-                keyBind="%label.controls.keybind.restart"
-                onAction="#restartSimulation"
-                styleClass="restart-button"/>
+        <ToolbarButton fx:id="restartButton"
+                       iconLiteral="fas-redo"
+                       actionText="%label.controls.restart"
+                       keyBind="%label.controls.keybind.restart"
+                       onAction="#restartSimulation"
+                       styleClass="restart-button"/>
 
-        <ToolbarButton
-                fx:id="stopButton"
-                iconLiteral="fas-stop"
-                actionText="%label.controls.stop"
-                keyBind="%label.controls.keybind.stop"
-                onAction="#stopSimulation"
-                styleClass="stop-button"/>
+        <ToolbarButton fx:id="stopButton"
+                       iconLiteral="fas-stop"
+                       actionText="%label.controls.stop"
+                       keyBind="%label.controls.keybind.stop"
+                       onAction="#stopSimulation"
+                       styleClass="stop-button"/>
 
-        <ToolbarButton
-                fx:id="pauseButton"
-                iconLiteral="fas-pause"
-                actionText="%label.controls.pause"
-                keyBind="%label.controls.keybind.pause"
-                onAction="#pauseSimulation"
-                styleClass="pause-button"/>
+        <ToolbarButton fx:id="pauseButton"
+                       iconLiteral="fas-pause"
+                       actionText="%label.controls.pause"
+                       keyBind="%label.controls.keybind.pause"
+                       onAction="#pauseSimulation"
+                       styleClass="pause-button"/>
 
         <Separator/>
 
-        <ToolbarButton
-                iconLiteral="fas-clock"
-                actionText="%label.controls.time"
-                keyBind="%label.controls.keybind.time"
-                onAction="#toggleTimeDisplay"
-                styleClass="time-toggle-button"/>
+        <ToolbarButton iconLiteral="fas-clock"
+                       actionText="%label.controls.time"
+                       keyBind="%label.controls.keybind.time"
+                       onAction="#toggleTimeDisplay"
+                       styleClass="time-toggle-button"/>
 
-        <ToolbarButton
-                iconLiteral="fas-list"
-                actionText="%label.controls.current.objects"
-                keyBind="%label.controls.keybind.current.objects"
-                onAction="#showCurrentObjectsDialog"
-                styleClass="current-objects-button"/>
+        <ToolbarButton iconLiteral="fas-list"
+                       actionText="%label.controls.current.objects"
+                       keyBind="%label.controls.keybind.current.objects"
+                       onAction="#showCurrentObjectsDialog"
+                       styleClass="current-objects-button"/>
     </ToolBar>
 
     <HBox VBox.vgrow="ALWAYS">
@@ -207,6 +202,11 @@
                                              iconLiteral="fas-hourglass-half"
                                              labelText="%label.lifetime"
                                              styleClass="lifetime-row"/>
+                            <LabeledUnitInputRow fx:id="truckSpeedInput"
+                                                 iconLiteral="fas-tachometer-alt"
+                                                 labelText="%label.movement.speed"
+                                                 unitText="%label.unit.speed"
+                                                 styleClass="speed-row"/>
                         </IconedSection>
                         <IconedSection iconLiteral="fas-car"
                                        title="%label.cars"
@@ -223,26 +223,31 @@
                                              iconLiteral="fas-hourglass-half"
                                              labelText="%label.lifetime"
                                              styleClass="lifetime-row"/>
+                            <LabeledUnitInputRow fx:id="carSpeedInput"
+                                                 iconLiteral="fas-tachometer-alt"
+                                                 labelText="%label.movement.speed"
+                                                 unitText="%label.unit.speed"
+                                                 styleClass="speed-row"/>
                         </IconedSection>
                     </IconedSection>
 
                     <Separator styleClass="section-separator"/>
 
                     <VBox fx:id="infoContainer" styleClass="info-container">
-                        <IconedSection iconLiteral="fas-chart-bar"
-                                       title="%label.statistics.title">
-                            <LabeledValueRow fx:id="truckRow"
-                                             iconLiteral="fas-truck"
-                                             labelText="%label.trucks"
+                        <IconedSection iconLiteral="fas-chart-bar" title="%label.statistics.title">
+                            <LabeledValueRow fx:id="truckRow" iconLiteral="fas-truck" labelText="%label.trucks"
                                              styleClass="truck-parameters-row"/>
-                            <LabeledValueRow fx:id="carRow"
-                                             iconLiteral="fas-car"
-                                             labelText="%label.cars"
+                            <LabeledValueRow fx:id="carRow" iconLiteral="fas-car" labelText="%label.cars"
                                              styleClass="car-parameters-row"/>
-                            <LabeledValueRow fx:id="totalRow"
-                                             iconLiteral="fas-chart-line"
-                                             labelText="%label.total"
+                            <LabeledValueRow fx:id="totalRow" iconLiteral="fas-chart-line" labelText="%label.total"
                                              styleClass="total-vehicles-parameters-row"/>
+
+                            <Separator styleClass="section-separator"/>
+
+                            <LabeledValueRow fx:id="currentTruckRow" iconLiteral="fas-truck"
+                                             labelText="%label.current.trucks" styleClass="truck-parameters-row"/>
+                            <LabeledValueRow fx:id="currentCarRow" iconLiteral="fas-car" labelText="%label.current.cars"
+                                             styleClass="car-parameters-row"/>
                         </IconedSection>
 
                         <Separator styleClass="section-separator"/>

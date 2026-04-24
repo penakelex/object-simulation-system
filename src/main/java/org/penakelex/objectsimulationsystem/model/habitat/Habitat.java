@@ -1,6 +1,7 @@
 package org.penakelex.objectsimulationsystem.model.habitat;
 
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.paint.Color;
 import org.apache.commons.lang3.tuple.Pair;
 import org.penakelex.objectsimulationsystem.model.ai.CarAI;
 import org.penakelex.objectsimulationsystem.model.ai.TruckAI;
@@ -17,6 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public final class Habitat {
     private static final double MAX_RELATIVE_VEHICLE_POSITION =
@@ -36,7 +38,11 @@ public final class Habitat {
     private final Random random = ThreadLocalRandom.current();
     private final VehicleCollection vehicleCollection;
 
-    private int trucksCount = 0, carsCount = 0;
+    private final AtomicInteger
+        trucksCount = new AtomicInteger(0),
+        carsCount = new AtomicInteger(0),
+        currentTrucksCount = new AtomicInteger(0),
+        currentCarsCount = new AtomicInteger(0);
 
     private final List<Integer> expiredIdsBuffer =
         new ArrayList<>(16);
@@ -192,9 +198,11 @@ public final class Habitat {
             statisticsDirty = true;
 
             if (spawner.getVehicleType() == Truck.class) {
-                trucksCount += spawnedVehicles.size();
+                trucksCount.addAndGet(spawnedVehicles.size());
+                currentTrucksCount.addAndGet(spawnedVehicles.size());
             } else if (spawner.getVehicleType() == Car.class) {
-                carsCount += spawnedVehicles.size();
+                carsCount.addAndGet(spawnedVehicles.size());
+                currentCarsCount.addAndGet(spawnedVehicles.size());
             }
 
             for (final var newVehicle : spawnedVehicles) {
@@ -204,12 +212,20 @@ public final class Habitat {
         }
 
         for (final var vehicle : vehicleCollection.getAll()) {
-            if (vehicle.isExpired(currentTimeMillis)) {
-                expiredIdsBuffer.add(vehicle.getId());
+            if (!vehicle.isExpired(currentTimeMillis)) {
+                continue;
+            }
+
+            expiredIdsBuffer.add(vehicle.getId());
+
+            switch (vehicle) {
+                case Truck _ -> currentTrucksCount.decrementAndGet();
+                case Car _ -> currentCarsCount.decrementAndGet();
             }
         }
 
         if (!expiredIdsBuffer.isEmpty()) {
+            statisticsDirty = true;
             vehicleCollection.removeByIds(expiredIdsBuffer);
             expiredIdsBuffer.clear();
         }
@@ -229,32 +245,24 @@ public final class Habitat {
     }
 
     public void pauseAI() {
-        pauseTruckAI();
-        pauseCarAI();
+        truckAI.onSimulationPause();
+        carAI.onSimulationPause();
     }
 
     public void pauseTruckAI() {
-        if (truckAI.isRunning()) {
-            truckAI.pause();
-        }
+        truckAI.pauseByUser();
     }
 
     public void resumeTruckAI() {
-        if (!truckAI.isRunning()) {
-            truckAI.resume();
-        }
+        truckAI.resumeByUser();
     }
 
     public void pauseCarAI() {
-        if (carAI.isRunning()) {
-            carAI.pause();
-        }
+        carAI.pauseByUser();
     }
 
     public void resumeCarAI() {
-        if (!carAI.isRunning()) {
-            carAI.resume();
-        }
+        carAI.resumeByUser();
     }
 
     public void setTruckAIPriority(final int priority) {
@@ -265,16 +273,92 @@ public final class Habitat {
         carAI.setPriority(priority);
     }
 
+    public void updateTruckSpeed(final double speed) {
+        truckAI.updateSpeed(speed);
+    }
+
+    public void updateCarSpeed(final double speed) {
+        carAI.updateSpeed(speed);
+    }
+
     public void draw(final GraphicsContext context) {
+        drawEnvironment(context);
         for (final var vehicle : vehicleCollection.getAll()) {
             vehicle.draw(context);
         }
     }
 
+    private void drawEnvironment(final GraphicsContext context) {
+        final double halfWidth = width * 0.5;
+        final double halfHeight = height * 0.5;
+        final double roadWidth =
+            Math.max(24.0, Math.min(width, height) * 0.04);
+
+        context.setFill(Color.rgb(230, 230, 230));
+        context.fillRect(0, 0, width, height);
+
+        context.setFill(Color.rgb(70, 70, 70));
+        context.fillRect(halfWidth - roadWidth / 2.0,
+            0,
+            roadWidth,
+            height
+        );
+        context.fillRect(0,
+            halfHeight - roadWidth / 2.0,
+            width,
+            roadWidth
+        );
+
+        context.setStroke(Color.YELLOW);
+        context.setLineWidth(2);
+        context.setLineDashes(8, 8);
+        context.strokeLine(halfWidth, 0, halfWidth, height);
+        context.strokeLine(0, halfHeight, width, halfHeight);
+        context.setLineDashes();
+
+        drawParkingZone(context,
+            0,
+            0,
+            halfWidth,
+            halfHeight,
+            Color.rgb(76, 175, 80, 0.15),
+            Color.GREEN
+        );
+        drawParkingZone(context,
+            halfWidth,
+            halfHeight,
+            halfWidth,
+            halfHeight,
+            Color.rgb(33, 150, 243, 0.15),
+            Color.BLUE
+        );
+    }
+
+    private void drawParkingZone(
+        final GraphicsContext context,
+        final double x,
+        final double y,
+        final double width,
+        final double height,
+        final Color fill,
+        final Color stroke
+    ) {
+        context.setFill(fill);
+        context.fillRect(x + 6, y + 6, width - 12, height - 12);
+
+        context.setStroke(stroke);
+        context.setLineWidth(3);
+        context.setLineDashes(12, 6);
+        context.strokeRect(x + 6, y + 6, width - 12, height - 12);
+        context.setLineDashes();
+    }
+
     public void reset() {
         vehicleCollection.clear();
-        trucksCount = 0;
-        carsCount = 0;
+        trucksCount.set(0);
+        carsCount.set(0);
+        currentCarsCount.set(0);
+        currentTrucksCount.set(0);
         statisticsDirty = true;
         vehicleSpawners.forEach(VehicleSpawner::reset);
     }
@@ -299,10 +383,15 @@ public final class Habitat {
     public VehicleStatistics getStatistics() {
         statisticsDirty = false;
 
+        final var trucksCount = this.trucksCount.get();
+        final var carsCount = this.carsCount.get();
+
         return new VehicleStatistics(
             trucksCount,
             carsCount,
-            trucksCount + carsCount
+            trucksCount + carsCount,
+            currentTrucksCount.get(),
+            currentCarsCount.get()
         );
     }
 }

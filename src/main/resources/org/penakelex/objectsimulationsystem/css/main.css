@@ -30,6 +30,7 @@
     -fx-probability-icon-color: -fx-base-orange-color;
     -fx-lifetime-icon-color: #9C27B0;
     -fx-overlay-time-color: #FF9800;
+    -fx-speed-icon-color: #FF9800;
 
     /* ====== MenuBar цвета ====== */
     -fx-menubar-bg: white;
