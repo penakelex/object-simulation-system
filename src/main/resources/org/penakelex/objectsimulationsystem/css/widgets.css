@@ -219,3 +219,74 @@
 .labeled-probability-box .combobox .arrow {
     -fx-background-color: -fx-text-color-light;
 }
+
+/* ========================================
+    AI Control Row
+======================================== */
+.ai-control-row {
+    -fx-alignment: center-left;
+    -fx-spacing: 10;
+    -fx-padding: 4 0;
+}
+
+.ai-control-row .icon {
+    -fx-icon-size: 14px;
+}
+
+.ai-control-row .label {
+    -fx-font-size: 13px;
+    -fx-text-fill: -fx-text-color-dark;
+}
+
+.ai-control-row .toggle-button {
+    -fx-background-color: -fx-base-blue-color;
+    -fx-background-radius: 4;
+    -fx-padding: 4 10;
+    -fx-cursor: hand;
+    -fx-min-width: 30;
+    -fx-border-color: transparent;
+    -fx-border-radius: 4;
+}
+
+.ai-control-row .toggle-button:hover {
+    -fx-background-color: -fx-radio-dark-blue;
+}
+
+.ai-control-row .toggle-button-icon {
+    -fx-icon-color: white;
+    -fx-icon-size: 12px;
+}
+
+.ai-control-row .priority-combo {
+    -fx-background-color: white;
+    -fx-border-color: #cccccc;
+    -fx-border-width: 1;
+    -fx-border-radius: 4;
+    -fx-background-radius: 4;
+    -fx-padding: 4 8;
+    -fx-font-size: 13px;
+    -fx-text-fill: -fx-text-color-dark;
+    -fx-pref-width: 70;
+    -fx-prompt-text-fill: #666666;
+}
+
+.ai-control-row .priority-combo:hover {
+    -fx-border-color: -fx-base-blue-color;
+}
+
+.ai-control-row .priority-combo:focused {
+    -fx-border-color: -fx-base-blue-color;
+    -fx-effect: dropshadow(gaussian, rgba(33, 150, 243, 0.3), 5, 0, 0, 1);
+}
+
+.ai-control-row .priority-combo .arrow-button {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-padding: 2 4;
+}
+
+.ai-control-row .priority-combo .arrow {
+    -fx-background-color: -fx-text-color-light;
+    -fx-padding: 4;
+    -fx-shape: "M 0 0 L 4 4 L 8 0 Z";
+}

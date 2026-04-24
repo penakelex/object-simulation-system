@@ -4,20 +4,21 @@ import javafx.geometry.Point2D;
 import org.penakelex.objectsimulationsystem.model.vehicle.Vehicle;
 
 import java.awt.*;
-import java.util.List;
+import java.util.Iterator;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.locks.LockSupport;
 import java.util.function.Supplier;
 
 public abstract sealed class BaseAI<T extends Vehicle>
     implements Runnable permits TruckAI, CarAI
 {
-    protected final Supplier<List<T>> vehiclesSupplier;
+    protected final Supplier<Iterator<T>> vehiclesSupplier;
+    protected final double speed;
+
     private final Thread thread;
     private final Object pauseLock = new Object();
     private final AtomicBoolean running = new AtomicBoolean(true);
-    private final AtomicBoolean paused = new AtomicBoolean(false);
-
-    protected final double speed;
 
     private static final int FRAME_INTERVAL_MS;
     private long lastUpdateTime = 0;
@@ -35,45 +36,35 @@ public abstract sealed class BaseAI<T extends Vehicle>
     }
 
     public BaseAI(
-        final Supplier<List<T>> vehiclesSupplier,
+        final Supplier<Iterator<T>> vehiclesSupplier,
         final double speed
     ) {
         this.vehiclesSupplier = vehiclesSupplier;
         this.speed = speed;
 
-        this.thread = new Thread(
-            this,
-            getClass().getSimpleName()
-        );
-        this.thread.setDaemon(true);
+        this.thread = new Thread(this, getClass().getSimpleName());
+        thread.setDaemon(true);
     }
 
     public void start() {
         if (thread.getState() == Thread.State.NEW) {
             thread.start();
+        } else {
+            resume();
         }
     }
 
-    public void stop() {
-        running.set(false);
-        resume();
+    public void resume() {
+        running.set(true);
+        lastUpdateTime = System.currentTimeMillis();
 
-        try {
-            thread.join(300);
-        } catch (final InterruptedException _) {
-            Thread.currentThread().interrupt();
+        synchronized (pauseLock) {
+            pauseLock.notifyAll();
         }
     }
 
     public void pause() {
-        paused.set(true);
-    }
-
-    public void resume() {
-        paused.set(false);
-        synchronized (pauseLock) {
-            pauseLock.notifyAll();
-        }
+        running.set(false);
     }
 
     public void setPriority(final int priority) {
@@ -83,10 +74,6 @@ public abstract sealed class BaseAI<T extends Vehicle>
         ));
     }
 
-    public boolean isPaused() {
-        return paused.get();
-    }
-
     public boolean isRunning() {
         return running.get();
     }
@@ -94,25 +81,26 @@ public abstract sealed class BaseAI<T extends Vehicle>
     @Override
     public final void run() {
         try {
-            while (running.get()) {
-                synchronized (pauseLock) {
-                    while (paused.get() && running.get()) {
+            while (!Thread.interrupted()) {
+                while (!running.get()) {
+                    synchronized (pauseLock) {
                         pauseLock.wait();
                     }
                 }
 
-                if (!running.get()) {
-                    break;
-                }
-
                 final var now = System.currentTimeMillis();
+                final var elapsed = now - lastUpdateTime;
 
-                if (now - lastUpdateTime >= FRAME_INTERVAL_MS) {
+                if (elapsed >= FRAME_INTERVAL_MS) {
                     executeBehavior(now);
                     lastUpdateTime = now;
+                } else {
+                    LockSupport.parkNanos(Math.max(
+                        1_000_000L,
+                        TimeUnit.MILLISECONDS
+                            .toNanos(FRAME_INTERVAL_MS - elapsed)
+                    ));
                 }
-
-                Thread.yield();
             }
         } catch (final InterruptedException _) {
             Thread.currentThread().interrupt();
@@ -127,19 +115,22 @@ public abstract sealed class BaseAI<T extends Vehicle>
 
         final double deltaTimeSeconds = deltaTimeMs / 1e3;
 
-        for (final var vehicle : vehiclesSupplier.get()) {
+        for (
+            final var vehicle : (Iterable<T>) vehiclesSupplier::get
+        ) {
             if (vehicle.isArrived()) {
                 continue;
             }
 
             if (!vehicle.hasTarget()) {
-                if (isVehicleArrived(
-                    vehicle.getAbsoluteX(),
-                    vehicle.getAbsoluteY()
+                if (isVehicleArrivedAtSpawn(
+                    vehicle.getRelativeX(),
+                    vehicle.getRelativeY()
                 )) {
                     vehicle.markArrived();
+                    continue;
                 } else {
-                    final var targetPoint = getTargetPoint();
+                    final var targetPoint = getRelativeTargetPoint();
 
                     vehicle.setMovementSpeed(speed);
                     vehicle.setTarget(
@@ -149,16 +140,14 @@ public abstract sealed class BaseAI<T extends Vehicle>
                 }
             }
 
-            if (vehicle.hasTarget() && !vehicle.isArrived()) {
-                vehicle.move(deltaTimeSeconds);
-            }
+            vehicle.move(deltaTimeSeconds);
         }
     }
 
-    protected abstract boolean isVehicleArrived(
-        final double x,
-        final double y
+    protected abstract boolean isVehicleArrivedAtSpawn(
+        final double relativeX,
+        final double relativeY
     );
 
-    protected abstract Point2D getTargetPoint();
+    protected abstract Point2D getRelativeTargetPoint();
 }

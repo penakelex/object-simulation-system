@@ -30,13 +30,16 @@ public final class Habitat {
     private final
     List<VehicleSpawner<? extends Vehicle>> vehicleSpawners;
 
-    private TruckAI truckAI;
-    private CarAI carAI;
+    private final TruckAI truckAI;
+    private final CarAI carAI;
 
     private final Random random = ThreadLocalRandom.current();
     private final VehicleCollection vehicleCollection;
 
     private int trucksCount = 0, carsCount = 0;
+
+    private final List<Integer> expiredIdsBuffer =
+        new ArrayList<>(16);
 
     public Habitat(
         final double width,
@@ -76,6 +79,24 @@ public final class Habitat {
             Car.class
         );
         vehicleSpawners = List.of(truckSpawner, carSpawner);
+
+        truckAI = new TruckAI(
+            () -> vehicleCollection.getAll()
+                .stream()
+                .filter(vehicle -> vehicle instanceof Truck)
+                .map(vehicle -> (Truck) vehicle)
+                .iterator(),
+            Configuration.TRUCK_MOVEMENT_SPEED
+        );
+
+        carAI = new CarAI(
+            () -> vehicleCollection.getAll()
+                .stream()
+                .filter(vehicle -> vehicle instanceof Car)
+                .map(vehicle -> (Car) vehicle)
+                .iterator(),
+            Configuration.CAR_MOVEMENT_SPEED
+        );
     }
 
     private static List<HabitatInvalidParameter> validateParameters(
@@ -83,6 +104,7 @@ public final class Habitat {
         final double height
     ) {
         List<HabitatInvalidParameter> invalidParameters = null;
+
         if (width < 0) {
             invalidParameters = new ArrayList<>(2);
             invalidParameters.add(
@@ -163,31 +185,33 @@ public final class Habitat {
                 vehicleCollection::getNextId
             );
 
-            if (!spawnedVehicles.isEmpty()) {
-                statisticsDirty = true;
-                if (spawner.getVehicleType() == Truck.class) {
-                    trucksCount += spawnedVehicles.size();
-                } else if (spawner.getVehicleType() == Car.class) {
-                    carsCount += spawnedVehicles.size();
-                }
+            if (spawnedVehicles.isEmpty()) {
+                continue;
+            }
+
+            statisticsDirty = true;
+
+            if (spawner.getVehicleType() == Truck.class) {
+                trucksCount += spawnedVehicles.size();
+            } else if (spawner.getVehicleType() == Car.class) {
+                carsCount += spawnedVehicles.size();
             }
 
             for (final var newVehicle : spawnedVehicles) {
-                newVehicle
-                    .onCanvasSizeUpdated(this.width, this.height);
+                newVehicle.onCanvasSizeUpdated(width, height);
                 vehicleCollection.add(newVehicle);
             }
         }
 
-        final var expiredIDs = vehicleCollection
-            .getAll()
-            .stream()
-            .filter(vehicle -> vehicle.isExpired(currentTimeMillis))
-            .map(Vehicle::getId)
-            .toList();
+        for (final var vehicle : vehicleCollection.getAll()) {
+            if (vehicle.isExpired(currentTimeMillis)) {
+                expiredIdsBuffer.add(vehicle.getId());
+            }
+        }
 
-        if (!expiredIDs.isEmpty()) {
-            vehicleCollection.removeByIds(expiredIDs);
+        if (!expiredIdsBuffer.isEmpty()) {
+            vehicleCollection.removeByIds(expiredIdsBuffer);
+            expiredIdsBuffer.clear();
         }
     }
 
@@ -200,75 +224,45 @@ public final class Habitat {
     }
 
     public void startAI() {
-        truckAI = new TruckAI(() -> vehicleCollection
-            .getAll()
-            .stream()
-            .filter(vehicle -> vehicle instanceof Truck)
-            .map(vehicle -> (Truck) vehicle)
-            .toList(),
-            Configuration.TRUCK_MOVEMENT_SPEED,
-            width,
-            height
-        );
-        carAI = new CarAI(() -> vehicleCollection
-            .getAll()
-            .stream()
-            .filter(vehicle -> vehicle instanceof Car)
-            .map(vehicle -> (Car) vehicle)
-            .toList(),
-            Configuration.CAR_MOVEMENT_SPEED,
-            width,
-            height
-        );
-
         truckAI.start();
         carAI.start();
     }
 
-    public void stopAI() {
-        if (truckAI != null) {
-            truckAI.stop();
-        }
-
-        if (carAI != null) {
-            carAI.stop();
-        }
+    public void pauseAI() {
+        pauseTruckAI();
+        pauseCarAI();
     }
 
     public void pauseTruckAI() {
-        if (truckAI != null) {
+        if (truckAI.isRunning()) {
             truckAI.pause();
         }
     }
 
     public void resumeTruckAI() {
-        if (truckAI != null) {
+        if (!truckAI.isRunning()) {
             truckAI.resume();
         }
     }
 
     public void pauseCarAI() {
-        if (carAI != null) {
+        if (carAI.isRunning()) {
             carAI.pause();
         }
     }
 
     public void resumeCarAI() {
-        if (carAI != null) {
+        if (!carAI.isRunning()) {
             carAI.resume();
         }
     }
 
     public void setTruckAIPriority(final int priority) {
-        if (truckAI != null) {
-            truckAI.setPriority(priority);
-        }
+        truckAI.setPriority(priority);
     }
 
     public void setCarAIPriority(final int priority) {
-        if (carAI != null) {
-            carAI.setPriority(priority);
-        }
+        carAI.setPriority(priority);
     }
 
     public void draw(final GraphicsContext context) {
@@ -282,7 +276,6 @@ public final class Habitat {
         trucksCount = 0;
         carsCount = 0;
         statisticsDirty = true;
-        stopAI();
         vehicleSpawners.forEach(VehicleSpawner::reset);
     }
 

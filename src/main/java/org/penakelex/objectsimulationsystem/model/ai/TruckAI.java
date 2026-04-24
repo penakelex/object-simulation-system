@@ -1,43 +1,41 @@
 package org.penakelex.objectsimulationsystem.model.ai;
 
 import javafx.geometry.Point2D;
+import org.penakelex.objectsimulationsystem.model.habitat.Configuration;
 import org.penakelex.objectsimulationsystem.model.vehicle.Truck;
 
-import java.util.List;
+import java.util.Iterator;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Supplier;
 
 public final class TruckAI extends BaseAI<Truck> {
-    private final double maxX, maxY;
+    private final static double MAX_X_Y =
+        0.5 - Configuration.VEHICLE_RELATIVE_SIZE;
 
     public TruckAI(
-        final Supplier<List<Truck>> trucksSupplier,
-        final double speed,
-        final double canvasWidth,
-        final double canvasHeight
+        final Supplier<Iterator<Truck>> trucksSupplier,
+        final double speed
     ) {
         super(trucksSupplier, speed);
-        this.maxX = canvasWidth / 2.0;
-        this.maxY = canvasHeight / 2.0;
     }
 
     @Override
-    protected boolean isVehicleArrived(
-        final double x,
-        final double y
+    protected boolean isVehicleArrivedAtSpawn(
+        final double relativeX,
+        final double relativeY
     ) {
-        return x <= maxX && y <= maxY;
+        return relativeX <= MAX_X_Y && relativeY <= MAX_X_Y;
     }
 
     @Override
-    protected Point2D getTargetPoint() {
+    protected Point2D getRelativeTargetPoint() {
         return new Point2D(
             ThreadLocalRandom
                 .current()
-                .nextDouble(0, maxX),
+                .nextDouble(0, MAX_X_Y),
             ThreadLocalRandom
                 .current()
-                .nextDouble(0, maxY)
+                .nextDouble(0, MAX_X_Y)
         );
     }
 }

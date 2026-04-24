@@ -1,45 +1,42 @@
 package org.penakelex.objectsimulationsystem.model.ai;
 
 import javafx.geometry.Point2D;
+import org.penakelex.objectsimulationsystem.model.habitat.Configuration;
 import org.penakelex.objectsimulationsystem.model.vehicle.Car;
 
-import java.util.List;
+import java.util.Iterator;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Supplier;
 
 public final class CarAI extends BaseAI<Car> {
-    private final double minX, minY, canvasWidth, canvasHeight;
+    private final static double MIN_X_Y = 0.5;
+    private final static double MAX_X_Y =
+        1 - Configuration.VEHICLE_RELATIVE_SIZE;
 
     public CarAI(
-        final Supplier<List<Car>> carsSupplier,
-        final double speed,
-        final double canvasWidth,
-        final double canvasHeight
+        final Supplier<Iterator<Car>> carsSupplier,
+        final double speed
     ) {
         super(carsSupplier, speed);
-        this.canvasWidth = canvasWidth;
-        this.canvasHeight = canvasHeight;
-        this.minX = canvasWidth / 2.0;
-        this.minY = canvasHeight / 2.0;
     }
 
     @Override
-    protected boolean isVehicleArrived(
-        final double x,
-        final double y
+    protected boolean isVehicleArrivedAtSpawn(
+        final double relativeX,
+        final double relativeY
     ) {
-        return x >= minX && y >= minY;
+        return relativeX >= MIN_X_Y && relativeY >= MIN_X_Y;
     }
 
     @Override
-    protected Point2D getTargetPoint() {
+    protected Point2D getRelativeTargetPoint() {
         return new Point2D(
             ThreadLocalRandom
                 .current()
-                .nextDouble(minX, canvasWidth),
+                .nextDouble(MIN_X_Y, MAX_X_Y),
             ThreadLocalRandom
                 .current()
-                .nextDouble(minY, canvasHeight)
+                .nextDouble(MIN_X_Y, MAX_X_Y)
         );
     }
 }

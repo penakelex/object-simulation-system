@@ -17,14 +17,14 @@
 <?import javafx.scene.layout.StackPane?>
 <?import org.kordamp.ikonli.javafx.FontIcon?>
 
+<?import org.penakelex.objectsimulationsystem.ui.components.AIControlRow?>
 <?import org.penakelex.objectsimulationsystem.ui.components.IconedSection?>
 <?import org.penakelex.objectsimulationsystem.ui.components.LabeledValueRow?>
 <?import org.penakelex.objectsimulationsystem.ui.components.ToolbarButton?>
 <?import org.penakelex.objectsimulationsystem.ui.components.LabeledProbabilityBox?>
 <?import org.penakelex.objectsimulationsystem.ui.components.LabeledInputRow?>
 
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.ComboBox?>
+
 <VBox xmlns="http://javafx.com/javafx/25"
       xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="org.penakelex.objectsimulationsystem.view.SimulationViewController"
@@ -273,42 +273,16 @@
                     </IconedSection>
 
                     <Separator styleClass="section-separator"/>
-                    <IconedSection iconLiteral="fas-brain" title="Управление ИИ объектов">
-                        <HBox spacing="10" alignment="CENTER_LEFT">
-                            <FontIcon iconLiteral="fas-truck" iconColor="#4CAF50"/>
-                            <Label text="%label.trucks" styleClass="label"/>
-                            <Button onAction="#pauseTruckAI"
-                                    styleClass="ai-button">
-                                <graphic>
-                                    <FontIcon iconLiteral="fas-pause" iconSize="12" iconColor="white"/>
-                                </graphic>
-                            </Button>
-                            <Button onAction="#resumeTruckAI"
-                                    styleClass="ai-button">
-                                <graphic>
-                                    <FontIcon iconLiteral="fas-play" iconSize="12" iconColor="white"/>
-                                </graphic>
-                            </Button>
-                            <ComboBox fx:id="comboTruckPriority" prefWidth="70" promptText="Приоритет"/>
-                        </HBox>
+                    <IconedSection iconLiteral="fas-brain" title="%label.ai.title">
+                        <AIControlRow fx:id="truckAIControl"
+                                      iconLiteral="fas-truck"
+                                      iconColor="#4CAF50"
+                                      labelText="%label.trucks"/>
 
-                        <HBox spacing="10" alignment="CENTER_LEFT" VBox.vgrow="NEVER">
-                            <FontIcon iconLiteral="fas-car" iconColor="#2196F3"/>
-                            <Label text="%label.cars" styleClass="label"/>
-                            <Button onAction="#pauseCarAI"
-                                    styleClass="ai-button">
-                                <graphic>
-                                    <FontIcon iconLiteral="fas-pause" iconSize="12" iconColor="white"/>
-                                </graphic>
-                            </Button>
-                            <Button onAction="#resumeCarAI"
-                                    styleClass="ai-button">
-                                <graphic>
-                                    <FontIcon iconLiteral="fas-play" iconSize="12" iconColor="white"/>
-                                </graphic>
-                            </Button>
-                            <ComboBox fx:id="comboCarPriority" prefWidth="70" promptText="Приоритет"/>
-                        </HBox>
+                        <AIControlRow fx:id="carAIControl"
+                                      iconLiteral="fas-car"
+                                      iconColor="#2196F3"
+                                      labelText="%label.cars"/>
                     </IconedSection>
                 </VBox>
             </ScrollPane>

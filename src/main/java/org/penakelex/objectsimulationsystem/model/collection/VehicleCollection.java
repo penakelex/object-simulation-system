@@ -3,113 +3,66 @@ package org.penakelex.objectsimulationsystem.model.collection;
 import org.penakelex.objectsimulationsystem.model.vehicle.Vehicle;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public final class VehicleCollection {
-    private static volatile VehicleCollection instance;
+    private static final VehicleCollection instance =
+        new VehicleCollection();
+
     private final List<Vehicle> vehicles;
     private final Set<Integer> vehiclesIDs;
     private final Map<Integer, Long> spawnTimes;
-    private final transient Object lock = new Object();
 
-    private int idCounter = 0;
+    private final AtomicInteger idCounter;
 
     private VehicleCollection() {
-        this.vehicles =
-            Collections.synchronizedList(new ArrayList<>(500));
-        this.vehiclesIDs =
-            Collections.synchronizedSet(new TreeSet<>());
-        this.spawnTimes =
-            Collections.synchronizedMap(new HashMap<>());
+        this.vehicles = new CopyOnWriteArrayList<>();
+        this.vehiclesIDs = ConcurrentHashMap.newKeySet();
+        this.spawnTimes = new ConcurrentHashMap<>();
+
+        this.idCounter = new AtomicInteger(0);
     }
 
     public static VehicleCollection getInstance() {
-        var result = instance;
-
-        if (result == null) {
-            synchronized (VehicleCollection.class) {
-                result = instance;
-
-                if (result == null) {
-                    instance = result = new VehicleCollection();
-                }
-            }
-        }
-
-        return result;
+        return instance;
     }
 
     public void add(final Vehicle vehicle) {
-        synchronized (lock) {
-            vehicles.add(vehicle);
-            vehiclesIDs.add(vehicle.getId());
-            spawnTimes.put(vehicle.getId(), vehicle.getSpawnTime());
-        }
-    }
-
-    public void removeById(final int id) {
-        synchronized (lock) {
-            vehicles.removeIf(v -> v.getId() == id);
-            vehiclesIDs.remove(id);
-            spawnTimes.remove(id);
-        }
+        vehicles.add(vehicle);
+        vehiclesIDs.add(vehicle.getId());
+        spawnTimes.put(vehicle.getId(), vehicle.getSpawnTime());
     }
 
     public void removeByIds(final Collection<Integer> ids) {
-        synchronized (lock) {
-            vehicles.removeIf(vehicle ->
-                ids.contains(vehicle.getId())
-            );
-            vehiclesIDs.removeAll(ids);
-            ids.forEach(spawnTimes::remove);
-        }
+        vehicles.removeIf(vehicle ->
+            ids.contains(vehicle.getId())
+        );
+        vehiclesIDs.removeAll(ids);
+        ids.forEach(spawnTimes::remove);
     }
 
     public List<Vehicle> getAll() {
-        synchronized (lock) {
-            return new ArrayList<>(vehicles);
-        }
+        return vehicles;
     }
 
     public int size() {
-        synchronized (lock) {
-            return vehicles.size();
-        }
+        return vehicles.size();
     }
 
     public void clear() {
-        synchronized (lock) {
-            vehicles.clear();
-            vehiclesIDs.clear();
-            spawnTimes.clear();
-            idCounter = 0;
-        }
+        vehicles.clear();
+        vehiclesIDs.clear();
+        spawnTimes.clear();
+        idCounter.set(0);
     }
 
-    public synchronized int getNextId() {
-        return idCounter++;
-    }
-
-    public boolean hasId(final int id) {
-        synchronized (lock) {
-            return vehiclesIDs.contains(id);
-        }
+    public int getNextId() {
+        return idCounter.getAndIncrement();
     }
 
     public Map<Integer, Long> getSpawnTimesSnapshot() {
-        synchronized (lock) {
-            return new HashMap<>(spawnTimes);
-        }
-    }
-
-    public Set<Integer> getVehicleIdsSnapshot() {
-        synchronized (lock) {
-            return new TreeSet<>(vehiclesIDs);
-        }
-    }
-
-    public boolean isEmpty() {
-        synchronized (lock) {
-            return vehicles.isEmpty();
-        }
+        return Map.copyOf(spawnTimes);
     }
 }

@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.function.Supplier;
 
 public final class VehicleSpawner<T extends Vehicle> {
     private int period;
@@ -91,8 +92,8 @@ public final class VehicleSpawner<T extends Vehicle> {
 
     public List<T> trySpawn(
         final long currentTimeMillis,
-        final RelativePositionGenerator relativePositionGenerator,
-        final IdSupplier idSupplier
+        final Supplier<Pair<Double, Double>> relativePositionGenerator,
+        final Supplier<Integer> idSupplier
     ) {
         final var spawnsNeeded =
             (int) ((currentTimeMillis - lastSpawnTime) /
@@ -102,21 +103,20 @@ public final class VehicleSpawner<T extends Vehicle> {
             return List.of();
         }
 
-        lastSpawnTime += (long) spawnsNeeded * periodMillis;
-
         final var newVehicles = new ArrayList<T>(spawnsNeeded);
 
         for (int i = 0; i < spawnsNeeded; i++) {
+            lastSpawnTime += periodMillis;
+
             if (random.nextDouble() > probability) {
                 continue;
             }
 
-            final var position =
-                relativePositionGenerator.generate();
+            final var position = relativePositionGenerator.get();
 
             newVehicles.add(
                 factory.create(
-                    idSupplier.getNextId(),
+                    idSupplier.get(),
                     position.getLeft(),
                     position.getRight(),
                     lastSpawnTime,
@@ -131,15 +131,5 @@ public final class VehicleSpawner<T extends Vehicle> {
 
     public void reset() {
         lastSpawnTime = 0;
-    }
-
-    @FunctionalInterface
-    public interface RelativePositionGenerator {
-        Pair<Double, Double> generate();
-    }
-
-    @FunctionalInterface
-    public interface IdSupplier {
-        int getNextId();
     }
 }

@@ -14,10 +14,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import org.kordamp.ikonli.javafx.FontIcon;
 import org.penakelex.objectsimulationsystem.ui.*;
-import org.penakelex.objectsimulationsystem.ui.components.LabeledInputRow;
-import org.penakelex.objectsimulationsystem.ui.components.LabeledProbabilityBox;
-import org.penakelex.objectsimulationsystem.ui.components.LabeledValueRow;
-import org.penakelex.objectsimulationsystem.ui.components.ToolbarButton;
+import org.penakelex.objectsimulationsystem.ui.components.*;
 import org.penakelex.objectsimulationsystem.ui.helpers.ParameterPanelInitializer;
 import org.penakelex.objectsimulationsystem.ui.helpers.SimulationViewHelper;
 import org.penakelex.objectsimulationsystem.model.vehicle.images.CarImages;
@@ -27,7 +24,6 @@ import org.penakelex.objectsimulationsystem.viewmodel.SimulationViewModel;
 
 import java.net.URL;
 import java.util.ResourceBundle;
-import java.util.stream.IntStream;
 
 public final class SimulationViewController implements Initializable {
     @FXML private MenuItem menuStart, menuRestart, menuStop,
@@ -43,8 +39,7 @@ public final class SimulationViewController implements Initializable {
     @FXML private LabeledValueRow truckRow, carRow, totalRow;
     @FXML private Label statusLabel;
     @FXML private FontIcon statusIcon;
-    @FXML private VBox infoContainer;
-    @FXML private VBox statusContainer;
+    @FXML private VBox infoContainer, statusContainer;
     @FXML private RadioButton showTimeRadio, hideTimeRadio;
     @FXML final ToggleGroup timeToggleGroup = new ToggleGroup();
     @FXML private CheckBox showStatisticsCheckBox;
@@ -53,8 +48,7 @@ public final class SimulationViewController implements Initializable {
         carProbabilityBox;
     @FXML private LabeledInputRow truckLifetimeInput,
         carLifetimeInput;
-    @FXML private ComboBox<Integer> comboTruckPriority,
-        comboCarPriority;
+    @FXML private AIControlRow truckAIControl, carAIControl;
 
     private SimulationViewModel viewModel;
     private AnimationTimer gameTimer;
@@ -72,13 +66,38 @@ public final class SimulationViewController implements Initializable {
         bindUI();
 
         gameTimer = new AnimationTimer() {
+            private int frameCount = 0;
+            private long lastFpsUpdateNs = 0;
+            private long previousFrameNs = 0;
+            private static final long ONE_SECOND_NS = 1_000_000_000L;
+            private static final long LONG_FRAME_THRESHOLD_NS =
+                20_000_000L;
+
             @Override
             public void handle(final long now) {
+                frameCount++;
+
+                if (now - lastFpsUpdateNs >= ONE_SECOND_NS) {
+                    IO.println(String.format("[FPS] %.1f",
+                        frameCount * 1e9 / (now - lastFpsUpdateNs)
+                    ));
+                    frameCount = 0;
+                    lastFpsUpdateNs = now;
+                }
+
+                if (previousFrameNs > 0) {
+                    final long deltaNs = now - previousFrameNs;
+                    if (deltaNs > LONG_FRAME_THRESHOLD_NS) {
+                        IO.println(String.format(
+                            "[WARN] Длинный кадр: %d мс",
+                            deltaNs / 1_000_000
+                        ));
+                    }
+                }
+                previousFrameNs = now;
+
                 if (viewModel.getState() == SimulationState.Running) {
-                    viewModel.updateTime();
-                    viewModel.updateHabitat();
-                    SimulationViewHelper.draw(
-                        simulationCanvas,
+                    SimulationViewHelper.draw(simulationCanvas,
                         viewModel.getHabitat()
                     );
                     SimulationViewHelper.updateStatusTime(
@@ -133,31 +152,54 @@ public final class SimulationViewController implements Initializable {
     }
 
     private void initPriorityComboBoxes() {
-        var priorities = IntStream.rangeClosed(1, 10)
+        final var priorities = java.util.stream.IntStream
+            .rangeClosed(Thread.MIN_PRIORITY, Thread.MAX_PRIORITY)
             .boxed()
             .toList();
 
-        comboTruckPriority.getItems().addAll(priorities);
-        comboCarPriority.getItems().addAll(priorities);
-        comboTruckPriority.setValue(Thread.NORM_PRIORITY);
-        comboCarPriority.setValue(Thread.NORM_PRIORITY);
+        truckAIControl.getPriorityComboBox()
+            .getItems()
+            .addAll(priorities);
+        truckAIControl.getPriorityComboBox()
+            .setValue(Thread.NORM_PRIORITY);
+
+        carAIControl.getPriorityComboBox()
+            .getItems()
+            .addAll(priorities);
+        carAIControl.getPriorityComboBox()
+            .setValue(Thread.NORM_PRIORITY);
     }
 
     private void bindAIControls() {
-        comboTruckPriority.valueProperty()
-            .addListener((_, _, newValue) -> {
-                if (viewModel.getHabitat() != null &&
-                    newValue != null) {
-                    viewModel.setTruckAIPriority(newValue);
+        truckAIControl.getPriorityComboBox()
+            .valueProperty()
+            .addListener((_, _, value) -> {
+                if (value != null) {
+                    viewModel.setTruckAIPriority(value);
                 }
             });
-        comboCarPriority.valueProperty()
-            .addListener((_, _, newValue) -> {
-                if (viewModel.getHabitat() != null &&
-                    newValue != null) {
-                    viewModel.setCarAIPriority(newValue);
+        carAIControl.getPriorityComboBox()
+            .valueProperty()
+            .addListener((_, _, value) -> {
+                if (value != null) {
+                    viewModel.setCarAIPriority(value);
                 }
             });
+
+        truckAIControl.setToggleAction(paused -> {
+            if (paused) {
+                viewModel.pauseTruckAI();
+            } else {
+                viewModel.resumeTruckAI();
+            }
+        });
+        carAIControl.setToggleAction(paused -> {
+            if (paused) {
+                viewModel.pauseCarAI();
+            } else {
+                viewModel.resumeCarAI();
+            }
+        });
     }
 
     @FXML
@@ -215,6 +257,7 @@ public final class SimulationViewController implements Initializable {
 
     @FXML
     private void pauseSimulation() {
+        gameTimer.stop();
         viewModel.pauseSimulation();
         simulationCanvas.requestFocus();
     }
@@ -256,26 +299,6 @@ public final class SimulationViewController implements Initializable {
             viewModel.getHabitat().getVehicleCollection(),
             resources
         );
-    }
-
-    @FXML
-    private void pauseTruckAI() {
-        viewModel.pauseTruckAI();
-    }
-
-    @FXML
-    private void resumeTruckAI() {
-        viewModel.resumeTruckAI();
-    }
-
-    @FXML
-    private void pauseCarAI() {
-        viewModel.pauseCarAI();
-    }
-
-    @FXML
-    private void resumeCarAI() {
-        viewModel.resumeCarAI();
     }
 
     private void updateUIState(final SimulationState state) {
@@ -353,8 +376,7 @@ public final class SimulationViewController implements Initializable {
         showTimeRadio.setToggleGroup(timeToggleGroup);
         hideTimeRadio.setToggleGroup(timeToggleGroup);
 
-        timeToggleGroup
-            .selectedToggleProperty()
+        timeToggleGroup.selectedToggleProperty()
             .addListener((_, _, newValue) -> {
                 final var shouldBeVisible = newValue == showTimeRadio;
 
@@ -404,8 +426,7 @@ public final class SimulationViewController implements Initializable {
     }
 
     private void setupLayoutListener() {
-        simulationField
-            .layoutBoundsProperty()
+        simulationField.layoutBoundsProperty()
             .addListener((_, _, newValue) -> {
                 if (viewModel.getHabitat() != null) {
                     viewModel.getHabitat().setSize(

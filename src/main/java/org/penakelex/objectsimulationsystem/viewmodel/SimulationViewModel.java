@@ -1,10 +1,14 @@
 package org.penakelex.objectsimulationsystem.viewmodel;
 
+import javafx.application.Platform;
 import javafx.beans.property.*;
 import org.penakelex.objectsimulationsystem.model.habitat.Habitat;
 import org.penakelex.objectsimulationsystem.model.vehicle.images.CarImages;
 import org.penakelex.objectsimulationsystem.model.vehicle.images.TruckImages;
 
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 public final class SimulationViewModel {
@@ -35,16 +39,35 @@ public final class SimulationViewModel {
         });
     }
 
-    public ObjectProperty<SimulationState> stateProperty() {
-        return state;
-    }
+    private final ScheduledExecutorService simTick = Executors
+        .newSingleThreadScheduledExecutor(runnable -> {
+            final var thread = new Thread(runnable, "SimulationTick");
+            thread.setDaemon(true);
+            return thread;
+        });
 
-    public LongProperty elapsedTimeProperty() {
-        return elapsedTime;
-    }
+    private volatile boolean simulationRunning = false;
 
-    public BooleanProperty showTimeProperty() {
-        return showTime;
+    {
+        simTick.scheduleAtFixedRate(
+            () -> {
+                if (!simulationRunning || habitat == null) {
+                    return;
+                }
+
+                final long elapsed =
+                    System.currentTimeMillis() - startTime;
+                habitat.update(elapsed);
+
+                Platform.runLater(() -> {
+                    elapsedTime.set(elapsed);
+                    updateStatistics();
+                });
+            },
+            0,
+            100,
+            TimeUnit.MILLISECONDS
+        );
     }
 
     public IntegerProperty truckCountProperty() {
@@ -81,11 +104,8 @@ public final class SimulationViewModel {
         }
 
         startTime = System.currentTimeMillis() - elapsedTime.get();
-
-        if (habitat != null) {
-            habitat.startAI();
-        }
-
+        simulationRunning = true;
+        habitat.startAI();
         setState(SimulationState.Running);
     }
 
@@ -94,9 +114,8 @@ public final class SimulationViewModel {
             return;
         }
 
-        if (habitat != null) {
-            habitat.stopAI();
-        }
+        simulationRunning = false;
+        habitat.pauseAI();
         setState(SimulationState.Stopped);
     }
 
@@ -105,11 +124,8 @@ public final class SimulationViewModel {
             return;
         }
 
-        if (habitat != null) {
-            habitat.pauseTruckAI();
-            habitat.pauseCarAI();
-        }
-
+        simulationRunning = false;
+        habitat.pauseAI();
         setState(SimulationState.Paused);
     }
 
@@ -125,22 +141,7 @@ public final class SimulationViewModel {
         showTime.set(!showTime.get());
     }
 
-    public void updateTime() {
-        if (state.get() == SimulationState.Running) {
-            elapsedTime.set(System.currentTimeMillis() - startTime);
-        }
-    }
-
-    public void updateHabitat() {
-        if (habitat != null &&
-            state.get() == SimulationState.Running
-        ) {
-            habitat.update(elapsedTime.get());
-            updateStatistics();
-        }
-    }
-
-    private void updateStatistics() {
+    public void updateStatistics() {
         if (habitat != null && habitat.isStatisticsDirty()) {
             final var statistics = habitat.getStatistics();
             truckCount.set(statistics.trucks());
@@ -165,10 +166,7 @@ public final class SimulationViewModel {
         carCount.set(0);
         totalCount.set(0);
         startTime = System.currentTimeMillis();
-
-        if (habitat != null) {
-            habitat.reset();
-        }
+        habitat.reset();
     }
 
     public void onStateChanged(
@@ -184,38 +182,26 @@ public final class SimulationViewModel {
     }
 
     public void pauseTruckAI() {
-        if (habitat != null) {
-            habitat.pauseTruckAI();
-        }
+        habitat.pauseTruckAI();
     }
 
     public void resumeTruckAI() {
-        if (habitat != null) {
-            habitat.resumeTruckAI();
-        }
+        habitat.resumeTruckAI();
     }
 
     public void pauseCarAI() {
-        if (habitat != null) {
-            habitat.pauseCarAI();
-        }
+        habitat.pauseCarAI();
     }
 
     public void resumeCarAI() {
-        if (habitat != null) {
-            habitat.resumeCarAI();
-        }
+        habitat.resumeCarAI();
     }
 
     public void setTruckAIPriority(final int priority) {
-        if (habitat != null) {
-            habitat.setTruckAIPriority(priority);
-        }
+        habitat.setTruckAIPriority(priority);
     }
 
     public void setCarAIPriority(final int priority) {
-        if (habitat != null) {
-            habitat.setCarAIPriority(priority);
-        }
+        habitat.setCarAIPriority(priority);
     }
 }
