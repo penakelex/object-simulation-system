@@ -1,0 +1,380 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.canvas.Canvas?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import org.kordamp.ikonli.javafx.*?>
+<?import org.penakelex.objectsimulationsystem.ui.components.*?>
+
+<VBox xmlns="http://javafx.com/javafx/25"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="org.penakelex.objectsimulationsystem.view.SimulationViewController"
+      minWidth="600"
+      minHeight="400"
+      prefWidth="900"
+      prefHeight="700"
+      stylesheets="@css/main.css">
+
+    <MenuBar styleClass="main-menubar">
+        <Menu text="%menu.file" mnemonicParsing="false">
+            <graphic>
+                <FontIcon iconLiteral="fas-folder" iconSize="14"/>
+            </graphic>
+            <MenuItem text="%menu.file.save"
+                      onAction="#saveSimulation"
+                      accelerator="Shortcut+S">
+                <graphic>
+                    <FontIcon iconLiteral="fas-save" iconSize="14"/>
+                </graphic>
+            </MenuItem>
+            <MenuItem text="%menu.file.load"
+                      onAction="#loadSimulation"
+                      accelerator="Shortcut+L">
+                <graphic>
+                    <FontIcon iconLiteral="fas-folder-open" iconSize="14"/>
+                </graphic>
+            </MenuItem>
+            <SeparatorMenuItem/>
+            <MenuItem text="%menu.file.exit"
+                      onAction="#exitApplication"
+                      accelerator="Shortcut+Q">
+                <graphic>
+                    <FontIcon iconLiteral="fas-sign-out-alt" iconSize="14"/>
+                </graphic>
+            </MenuItem>
+        </Menu>
+
+        <Menu text="%menu.simulation" mnemonicParsing="false">
+            <graphic>
+                <FontIcon iconLiteral="fas-play" iconSize="14"/>
+            </graphic>
+            <MenuItem fx:id="menuStart"
+                      text="%menu.simulation.start"
+                      onAction="#startSimulation"
+                      accelerator="%label.controls.keybind.start">
+                <graphic>
+                    <FontIcon iconLiteral="fas-play" iconSize="14"/>
+                </graphic>
+            </MenuItem>
+            <MenuItem fx:id="menuPause"
+                      text="%menu.simulation.pause"
+                      onAction="#pauseSimulation"
+                      accelerator="%label.controls.keybind.pause">
+                <graphic>
+                    <FontIcon iconLiteral="fas-pause" iconSize="14"/>
+                </graphic>
+            </MenuItem>
+            <MenuItem fx:id="menuStop"
+                      text="%menu.simulation.stop"
+                      onAction="#stopSimulation"
+                      accelerator="%label.controls.keybind.stop">
+                <graphic>
+                    <FontIcon iconLiteral="fas-stop" iconSize="14"/>
+                </graphic>
+            </MenuItem>
+            <SeparatorMenuItem/>
+            <MenuItem fx:id="menuRestart"
+                      text="%menu.simulation.restart"
+                      onAction="#restartSimulation"
+                      accelerator="%label.controls.keybind.restart">
+                <graphic>
+                    <FontIcon iconLiteral="fas-redo" iconSize="14"/>
+                </graphic>
+            </MenuItem>
+            <SeparatorMenuItem/>
+            <MenuItem text="%menu.console"
+                      onAction="#showConsoleDialog">
+                <graphic>
+                    <FontIcon iconLiteral="fas-terminal" iconSize="14"/>
+                </graphic>
+            </MenuItem>
+        </Menu>
+
+        <Menu text="%menu.view" mnemonicParsing="false">
+            <graphic>
+                <FontIcon iconLiteral="fas-eye" iconSize="14"/>
+            </graphic>
+            <CheckMenuItem fx:id="menuToggleTime"
+                           text="%menu.view.show.time"
+                           onAction="#toggleTimeDisplay"
+                           accelerator="label.controls.keybind.time"
+                           selected="true">
+                <graphic>
+                    <FontIcon fx:id="menuTimeIcon"
+                              iconLiteral="fas-clock"
+                              styleClass="menu-icon, menu-icon-time-active"/>
+                </graphic>
+            </CheckMenuItem>
+
+            <SeparatorMenuItem/>
+
+            <MenuItem fx:id="menuCurrentObjects"
+                      text="%menu.view.current.objects"
+                      onAction="#showCurrentObjectsDialog"
+                      accelerator="%label.controls.keybind.current.objects">
+                <graphic>
+                    <FontIcon iconLiteral="fas-list" iconSize="14"/>
+                </graphic>
+            </MenuItem>
+        </Menu>
+
+        <Menu text="%menu.help" mnemonicParsing="false">
+            <graphic>
+                <FontIcon iconLiteral="fas-question-circle" iconSize="14"/>
+            </graphic>
+            <MenuItem text="%menu.help.about"
+                      onAction="#showAboutDialog">
+                <graphic>
+                    <FontIcon iconLiteral="fas-info-circle" iconSize="14"/>
+                </graphic>
+            </MenuItem>
+        </Menu>
+    </MenuBar>
+
+    <ToolBar styleClass="main-toolbar">
+        <ToolbarButton fx:id="startButton"
+                       iconLiteral="fas-play"
+                       actionText="%label.controls.start"
+                       keyBind="%label.controls.keybind.start"
+                       onAction="#startSimulation"
+                       styleClass="start-button"/>
+
+        <ToolbarButton fx:id="restartButton"
+                       iconLiteral="fas-redo"
+                       actionText="%label.controls.restart"
+                       keyBind="%label.controls.keybind.restart"
+                       onAction="#restartSimulation"
+                       styleClass="restart-button"/>
+
+        <ToolbarButton fx:id="stopButton"
+                       iconLiteral="fas-stop"
+                       actionText="%label.controls.stop"
+                       keyBind="%label.controls.keybind.stop"
+                       onAction="#stopSimulation"
+                       styleClass="stop-button"/>
+
+        <ToolbarButton fx:id="pauseButton"
+                       iconLiteral="fas-pause"
+                       actionText="%label.controls.pause"
+                       keyBind="%label.controls.keybind.pause"
+                       onAction="#pauseSimulation"
+                       styleClass="pause-button"/>
+
+        <Separator/>
+
+        <ToolbarButton iconLiteral="fas-clock"
+                       actionText="%label.controls.time"
+                       keyBind="%label.controls.keybind.time"
+                       onAction="#toggleTimeDisplay"
+                       styleClass="time-toggle-button"/>
+
+        <ToolbarButton iconLiteral="fas-list"
+                       actionText="%label.controls.current.objects"
+                       keyBind="%label.controls.keybind.current.objects"
+                       onAction="#showCurrentObjectsDialog"
+                       styleClass="current-objects-button"/>
+    </ToolBar>
+
+    <HBox VBox.vgrow="ALWAYS">
+        <StackPane fx:id="simulationField"
+                   HBox.hgrow="ALWAYS"
+                   styleClass="canvas-container">
+            <Canvas fx:id="simulationCanvas" styleClass="simulation-canvas"/>
+            <StackPane fx:id="loadingOverlay" styleClass="loading-overlay" visible="false" managed="false">
+                <ProgressIndicator styleClass="loading-progress"/>
+            </StackPane>
+        </StackPane>
+
+        <VBox styleClass="control-panel" HBox.hgrow="NEVER">
+            <ScrollPane styleClass="control-panel-scroll"
+                        VBox.vgrow="ALWAYS">
+
+                <VBox styleClass="control-panel-content">
+                    <IconedSection iconLiteral="fas-cogs"
+                                   title="%label.generation.parameters">
+                        <IconedSection iconLiteral="fas-truck"
+                                       title="%label.trucks"
+                                       styleClass="truck-parameters-section">
+                            <LabeledInputRow fx:id="truckPeriodInput"
+                                             iconLiteral="fas-clock"
+                                             labelText="%label.generation.period"
+                                             styleClass="period-row"/>
+                            <LabeledProbabilityBox fx:id="truckProbabilityBox"
+                                                   iconLiteral="fas-percentage"
+                                                   labelText="%label.generation.probability"
+                                                   styleClass="probability-row"/>
+                            <LabeledInputRow fx:id="truckLifetimeInput"
+                                             iconLiteral="fas-hourglass-half"
+                                             labelText="%label.lifetime"
+                                             styleClass="lifetime-row"/>
+                            <LabeledUnitInputRow fx:id="truckSpeedInput"
+                                                 iconLiteral="fas-tachometer-alt"
+                                                 labelText="%label.movement.speed"
+                                                 unitText="%label.unit.speed"
+                                                 styleClass="speed-row"/>
+                        </IconedSection>
+                        <IconedSection iconLiteral="fas-car"
+                                       title="%label.cars"
+                                       styleClass="car-parameters-section">
+                            <LabeledInputRow fx:id="carPeriodInput"
+                                             iconLiteral="fas-clock"
+                                             labelText="%label.generation.period"
+                                             styleClass="period-row"/>
+                            <LabeledProbabilityBox fx:id="carProbabilityBox"
+                                                   iconLiteral="fas-percentage"
+                                                   labelText="%label.generation.probability"
+                                                   styleClass="probability-row"/>
+                            <LabeledInputRow fx:id="carLifetimeInput"
+                                             iconLiteral="fas-hourglass-half"
+                                             labelText="%label.lifetime"
+                                             styleClass="lifetime-row"/>
+                            <LabeledUnitInputRow fx:id="carSpeedInput"
+                                                 iconLiteral="fas-tachometer-alt"
+                                                 labelText="%label.movement.speed"
+                                                 unitText="%label.unit.speed"
+                                                 styleClass="speed-row"/>
+                        </IconedSection>
+                    </IconedSection>
+
+                    <Separator styleClass="section-separator"/>
+
+                    <VBox fx:id="infoContainer" styleClass="info-container">
+                        <IconedSection iconLiteral="fas-chart-bar" title="%label.statistics.title">
+                            <LabeledValueRow fx:id="truckRow"
+                                             iconLiteral="fas-truck"
+                                             labelText="%label.trucks"
+                                             styleClass="truck-parameters-row"/>
+                            <LabeledValueRow fx:id="carRow"
+                                             iconLiteral="fas-car"
+                                             labelText="%label.cars"
+                                             styleClass="car-parameters-row"/>
+                            <LabeledValueRow fx:id="totalRow"
+                                             iconLiteral="fas-chart-line"
+                                             labelText="%label.total"
+                                             styleClass="total-vehicles-parameters-row"/>
+
+                            <Separator styleClass="section-separator"/>
+
+                            <LabeledValueRow fx:id="currentTruckRow"
+                                             iconLiteral="fas-truck"
+                                             labelText="%label.current.trucks"
+                                             styleClass="truck-parameters-row"/>
+                            <LabeledValueRow fx:id="currentCarRow"
+                                             iconLiteral="fas-car"
+                                             labelText="%label.current.cars"
+                                             styleClass="car-parameters-row"/>
+                            <LabeledValueRow fx:id="currentTotalRow"
+                                             iconLiteral="fas-chart-line"
+                                             labelText="%label.current.total"
+                                             styleClass="total-vehicles-parameters-row"/>
+                        </IconedSection>
+
+                        <Separator styleClass="section-separator"/>
+                    </VBox>
+
+                    <IconedSection iconLiteral="fas-cog"
+                                   title="%label.controls.title">
+                        <IconedSection iconLiteral="fas-clock"
+                                       title="%label.view.time.title">
+                            <RadioButton fx:id="showTimeRadio"
+                                         text="%label.view.time.show"
+                                         toggleGroup="$timeToggleGroup"
+                                         styleClass="time-radio-button"
+                                         selected="true"/>
+                            <RadioButton fx:id="hideTimeRadio"
+                                         text="%label.view.time.hide"
+                                         toggleGroup="$timeToggleGroup"
+                                         styleClass="time-radio-button"/>
+                        </IconedSection>
+
+                        <IconedSection iconLiteral="fas-info-circle"
+                                       title="%label.show.statistics.title">
+                            <CheckBox fx:id="showStatisticsCheckBox"
+                                      text="%label.show.statistics"
+                                      selected="true"
+                                      styleClass="statistics-checkbox"/>
+                        </IconedSection>
+                    </IconedSection>
+
+                    <Separator styleClass="section-separator"/>
+                    <IconedSection iconLiteral="fas-brain" title="%label.ai.title">
+                        <AIControlRow fx:id="truckAIControl"
+                                      iconLiteral="fas-truck"
+                                      iconColor="#4CAF50"
+                                      labelText="%label.trucks"/>
+
+                        <AIControlRow fx:id="carAIControl"
+                                      iconLiteral="fas-car"
+                                      iconColor="#2196F3"
+                                      labelText="%label.cars"/>
+                    </IconedSection>
+
+                    <Separator styleClass="section-separator"/>
+
+                    <IconedSection iconLiteral="fas-network-wired" title="%label.network.title">
+                        <LabeledTextRow fx:id="serverHostInput"
+                                        iconLiteral="fas-server"
+                                        labelText="%label.network.host"
+                                        styleClass="network-input-row"/>
+                        <LabeledTextRow fx:id="serverPortInput"
+                                        iconLiteral="fas-plug"
+                                        labelText="%label.network.port"
+                                        styleClass="network-input-row"/>
+                        <HBox styleClass="network-buttons-container">
+                            <Button fx:id="connectToServerButton"
+                                    text="%label.network.connect"
+                                    onAction="#handleConnectToServer"
+                                    styleClass="connect-button"/>
+                            <Button fx:id="disconnectFromServerButton"
+                                    text="%label.network.disconnect"
+                                    onAction="#handleDisconnectFromServer"
+                                    disable="true"
+                                    styleClass="disconnect-button"/>
+                        </HBox>
+                        <HBox styleClass="network-status-container">
+                            <Label fx:id="connectionStatusText"
+                                   text="%label.network.status.disconnected"
+                                   styleClass="connection-status-label"/>
+                            <Label fx:id="clientIdentifierText"
+                                   styleClass="client-id-label"
+                                   visible="false"
+                                   managed="false"/>
+                        </HBox>
+
+                        <Separator styleClass="section-separator"/>
+
+                        <ComboBox fx:id="connectedClientsComboBox"
+                                  promptText="%label.network.client.prompt"
+                                  disable="true"/>
+                        <ComboBox fx:id="exchangeVehicleTypeComboBox"
+                                  promptText="%label.network.type.prompt"
+                                  disable="true"/>
+                        <Button fx:id="exchangeVehiclesButton"
+                                text="%label.network.exchange"
+                                onAction="#handleExchangeVehicles"
+                                disable="true"
+                                styleClass="exchange-button"/>
+                    </IconedSection>
+                </VBox>
+            </ScrollPane>
+
+            <VBox fx:id="statusContainer" styleClass="status-section">
+                <StackPane fx:id="statusTimeContainer" styleClass="status-time-container">
+                    <LabeledValueRow fx:id="statusTimeRow"
+                                     iconLiteral="fas-clock"
+                                     labelText="%label.simulation.time"
+                                     styleClass="status-time-row"/>
+                </StackPane>
+
+                <HBox styleClass="status-container">
+                    <FontIcon fx:id="statusIcon"
+                              iconLiteral="fas-pause-circle"
+                              styleClass="status-icon"/>
+                    <Label fx:id="statusLabel"
+                           text="%label.status.stopped"
+                           styleClass="status-value stopped"/>
+                </HBox>
+            </VBox>
+        </VBox>
+    </HBox>
+</VBox>

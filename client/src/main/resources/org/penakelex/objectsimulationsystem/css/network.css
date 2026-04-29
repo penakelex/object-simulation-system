@@ -1,0 +1,147 @@
+/* ========================================
+   Сетевой блок (Network UI)
+   ======================================== */
+
+/* Контейнер строки с меткой и полем ввода */
+.labeled-text-row {
+    -fx-alignment: center-left;
+    -fx-spacing: 10;
+}
+
+/* Иконки в строках ввода */
+.labeled-text-row .icon {
+    -fx-icon-color: -fx-base-blue-color;
+    -fx-icon-size: 14px;
+}
+
+/* Метка (текст "Хост:", "Порт:") */
+.labeled-text-row .label {
+    -fx-font-size: 13px;
+    -fx-text-fill: -fx-text-color-light;
+    -fx-padding: 0;
+    -fx-alignment: center-left;
+}
+
+/* Поле ввода текста (хост/порт) */
+.labeled-text-row .input-field {
+    -fx-pref-width: 156;
+    -fx-background-color: white;
+    -fx-border-color: #cccccc;
+    -fx-border-width: 1;
+    -fx-border-radius: 4;
+    -fx-background-radius: 4;
+    -fx-padding: 4 8;
+    -fx-font-size: 13px;
+    -fx-text-fill: -fx-text-color-dark;
+    -fx-alignment: center-left;
+}
+
+.labeled-text-row .input-field:hover {
+    -fx-border-color: -fx-base-blue-color;
+}
+
+.labeled-text-row .input-field:focused {
+    -fx-border-color: -fx-base-blue-color;
+    -fx-effect: dropshadow(gaussian, rgba(33, 150, 243, 0.3), 5, 0, 0, 1);
+}
+
+/* Состояние блокировки (когда клиент подключён) */
+.labeled-text-row:disabled .input-field {
+    -fx-opacity: 0.6;
+    -fx-cursor: default;
+    -fx-border-color: #cccccc;
+}
+
+/* Состояние блокировки (после подключения) */
+.labeled-text-row:disabled .input-field,
+.labeled-text-row:disabled .label,
+.labeled-text-row:disabled .icon {
+    -fx-opacity: 0.5;
+    -fx-cursor: default;
+}
+
+.client-id-label {
+    -fx-font-size: 12px;
+    -fx-font-family: "Consolas", "Menlo", "Courier New", monospace;
+    -fx-text-fill: -fx-text-color-light;
+    -fx-opacity: 0.75;
+}
+
+/* Кнопки */
+.connect-button,
+.disconnect-button,
+.exchange-button {
+    -fx-text-fill: white;
+    -fx-font-size: 12px;
+    -fx-font-weight: 600;
+    -fx-padding: 6 14;
+    -fx-background-radius: 4;
+    -fx-border-radius: 4;
+    -fx-cursor: hand;
+    -fx-min-width: 100;
+    -fx-transition: -fx-background-color 0.15s ease;
+}
+
+.connect-button {
+    -fx-background-color: -fx-base-green-color;
+}
+.connect-button:hover { -fx-background-color: derive(-fx-base-green-color, -10%); }
+.connect-button:pressed { -fx-background-color: derive(-fx-base-green-color, -20%); }
+.connect-button:disabled { -fx-opacity: 0.6; -fx-cursor: default; }
+
+.disconnect-button {
+    -fx-background-color: -fx-base-red-color;
+}
+.disconnect-button:hover { -fx-background-color: derive(-fx-base-red-color, -10%); }
+.disconnect-button:pressed { -fx-background-color: derive(-fx-base-red-color, -20%); }
+.disconnect-button:disabled { -fx-opacity: 0.6; -fx-cursor: default; }
+
+.exchange-button {
+    -fx-background-color: -fx-base-blue-color;
+}
+.exchange-button:hover { -fx-background-color: derive(-fx-base-blue-color, -10%); }
+.exchange-button:pressed { -fx-background-color: derive(-fx-base-blue-color, -20%); }
+.exchange-button:disabled { -fx-opacity: 0.6; -fx-cursor: default; }
+
+/* Статус подключения */
+.connection-status-label {
+    -fx-font-size: 12px;
+    -fx-font-weight: 500;
+    -fx-text-fill: -fx-text-color-light;
+    -fx-padding: 2 0 4 0;
+    -fx-transition: -fx-text-fill 0.2s ease;
+}
+.connection-status-label.connected { -fx-text-fill: -fx-base-green-color; }
+.connection-status-label.connecting { -fx-text-fill: -fx-base-orange-color; }
+.connection-status-label.error { -fx-text-fill: -fx-base-red-color; }
+
+.network-buttons-container {
+    -fx-spacing: 10;
+    -fx-alignment: center-left;
+}
+
+.network-status-container {
+    -fx-spacing: 8;
+    -fx-alignment: center-left;
+}
+
+/* ComboBox */
+#connectedClientsComboBox,
+#exchangeVehicleTypeComboBox {
+    -fx-pref-width: 180;
+    -fx-background-color: white;
+    -fx-border-color: #cccccc;
+    -fx-border-width: 1;
+    -fx-border-radius: 4;
+    -fx-background-radius: 4;
+    -fx-padding: 2 4;
+}
+#connectedClientsComboBox:hover,
+#exchangeVehicleTypeComboBox:hover {
+    -fx-border-color: -fx-base-blue-color;
+}
+#connectedClientsComboBox:focused,
+#exchangeVehicleTypeComboBox:focused {
+    -fx-border-color: -fx-base-blue-color;
+    -fx-effect: dropshadow(gaussian, rgba(33, 150, 243, 0.3), 5, 0, 0, 1);
+}
