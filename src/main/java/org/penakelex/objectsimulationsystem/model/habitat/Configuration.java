@@ -26,6 +26,8 @@ public final class Configuration {
     public static final String VEHICLE_IMAGES_TRUCKS_PATH;
     public static final String[] VEHICLE_IMAGE_EXTENSIONS;
 
+    public static final int MIN_RECOMMENDED_PERIOD_MS;
+
     static {
         final var configuration =
             ResourceBundle.getBundle("configuration");
@@ -112,6 +114,12 @@ public final class Configuration {
         VEHICLE_IMAGE_EXTENSIONS = configuration
             .getString("vehicle.image.extensions")
             .split(",");
+
+        MIN_RECOMMENDED_PERIOD_MS = validatePositiveInt(
+            configuration,
+            "warning.performance.min_period_ms",
+            "Minimum recommended period"
+        );
     }
 
     private Configuration() {

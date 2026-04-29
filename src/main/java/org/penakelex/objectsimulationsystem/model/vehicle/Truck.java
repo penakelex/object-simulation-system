@@ -9,8 +9,16 @@ public final class Truck extends Vehicle {
         final double relativeY,
         final long spawnTime,
         final long lifeTime,
-        final Image image
+        final Image image,
+        final short imageResourceIndex
     ) {
-        super(id, relativeX, relativeY, spawnTime, lifeTime, image);
+        super(id,
+            relativeX,
+            relativeY,
+            spawnTime,
+            lifeTime,
+            image,
+            imageResourceIndex
+        );
     }
 }

@@ -4,7 +4,8 @@ import javafx.stage.Stage;
 import org.penakelex.objectsimulationsystem.model.habitat.Configuration;
 import org.penakelex.objectsimulationsystem.model.habitat.Habitat;
 import org.penakelex.objectsimulationsystem.model.habitat.TimeUnit;
-import org.penakelex.objectsimulationsystem.ui.WarningDialog;
+import org.penakelex.objectsimulationsystem.ui.dialogs.EnteredValueErrorDialog;
+import org.penakelex.objectsimulationsystem.ui.dialogs.WarningDialog;
 import org.penakelex.objectsimulationsystem.ui.components.LabeledInputRow;
 import org.penakelex.objectsimulationsystem.ui.components.LabeledProbabilityBox;
 import org.penakelex.objectsimulationsystem.ui.components.LabeledUnitInputRow;
@@ -180,7 +181,8 @@ public final class ParameterPanelInitializer {
                     defaultValue,
                     defaultTimeUnit,
                     resources,
-                    ownerStage
+                    ownerStage,
+                    true
                 )
             );
     }
@@ -235,7 +237,8 @@ public final class ParameterPanelInitializer {
                 defaultValue,
                 defaultTimeUnit,
                 resources,
-                ownerStage
+                ownerStage,
+                false
             ));
     }
 
@@ -274,13 +277,16 @@ public final class ParameterPanelInitializer {
 
         input.textProperty().addListener((_, _, newValue) -> {
             final var habitat = habitatSupplier.get();
+
             if (habitat == null) {
                 return;
             }
 
             final var validated = validatePositiveInteger(newValue);
+
             if (validated.isPresent()) {
-                speedSetter.accept(habitat,
+                speedSetter.accept(
+                    habitat,
                     validated.get().doubleValue()
                 );
                 input.setError(false);
@@ -303,7 +309,7 @@ public final class ParameterPanelInitializer {
 
                 input.setTextFieldValue(defaultValue);
                 input.setError(false);
-                WarningDialog.showWarning(
+                EnteredValueErrorDialog.showError(
                     ownerStage, resources,
                     resources.getString("error.invalid.speed")
                         .formatted(fieldText, defaultValue)
@@ -341,14 +347,40 @@ public final class ParameterPanelInitializer {
         final int defaultValue,
         final TimeUnit defaultTimeUnit,
         final ResourceBundle resources,
-        final Stage ownerStage
+        final Stage ownerStage,
+        final boolean isGenerationPeriod
     ) {
         if (focused) {
             return;
         }
 
         final var fieldText = input.getFieldText();
-        if (validatePositiveInteger(fieldText).isPresent()) {
+        final var parsed = validatePositiveInteger(fieldText);
+
+        if (parsed.isPresent()) {
+            if (isGenerationPeriod) {
+                findTimeUnit(
+                    resources,
+                    input.getComboBoxValue()
+                ).ifPresent(timeUnit -> {
+                    if (parsed.get() * timeUnit.millisModifier >=
+                        Configuration.MIN_RECOMMENDED_PERIOD_MS
+                    ) {
+                        return;
+                    }
+
+                    WarningDialog.showWarning(
+                        ownerStage,
+                        resources,
+                        resources.getString(
+                            "warning.performance.low_period"
+                        ).formatted(
+                            Configuration.MIN_RECOMMENDED_PERIOD_MS
+                        )
+                    );
+                });
+            }
+
             return;
         }
 
@@ -360,7 +392,7 @@ public final class ParameterPanelInitializer {
         input.setComboBoxValue(defaultTimeUnitLabel);
         input.setError(false);
 
-        WarningDialog.showWarning(
+        EnteredValueErrorDialog.showError(
             ownerStage,
             resources,
             resources.getString("error.invalid.period").formatted(

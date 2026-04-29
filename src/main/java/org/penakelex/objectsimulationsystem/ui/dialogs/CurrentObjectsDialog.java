@@ -1,25 +1,19 @@
-package org.penakelex.objectsimulationsystem.ui;
+package org.penakelex.objectsimulationsystem.ui.dialogs;
 
 import javafx.animation.AnimationTimer;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.geometry.Point2D;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
-import javafx.scene.input.KeyCode;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
-import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import org.kordamp.ikonli.javafx.FontIcon;
 import org.penakelex.objectsimulationsystem.model.collection.VehicleCollection;
-import org.penakelex.objectsimulationsystem.ui.helpers.MutableHolder;
+import org.penakelex.objectsimulationsystem.ui.helpers.TimeFormatter;
 
 import java.util.Map;
 import java.util.ResourceBundle;
@@ -35,48 +29,46 @@ public final class CurrentObjectsDialog {
     public static void showDialog(
         final Stage ownerStage,
         final VehicleCollection vehicleCollection,
-        final ResourceBundle localizedResources
+        final ResourceBundle resources
     ) {
         final var dialogStage = new Stage();
-
         dialogStage.initOwner(ownerStage);
         dialogStage.initModality(Modality.APPLICATION_MODAL);
         dialogStage.initStyle(StageStyle.TRANSPARENT);
 
-        final var rootContainer = createRootContainer();
-
         final var vehicleInfoList =
             FXCollections.<VehicleInfo>observableArrayList();
-
-        final var objectsListView = new ListView<>(vehicleInfoList);
-        objectsListView.getStyleClass().add("dialog-list-view");
-        objectsListView.setCellFactory(_ ->
-            new VehicleInfoCell(localizedResources)
+        final var listView = new ListView<>(vehicleInfoList);
+        listView.getStyleClass().add("dialog-list-view");
+        listView.setCellFactory(_ ->
+            new VehicleInfoCell(resources)
         );
 
-        final var emptyListLabel = new Label(localizedResources
-            .getString("dialog.current.objects.empty")
+        final var emptyLabel = new Label(resources.getString(
+            "dialog.current.objects.empty"
+        ));
+        emptyLabel.getStyleClass().add("dialog-list-empty-label");
+        listView.setPlaceholder(emptyLabel);
+
+        final var root = DialogUtils.createRootContainer(
+            "current-objects-dialog-pane"
         );
-        emptyListLabel.getStyleClass().add("dialog-list-empty-label");
-        objectsListView.setPlaceholder(emptyListLabel);
-
-        rootContainer.getChildren().addAll(
-            createHeaderContainer(localizedResources, dialogStage),
-            createListContentContainer(objectsListView),
-            createButtonBarContainer(localizedResources, dialogStage)
+        root.getChildren().addAll(
+            DialogUtils.createHeaderContainer(
+                resources,
+                "dialog.current.objects.header",
+                dialogStage,
+                "fas-list"
+            ),
+            createListContentContainer(listView),
+            DialogUtils.createCloseButtonBar(resources, dialogStage)
         );
 
-        final var dialogScene = new Scene(rootContainer);
-        dialogScene.getStylesheets()
-            .addAll(ownerStage.getScene().getStylesheets());
+        final var scene = new Scene(root);
+        DialogUtils.applyStylesheets(scene, ownerStage);
+        DialogUtils.registerEscapeHandler(scene, dialogStage);
 
-        dialogScene.setOnKeyPressed(event -> {
-            if (event.getCode() == KeyCode.ESCAPE) {
-                dialogStage.close();
-            }
-        });
-
-        dialogStage.setScene(dialogScene);
+        dialogStage.setScene(scene);
         dialogStage.sizeToScene();
         dialogStage.centerOnScreen();
 
@@ -88,87 +80,14 @@ public final class CurrentObjectsDialog {
         dialogStage.showAndWait();
     }
 
-    private static VBox createRootContainer() {
-        final var container = new VBox();
-        container.getStyleClass()
-            .addAll("dialog-pane", "current-objects-dialog-pane");
-        return container;
-    }
-
-    private static HBox createHeaderContainer(
-        final ResourceBundle localizedResources,
-        final Stage dialogStage
+    private static VBox createListContentContainer(
+        final ListView<VehicleInfo> listView
     ) {
-        final var headerContainer = new HBox();
-        headerContainer.getStyleClass().add("dialog-header");
-
-        final var titleLabel = new Label(localizedResources
-            .getString("dialog.current.objects.header")
-        );
-        titleLabel.getStyleClass().add("dialog-header-label");
-
-        final var spacer = new Region();
-        HBox.setHgrow(spacer, Priority.ALWAYS);
-
-        final var closeButton = new Button();
-        closeButton.getStyleClass().add("dialog-close-button");
-        closeButton.setGraphic(new FontIcon("fas-times"));
-        closeButton.setOnAction(_ -> dialogStage.close());
-
-        headerContainer.getChildren()
-            .addAll(titleLabel, spacer, closeButton);
-        setupWindowDragging(headerContainer, dialogStage);
-
-        return headerContainer;
-    }
-
-    private static void setupWindowDragging(
-        final HBox draggableHeader,
-        final Stage targetStage
-    ) {
-        final var dragCoordinates = new MutableHolder<>(Point2D.ZERO);
-
-        draggableHeader.setOnMousePressed(event ->
-            dragCoordinates.setContainedValue(
-                new Point2D(event.getSceneX(), event.getSceneY())
-            )
-        );
-
-        draggableHeader.setOnMouseDragged(event -> {
-            final var initialPoint =
-                dragCoordinates.getContainedValue();
-            targetStage.setX(
-                event.getScreenX() - initialPoint.getX()
-            );
-            targetStage.setY(
-                event.getScreenY() - initialPoint.getY()
-            );
-        });
-    }
-
-    private static VBox createListContentContainer(final ListView<VehicleInfo> listView) {
         final var contentContainer = new VBox();
         contentContainer.getStyleClass().add("dialog-content");
         VBox.setVgrow(listView, Priority.ALWAYS);
         contentContainer.getChildren().add(listView);
         return contentContainer;
-    }
-
-    private static HBox createButtonBarContainer(
-        final ResourceBundle localizedResources,
-        final Stage dialogStage
-    ) {
-        final var buttonBarContainer = new HBox();
-        buttonBarContainer.getStyleClass().add("dialog-button-bar");
-
-        final var closeTextButton = new Button(localizedResources
-            .getString("dialog.button.close")
-        );
-        closeTextButton.setDefaultButton(true);
-        closeTextButton.setOnAction(_ -> dialogStage.close());
-
-        buttonBarContainer.getChildren().add(closeTextButton);
-        return buttonBarContainer;
     }
 
     private static void setupLiveUpdateTimer(
@@ -225,6 +144,7 @@ public final class CurrentObjectsDialog {
 
         private VehicleInfoCell(final ResourceBundle resources) {
             this.resources = resources;
+
             container = new VBox();
             container.getStyleClass().add("vehicle-info-cell");
 

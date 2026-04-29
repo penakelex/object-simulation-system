@@ -5,7 +5,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import org.penakelex.objectsimulationsystem.ui.ErrorDialog;
+import org.penakelex.objectsimulationsystem.ui.dialogs.ErrorDialog;
 import org.penakelex.objectsimulationsystem.view.SimulationViewController;
 import org.penakelex.objectsimulationsystem.model.habitat.Configuration;
 import org.penakelex.objectsimulationsystem.model.vehicle.images.CarImages;
@@ -15,7 +15,7 @@ import java.io.IOException;
 import java.util.Objects;
 import java.util.ResourceBundle;
 
-import static org.penakelex.objectsimulationsystem.ui.ErrorDialog.getErrorString;
+import static org.penakelex.objectsimulationsystem.ui.dialogs.ErrorDialog.getErrorString;
 
 public class SimulationApplication extends Application {
     @Override
@@ -95,6 +95,7 @@ public class SimulationApplication extends Application {
         stage.setScene(scene);
         stage.setMinWidth(root.getMinWidth());
         stage.setMinHeight(root.getMinHeight());
+        stage.setOnCloseRequest(_ -> controller.exitApplication());
         stage.show();
 
         controller.setKeyboardHandler(scene);

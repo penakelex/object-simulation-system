@@ -1,0 +1,10 @@
+.loading-overlay {
+    -fx-background-color: rgba(0, 0, 0, 0.55);
+    -fx-alignment: center;
+}
+
+.loading-progress {
+    -fx-progress-color: -fx-base-blue-color;
+    -fx-pref-width: 50;
+    -fx-pref-height: 50;
+}

@@ -30,10 +30,15 @@ public final class SimulationViewModel {
         new SimpleIntegerProperty(0);
     private final IntegerProperty currentCarCount =
         new SimpleIntegerProperty(0);
+    private final IntegerProperty currentTotalCount =
+        new SimpleIntegerProperty(0);
 
     private Habitat habitat;
     private long startTime = 0;
     private Consumer<SimulationState> stateChangeListener;
+
+    private TruckImages truckImages;
+    private CarImages carImages;
 
     public SimulationViewModel() {
         state.addListener((_, _, newState) -> {
@@ -61,12 +66,10 @@ public final class SimulationViewModel {
 
                 final long elapsed =
                     System.currentTimeMillis() - startTime;
+
                 habitat.update(elapsed);
 
-                Platform.runLater(() -> {
-                    elapsedTime.set(elapsed);
-                    updateStatistics();
-                });
+                Platform.runLater(this::updateStatistics);
             },
             0,
             100,
@@ -92,6 +95,10 @@ public final class SimulationViewModel {
 
     public IntegerProperty currentCarCountProperty() {
         return currentCarCount;
+    }
+
+    public IntegerProperty currentTotalCountProperty() {
+        return currentTotalCount;
     }
 
     public SimulationState getState() {
@@ -167,6 +174,7 @@ public final class SimulationViewModel {
             totalCount.set(statistics.total());
             currentTruckCount.set(statistics.currentTrucks());
             currentCarCount.set(statistics.currentCars());
+            currentTotalCount.set(statistics.currentTotal());
         }
     }
 
@@ -177,6 +185,8 @@ public final class SimulationViewModel {
         final CarImages carImages
     ) {
         habitat = new Habitat(width, height, truckImages, carImages);
+        this.truckImages = truckImages;
+        this.carImages = carImages;
         updateStatistics();
     }
 
@@ -185,6 +195,9 @@ public final class SimulationViewModel {
         truckCount.set(0);
         carCount.set(0);
         totalCount.set(0);
+        currentTruckCount.set(0);
+        currentCarCount.set(0);
+        currentTotalCount.set(0);
         startTime = System.currentTimeMillis();
         habitat.reset();
     }
@@ -223,5 +236,29 @@ public final class SimulationViewModel {
 
     public void setCarAIPriority(final int priority) {
         habitat.setCarAIPriority(priority);
+    }
+
+    public void pauseUserAI() {
+        if (habitat != null) {
+            habitat.pauseUserAI();
+        }
+    }
+
+    public void resumeUserAI() {
+        if (habitat != null) {
+            habitat.resumeUserAI();
+        }
+    }
+
+    public TruckImages getTruckImages() {
+        return this.truckImages;
+    }
+
+    public CarImages getCarImages() {
+        return this.carImages;
+    }
+
+    public void setElapsedTimeForLoad(final long elapsedTime) {
+        this.elapsedTime.set(elapsedTime);
     }
 }

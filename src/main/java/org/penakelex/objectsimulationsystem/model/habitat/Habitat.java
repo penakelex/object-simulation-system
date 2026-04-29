@@ -385,13 +385,45 @@ public final class Habitat {
 
         final var trucksCount = this.trucksCount.get();
         final var carsCount = this.carsCount.get();
+        final var currentTrucksCount = this.currentTrucksCount.get();
+        final var currentCarsCount = this.currentCarsCount.get();
 
         return new VehicleStatistics(
             trucksCount,
             carsCount,
             trucksCount + carsCount,
-            currentTrucksCount.get(),
-            currentCarsCount.get()
+            currentTrucksCount,
+            currentCarsCount,
+            currentTrucksCount + currentCarsCount
         );
+    }
+
+    public void pauseUserAI() {
+        truckAI.pauseByUser();
+        carAI.pauseByUser();
+    }
+
+    public void resumeUserAI() {
+        truckAI.resumeByUser();
+        carAI.resumeByUser();
+    }
+
+    public void restoreStatistics(
+        final int totalTrucks,
+        final int totalCars,
+        final int currentTrucks,
+        final int currentCars
+    ) {
+        trucksCount.set(totalTrucks);
+        carsCount.set(totalCars);
+        currentTrucksCount.set(currentTrucks);
+        currentCarsCount.set(currentCars);
+        statisticsDirty = true;
+    }
+
+    public void synchronizeSpawnerTimes(final long currentTime) {
+        for (final var spawner : vehicleSpawners) {
+            spawner.synchronizeLastSpawnTime(currentTime);
+        }
     }
 }

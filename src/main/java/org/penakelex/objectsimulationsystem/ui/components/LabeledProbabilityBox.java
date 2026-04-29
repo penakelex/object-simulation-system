@@ -35,6 +35,10 @@ public final class LabeledProbabilityBox extends HBox {
         return comboBox.getSelectionModel().selectedIndexProperty();
     }
 
+    public void setSelectedIndex(final int index) {
+        comboBox.getSelectionModel().select(index);
+    }
+
     public void setLabelText(final String text) {
         label.setText(text);
     }

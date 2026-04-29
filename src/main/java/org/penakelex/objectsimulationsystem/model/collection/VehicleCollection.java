@@ -65,4 +65,27 @@ public final class VehicleCollection {
     public Map<Integer, Long> getSpawnTimesSnapshot() {
         return Map.copyOf(spawnTimes);
     }
+
+    public void loadVehicles(
+        final Collection<Vehicle> loadedVehicles
+    ) {
+        vehicles.clear();
+        vehiclesIDs.clear();
+        spawnTimes.clear();
+
+        vehicles.addAll(loadedVehicles);
+
+        int maximumIdentifier = 0;
+
+        for (final var vehicle : loadedVehicles) {
+            vehiclesIDs.add(vehicle.getId());
+            spawnTimes.put(vehicle.getId(),
+                vehicle.getSpawnTime()
+            );
+            maximumIdentifier =
+                Math.max(maximumIdentifier, vehicle.getId());
+        }
+
+        idCounter.set(maximumIdentifier + 1);
+    }
 }

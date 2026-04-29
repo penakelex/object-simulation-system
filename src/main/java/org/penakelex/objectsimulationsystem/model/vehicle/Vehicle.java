@@ -7,25 +7,27 @@ import org.penakelex.objectsimulationsystem.model.habitat.Configuration;
 import org.penakelex.objectsimulationsystem.model.vehicle.exceptions.VehicleCreationException;
 import org.penakelex.objectsimulationsystem.model.vehicle.exceptions.VehicleInvalidParameter;
 
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract sealed class Vehicle implements IBehaviour
+public abstract sealed class Vehicle
+    implements IBehaviour, Serializable
     permits Truck, Car
 {
     private final int id;
     private final long spawnTime;
     private final long lifetime;
 
-    private final Image image;
+    private transient Image image;
+    private short imageResourceIndex;
 
     private volatile double relativeX, relativeY;
     private volatile double targetRelativeX, targetRelativeY;
 
-    private double canvasWidth, canvasHeight;
-    private double scaledWidth, scaledHeight;
+    private transient double canvasWidth, canvasHeight;
+    private transient double scaledWidth, scaledHeight;
 
-    private double movementSpeed;
     private boolean hasTarget = false;
     private boolean arrived = false;
 
@@ -35,10 +37,17 @@ public abstract sealed class Vehicle implements IBehaviour
         final double relativeY,
         final long spawnTime,
         final long lifetime,
-        final Image image
+        final Image image,
+        final short imageResourceIndex
     ) {
         final var invalidParameters = validateParameters(
-            id, relativeX, relativeY, spawnTime, lifetime, image
+            id,
+            relativeX,
+            relativeY,
+            spawnTime,
+            lifetime,
+            image,
+            imageResourceIndex
         );
 
         if (invalidParameters != null) {
@@ -51,6 +60,7 @@ public abstract sealed class Vehicle implements IBehaviour
         this.spawnTime = spawnTime;
         this.lifetime = lifetime;
         this.image = image;
+        this.imageResourceIndex = imageResourceIndex;
     }
 
     private static List<VehicleInvalidParameter> validateParameters(
@@ -59,18 +69,19 @@ public abstract sealed class Vehicle implements IBehaviour
         final double relativeY,
         final long spawnTime,
         final long lifetime,
-        final Image image
+        final Image image,
+        final short imageResourceIndex
     ) {
         List<VehicleInvalidParameter> invalidParameters = null;
 
         if (id < 0) {
-            invalidParameters = new ArrayList<>(6);
+            invalidParameters = new ArrayList<>(7);
             invalidParameters.add(new VehicleInvalidParameter.Id(id));
         }
 
         if (relativeX < 0 || relativeX > 1) {
             if (invalidParameters == null) {
-                invalidParameters = new ArrayList<>(5);
+                invalidParameters = new ArrayList<>(6);
             }
 
             invalidParameters.add(
@@ -80,7 +91,7 @@ public abstract sealed class Vehicle implements IBehaviour
 
         if (relativeY < 0 || relativeY > 1) {
             if (invalidParameters == null) {
-                invalidParameters = new ArrayList<>(4);
+                invalidParameters = new ArrayList<>(5);
             }
 
             invalidParameters.add(
@@ -90,7 +101,7 @@ public abstract sealed class Vehicle implements IBehaviour
 
         if (spawnTime < 0) {
             if (invalidParameters == null) {
-                invalidParameters = new ArrayList<>(3);
+                invalidParameters = new ArrayList<>(4);
             }
 
             invalidParameters.add(
@@ -100,7 +111,7 @@ public abstract sealed class Vehicle implements IBehaviour
 
         if (lifetime <= 0) {
             if (invalidParameters == null) {
-                invalidParameters = new ArrayList<>(2);
+                invalidParameters = new ArrayList<>(3);
             }
             invalidParameters
                 .add(new VehicleInvalidParameter.LifeTime(lifetime));
@@ -108,14 +119,41 @@ public abstract sealed class Vehicle implements IBehaviour
 
         if (image == null) {
             if (invalidParameters == null) {
-                invalidParameters = new ArrayList<>(1);
+                invalidParameters = new ArrayList<>(2);
             }
 
             invalidParameters
                 .add(new VehicleInvalidParameter.Image());
         }
 
+        if (imageResourceIndex < 0) {
+            if (invalidParameters == null) {
+                invalidParameters = new ArrayList<>(1);
+            }
+
+            invalidParameters.add(new VehicleInvalidParameter
+                .ImageResourceIndex(imageResourceIndex)
+            );
+        }
+
         return invalidParameters;
+    }
+
+    @Serial
+    private void writeObject(
+        final ObjectOutputStream objectOutputStream
+    ) throws IOException {
+        objectOutputStream.defaultWriteObject();
+    }
+
+    @Serial
+    private void readObject(final ObjectInputStream objectInputStream)
+    throws IOException, ClassNotFoundException {
+        objectInputStream.defaultReadObject();
+    }
+
+    public short getImageResourceIndex() {
+        return imageResourceIndex;
     }
 
     public boolean isExpired(final long currentTime) {
@@ -128,6 +166,22 @@ public abstract sealed class Vehicle implements IBehaviour
 
     public long getSpawnTime() {
         return spawnTime;
+    }
+
+    public long getLifetime() {
+        return this.lifetime;
+    }
+
+    public void setImage(final Image image) {
+        this.image = image;
+    }
+
+    public void setImageWithResourceIndex(
+        final Image image,
+        final short imageResourceIndex
+    ) {
+        this.imageResourceIndex = imageResourceIndex;
+        setImage(image);
     }
 
     public synchronized void onCanvasSizeUpdated(
@@ -146,12 +200,6 @@ public abstract sealed class Vehicle implements IBehaviour
 
         this.scaledWidth = image.getWidth() * imageScale;
         this.scaledHeight = image.getHeight() * imageScale;
-    }
-
-    public void setMovementSpeed(
-        final double movementSpeed
-    ) {
-        this.movementSpeed = movementSpeed;
     }
 
     public void setTarget(
@@ -188,7 +236,10 @@ public abstract sealed class Vehicle implements IBehaviour
     public synchronized void update(final long currentTime) {
     }
 
-    public void move(final double deltaTimeSeconds) {
+    public void move(
+        final double deltaTimeSeconds,
+        final double movementSpeed
+    ) {
         if (!hasTarget || arrived
             || canvasWidth <= 0 || canvasHeight <= 0) {
             return;

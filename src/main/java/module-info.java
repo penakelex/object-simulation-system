@@ -11,7 +11,6 @@ module org.penakelex.objectsimulationsystem {
     exports org.penakelex.objectsimulationsystem;
     exports org.penakelex.objectsimulationsystem.model.behaviour;
     exports org.penakelex.objectsimulationsystem.model.habitat;
-    exports org.penakelex.objectsimulationsystem.ui;
     exports org.penakelex.objectsimulationsystem.model.vehicle;
     exports org.penakelex.objectsimulationsystem.model.vehicle.images;
     exports org.penakelex.objectsimulationsystem.model.vehicle.images.exceptions;
@@ -25,4 +24,5 @@ module org.penakelex.objectsimulationsystem {
     opens org.penakelex.objectsimulationsystem.view to javafx.fxml;
     exports org.penakelex.objectsimulationsystem.ui.helpers;
     opens org.penakelex.objectsimulationsystem.ui.helpers to javafx.fxml;
+    exports org.penakelex.objectsimulationsystem.ui.dialogs;
 }

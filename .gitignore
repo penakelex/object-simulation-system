@@ -14,3 +14,4 @@ src/**/resources/images/**/*.jpeg
 *.iws
 *.iml
 *.ipr
+/simulation-config.properties

@@ -1,6 +1,7 @@
 package org.penakelex.objectsimulationsystem.model.vehicle.images;
 
 import javafx.scene.image.Image;
+import org.apache.commons.lang3.tuple.Pair;
 import org.penakelex.objectsimulationsystem.model.habitat.Configuration;
 import org.penakelex.objectsimulationsystem.model.vehicle.images.exceptions.*;
 
@@ -10,11 +11,14 @@ import java.net.URISyntaxException;
 import java.nio.file.*;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.stream.IntStream;
 
 public sealed abstract class VehicleImages
     permits CarImages, TruckImages
 {
     protected final List<Image> images;
+    private final Map<Short, Image> pathsToImages = new HashMap<>();
+    private final Map<Image, Short> imagesPaths = new HashMap<>();
 
     protected VehicleImages() {
         images = loadImages();
@@ -32,7 +36,8 @@ public sealed abstract class VehicleImages
             );
         }
 
-        return imagesNames.stream().map(name -> {
+        return IntStream.range(0, imagesNames.size()).mapToObj(i -> {
+            final var name = imagesNames.get(i);
             final Image image;
 
             try {
@@ -53,6 +58,8 @@ public sealed abstract class VehicleImages
                 throw new ImageLoadException(name, null);
             }
 
+            pathsToImages.put((short) i, image);
+            imagesPaths.put(image, (short) i);
             return image;
         }).toList();
     }
@@ -143,9 +150,18 @@ public sealed abstract class VehicleImages
             );
     }
 
-    public final Image getRandomImage() {
-        return images.get(
-            ThreadLocalRandom.current().nextInt(images.size())
+    public Optional<Image> getImageForResourceIndex(
+        final short imagePath
+    ) {
+        return Optional.ofNullable(pathsToImages.get(imagePath));
+    }
+
+    public Pair<Image, Short> getRandomImageWithIndex() {
+        final var selectedImage = images.get(ThreadLocalRandom
+            .current()
+            .nextInt(images.size())
         );
+
+        return Pair.of(selectedImage, imagesPaths.get(selectedImage));
     }
 }

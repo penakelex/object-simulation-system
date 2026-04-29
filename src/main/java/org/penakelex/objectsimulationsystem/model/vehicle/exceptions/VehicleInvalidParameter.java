@@ -104,4 +104,21 @@ public abstract sealed class VehicleInvalidParameter implements
             return null;
         }
     }
+
+    public static final class ImageResourceIndex extends VehicleInvalidParameter {
+        private final short index;
+
+        public ImageResourceIndex(final short index) {
+            this.index = index;
+        }
+
+        public short getIndex() {
+            return index;
+        }
+
+        @Override
+        public Object getParameterValue() {
+            return null;
+        }
+    }
 }

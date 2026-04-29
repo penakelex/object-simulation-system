@@ -59,25 +59,26 @@ public abstract sealed class BaseAI<T extends Vehicle>
 
     public void onSimulationResume() {
         simulationActive.set(true);
-        syncRunningState();
+        lastUpdateTime = System.currentTimeMillis();
+        synchronizeRunningState();
     }
 
     public void onSimulationPause() {
         simulationActive.set(false);
-        syncRunningState();
+        synchronizeRunningState();
     }
 
     public void pauseByUser() {
         userPaused.set(true);
-        syncRunningState();
+        synchronizeRunningState();
     }
 
     public void resumeByUser() {
         userPaused.set(false);
-        syncRunningState();
+        synchronizeRunningState();
     }
 
-    private synchronized void syncRunningState() {
+    private synchronized void synchronizeRunningState() {
         final var shouldBeRunning =
             simulationActive.get() && !userPaused.get();
 
@@ -124,10 +125,12 @@ public abstract sealed class BaseAI<T extends Vehicle>
                 }
 
                 final var now = System.currentTimeMillis();
-                final var elapsed = now - lastUpdateTime;
+                final var elapsed = lastUpdateTime > 0
+                    ? now - lastUpdateTime
+                    : FRAME_INTERVAL_MS;
 
                 if (elapsed >= FRAME_INTERVAL_MS) {
-                    executeBehavior(now);
+                    executeBehavior(elapsed);
                     lastUpdateTime = now;
                 } else {
                     LockSupport.parkNanos(Math.max(
@@ -142,17 +145,14 @@ public abstract sealed class BaseAI<T extends Vehicle>
         }
     }
 
-    private void executeBehavior(final long currentTime) {
-        final long deltaTimeMs = lastUpdateTime > 0
-            ? currentTime - lastUpdateTime
-            : FRAME_INTERVAL_MS;
-        lastUpdateTime = currentTime;
+    private void executeBehavior(final long deltaTimeMs) {
         final double deltaTimeSeconds = deltaTimeMs / 1e3;
 
         for (final var vehicle : (Iterable<T>) vehiclesSupplier::get) {
             if (vehicle.isArrived()) {
                 continue;
             }
+
             if (!vehicle.hasTarget()) {
                 if (isVehicleArrivedAtSpawn(
                     vehicle.getRelativeX(),
@@ -162,14 +162,14 @@ public abstract sealed class BaseAI<T extends Vehicle>
                     continue;
                 } else {
                     final var targetPoint = getRelativeTargetPoint();
-                    vehicle.setMovementSpeed(speed);
                     vehicle.setTarget(
                         targetPoint.getX(),
                         targetPoint.getY()
                     );
                 }
             }
-            vehicle.move(deltaTimeSeconds);
+
+            vehicle.move(deltaTimeSeconds, speed);
         }
     }
 

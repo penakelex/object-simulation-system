@@ -1,4 +1,4 @@
-package org.penakelex.objectsimulationsystem.ui;
+package org.penakelex.objectsimulationsystem.ui.helpers;
 
 import org.penakelex.objectsimulationsystem.model.habitat.TimeUnit;
 
@@ -51,11 +51,9 @@ public final class TimeFormatter {
         final TimeUnit timeUnit,
         final ResourceBundle resources
     ) {
-        return resources
-            .getString("format.time")
-            .formatted(
-                value,
-                resources.getString(timeUnit.messageKey)
-            );
+        return resources.getString("format.time").formatted(
+            value,
+            resources.getString(timeUnit.messageKey)
+        );
     }
 }

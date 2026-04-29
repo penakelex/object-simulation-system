@@ -113,17 +113,17 @@ public final class VehicleSpawner<T extends Vehicle> {
             }
 
             final var position = relativePositionGenerator.get();
+            final var imageWithPath = images.getRandomImageWithIndex();
 
-            newVehicles.add(
-                factory.create(
-                    idSupplier.get(),
-                    position.getLeft(),
-                    position.getRight(),
-                    lastSpawnTime,
-                    lifeTimeMillis,
-                    images.getRandomImage()
-                )
-            );
+            newVehicles.add(factory.create(
+                idSupplier.get(),
+                position.getLeft(),
+                position.getRight(),
+                lastSpawnTime,
+                lifeTimeMillis,
+                imageWithPath.getLeft(),
+                imageWithPath.getRight()
+            ));
         }
 
         return newVehicles;
@@ -131,5 +131,9 @@ public final class VehicleSpawner<T extends Vehicle> {
 
     public void reset() {
         lastSpawnTime = 0;
+    }
+
+    void synchronizeLastSpawnTime(final long currentTime) {
+        this.lastSpawnTime = currentTime;
     }
 }

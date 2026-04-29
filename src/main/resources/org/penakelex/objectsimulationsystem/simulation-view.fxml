@@ -7,6 +7,7 @@
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.ProgressIndicator?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.SeparatorMenuItem?>
@@ -40,6 +41,21 @@
             <graphic>
                 <FontIcon iconLiteral="fas-folder" iconSize="14"/>
             </graphic>
+            <MenuItem text="%menu.file.save"
+                      onAction="#saveSimulation"
+                      accelerator="Shortcut+S">
+                <graphic>
+                    <FontIcon iconLiteral="fas-save" iconSize="14"/>
+                </graphic>
+            </MenuItem>
+            <MenuItem text="%menu.file.load"
+                      onAction="#loadSimulation"
+                      accelerator="Shortcut+L">
+                <graphic>
+                    <FontIcon iconLiteral="fas-folder-open" iconSize="14"/>
+                </graphic>
+            </MenuItem>
+            <SeparatorMenuItem/>
             <MenuItem text="%menu.file.exit"
                       onAction="#exitApplication"
                       accelerator="Shortcut+Q">
@@ -84,6 +100,13 @@
                       accelerator="%label.controls.keybind.restart">
                 <graphic>
                     <FontIcon iconLiteral="fas-redo" iconSize="14"/>
+                </graphic>
+            </MenuItem>
+            <SeparatorMenuItem/>
+            <MenuItem text="%menu.console"
+                      onAction="#showConsoleDialog">
+                <graphic>
+                    <FontIcon iconLiteral="fas-terminal" iconSize="14"/>
                 </graphic>
             </MenuItem>
         </Menu>
@@ -178,6 +201,9 @@
                    HBox.hgrow="ALWAYS"
                    styleClass="canvas-container">
             <Canvas fx:id="simulationCanvas" styleClass="simulation-canvas"/>
+            <StackPane fx:id="loadingOverlay" styleClass="loading-overlay" visible="false" managed="false">
+                <ProgressIndicator styleClass="loading-progress"/>
+            </StackPane>
         </StackPane>
 
         <VBox styleClass="control-panel" HBox.hgrow="NEVER">
@@ -235,19 +261,33 @@
 
                     <VBox fx:id="infoContainer" styleClass="info-container">
                         <IconedSection iconLiteral="fas-chart-bar" title="%label.statistics.title">
-                            <LabeledValueRow fx:id="truckRow" iconLiteral="fas-truck" labelText="%label.trucks"
+                            <LabeledValueRow fx:id="truckRow"
+                                             iconLiteral="fas-truck"
+                                             labelText="%label.trucks"
                                              styleClass="truck-parameters-row"/>
-                            <LabeledValueRow fx:id="carRow" iconLiteral="fas-car" labelText="%label.cars"
+                            <LabeledValueRow fx:id="carRow"
+                                             iconLiteral="fas-car"
+                                             labelText="%label.cars"
                                              styleClass="car-parameters-row"/>
-                            <LabeledValueRow fx:id="totalRow" iconLiteral="fas-chart-line" labelText="%label.total"
+                            <LabeledValueRow fx:id="totalRow"
+                                             iconLiteral="fas-chart-line"
+                                             labelText="%label.total"
                                              styleClass="total-vehicles-parameters-row"/>
 
                             <Separator styleClass="section-separator"/>
 
-                            <LabeledValueRow fx:id="currentTruckRow" iconLiteral="fas-truck"
-                                             labelText="%label.current.trucks" styleClass="truck-parameters-row"/>
-                            <LabeledValueRow fx:id="currentCarRow" iconLiteral="fas-car" labelText="%label.current.cars"
+                            <LabeledValueRow fx:id="currentTruckRow"
+                                             iconLiteral="fas-truck"
+                                             labelText="%label.current.trucks"
+                                             styleClass="truck-parameters-row"/>
+                            <LabeledValueRow fx:id="currentCarRow"
+                                             iconLiteral="fas-car"
+                                             labelText="%label.current.cars"
                                              styleClass="car-parameters-row"/>
+                            <LabeledValueRow fx:id="currentTotalRow"
+                                             iconLiteral="fas-chart-line"
+                                             labelText="%label.current.total"
+                                             styleClass="total-vehicles-parameters-row"/>
                         </IconedSection>
 
                         <Separator styleClass="section-separator"/>

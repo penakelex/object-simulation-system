@@ -9,6 +9,7 @@
 @import url("radio_button.css");
 @import url("menubar.css");
 @import url("dialogs.css");
+@import url("progress.css");
 
 .root {
     /* ====== Базовые цвета ====== */

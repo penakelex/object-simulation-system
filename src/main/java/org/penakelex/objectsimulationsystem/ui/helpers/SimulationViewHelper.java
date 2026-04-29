@@ -11,7 +11,6 @@ import org.kordamp.ikonli.javafx.FontIcon;
 import org.penakelex.objectsimulationsystem.model.habitat.Habitat;
 import org.penakelex.objectsimulationsystem.model.habitat.VehicleStatistics;
 import org.penakelex.objectsimulationsystem.ui.components.LabeledValueRow;
-import org.penakelex.objectsimulationsystem.ui.TimeFormatter;
 import org.penakelex.objectsimulationsystem.viewmodel.SimulationState;
 
 import java.util.ResourceBundle;
@@ -111,27 +110,26 @@ public final class SimulationViewHelper {
         final LabeledValueRow carRow,
         final LabeledValueRow totalRow,
         final LabeledValueRow currentTruckRow,
-        final LabeledValueRow currentCarRow
+        final LabeledValueRow currentCarRow,
+        final LabeledValueRow currentTotalRow
     ) {
         truckRow.setValue(statistics.trucks());
         carRow.setValue(statistics.cars());
         totalRow.setValue(statistics.total());
         currentTruckRow.setValue(statistics.currentTrucks());
         currentCarRow.setValue(statistics.currentCars());
+        currentTotalRow.setValue(statistics.currentTotal());
     }
 
     public static void updateStatusTime(
         final long elapsedTime,
-        final boolean showTime,
         final ResourceBundle resources,
         final LabeledValueRow statusTimeRow
     ) {
-        if (showTime) {
-            statusTimeRow.setValue(TimeFormatter.formatTime(
-                elapsedTime,
-                resources
-            ));
-        }
+        statusTimeRow.setValue(TimeFormatter.formatTime(
+            elapsedTime,
+            resources
+        ));
     }
 
     public static void updateStatus(
@@ -161,7 +159,14 @@ public final class SimulationViewHelper {
         final boolean isTimeVisible,
         final VBox statusContainer
     ) {
-        statusContainer.setMinHeight(isTimeVisible ? 120 : 70);
+        final var hiddenClass = "status-time-hidden";
+        final var styleClasses = statusContainer.getStyleClass();
+
+        if (isTimeVisible) {
+            styleClasses.remove(hiddenClass);
+        } else {
+            styleClasses.add(hiddenClass);
+        }
     }
 
     public static void setNodeVisible(

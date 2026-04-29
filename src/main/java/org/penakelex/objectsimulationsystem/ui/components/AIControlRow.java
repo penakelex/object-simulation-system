@@ -82,4 +82,13 @@ public final class AIControlRow extends HBox {
     public ComboBox<Integer> getPriorityComboBox() {
         return priorityComboBox;
     }
+
+    public boolean isPaused() {
+        return isPaused;
+    }
+
+    public void setPausedSilent(final boolean paused) {
+        this.isPaused = paused;
+        toggleIcon.setIconLiteral(paused ? "fas-play" : "fas-pause");
+    }
 }
